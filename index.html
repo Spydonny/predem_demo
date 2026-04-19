@@ -810,6 +810,107 @@
         margin-left: 0;
       }
     }
+
+    /* ── Chart hover interaction ── */
+    .plot-shell {
+      position: relative;
+      cursor: crosshair;
+    }
+
+    .plot-shell svg {
+      pointer-events: none;
+    }
+
+    .chart-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .chart-cursor {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent 0%, rgba(100, 120, 160, 0.35) 20%, rgba(100, 120, 160, 0.35) 80%, transparent 100%);
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      pointer-events: none;
+    }
+
+    .chart-dot {
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: white;
+      border: 2.5px solid currentColor;
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+      transition: opacity 0.12s ease, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    }
+
+    .chart-tooltip {
+      position: absolute;
+      background: rgba(20, 28, 44, 0.92);
+      color: #f0f4f8;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      padding: 5px 9px 5px 9px;
+      border-radius: 8px;
+      white-space: nowrap;
+      pointer-events: none;
+      transform: translate(-50%, -100%);
+      margin-top: -8px;
+      opacity: 0;
+      transition: opacity 0.14s ease, transform 0.16s ease;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.22);
+      backdrop-filter: blur(6px);
+      z-index: 10;
+    }
+
+    .chart-tooltip.visible {
+      opacity: 1;
+    }
+
+    .chart-dot.visible {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .chart-cursor.visible {
+      opacity: 1;
+    }
+
+    .plot-shell:hover .chart-cursor {
+      opacity: 1;
+    }
+
+    /* pulse on first hover */
+    @keyframes dot-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(current, 0.4); }
+      70%  { box-shadow: 0 0 0 7px rgba(current, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(current, 0); }
+    }
+
+    .chart-tooltip .tt-time {
+      font-size: 10px;
+      font-weight: 500;
+      opacity: 0.62;
+      display: block;
+      margin-bottom: 1px;
+    }
+
+    .chart-tooltip .tt-val {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
   </style>
 </head>
 <body>
@@ -944,11 +1045,16 @@
           <div class="plot-name" data-i18n-html="hrvTitle">HRV &middot; RMSSD</div>
           <div class="plot-note" data-i18n="hrvNote">higher spread during sleep, flatter after breakfast</div>
         </div>
-        <div class="plot-shell tint-hrv">
+        <div class="plot-shell tint-hrv" id="chart-hrv"
+          data-points="0,61 18,69 36,49 54,79 72,44 90,73 108,60 126,86 144,77 162,92 180,87 198,96 216,89 234,98 252,92 270,99 288,91 306,85 324,79 342,95 360,74 378,61 396,84 414,53 432,73 450,57 480,68"
+          data-unit="ms" data-min="28" data-max="72" data-color="#43a047">
           <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
             <path class="guide" d="M0 86 L480 86"></path>
             <polyline class="trace-hrv" points="0,61 18,69 36,49 54,79 72,44 90,73 108,60 126,86 144,77 162,92 180,87 198,96 216,89 234,98 252,92 270,99 288,91 306,85 324,79 342,95 360,74 378,61 396,84 414,53 432,73 450,57 480,68"></polyline>
           </svg>
+          <div class="chart-cursor" id="cursor-hrv"></div>
+          <div class="chart-dot" id="dot-hrv" style="color:#43a047;"></div>
+          <div class="chart-tooltip" id="tip-hrv"><span class="tt-time"></span><span class="tt-val"></span></div>
         </div>
         <div class="plot-foot">
           <span data-i18n="timeStart">00 h</span>
@@ -962,11 +1068,16 @@
           <div class="plot-name">SpO<sub>2</sub></div>
           <div class="plot-note" data-i18n="spo2Note">baseline 96 to 98% with short nocturnal drops</div>
         </div>
-        <div class="plot-shell tint-spo2">
+        <div class="plot-shell tint-spo2" id="chart-spo2"
+          data-points="0,44 18,43 36,42 54,77 66,45 84,43 102,82 114,44 132,44 150,71 162,44 180,43 198,45 216,44 234,43 252,45 270,44 288,42 306,44 324,45 342,43 360,44 378,42 396,44 414,46 432,44 450,43 480,45"
+          data-unit="%" data-min="91.8" data-max="98.2" data-color="#d6aa31" data-decimals="1">
           <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
             <path class="guide" d="M0 48 L480 48"></path>
             <polyline class="trace-spo2" points="0,44 18,43 36,42 54,77 66,45 84,43 102,82 114,44 132,44 150,71 162,44 180,43 198,45 216,44 234,43 252,45 270,44 288,42 306,44 324,45 342,43 360,44 378,42 396,44 414,46 432,44 450,43 480,45"></polyline>
           </svg>
+          <div class="chart-cursor" id="cursor-spo2"></div>
+          <div class="chart-dot" id="dot-spo2" style="color:#d6aa31;"></div>
+          <div class="chart-tooltip" id="tip-spo2"><span class="tt-time"></span><span class="tt-val"></span></div>
         </div>
         <div class="plot-foot">
           <span data-i18n="timeStart">00 h</span>
@@ -980,11 +1091,16 @@
           <div class="plot-name" data-i18n="temperature">Temperature</div>
           <div class="plot-note" data-i18n="tempNote">morning trough, then a broad evening rise</div>
         </div>
-        <div class="plot-shell tint-temp">
+        <div class="plot-shell tint-temp" id="chart-temp"
+          data-points="0,75 24,78 48,84 72,90 96,96 120,100 144,97 168,92 192,88 216,82 240,77 264,72 288,68 312,62 336,58 360,55 384,56 408,60 432,63 456,68 480,71"
+          data-unit="°C" data-min="36.42" data-max="37.24" data-color="#e53935" data-decimals="2">
           <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
             <path class="guide" d="M0 84 L480 84"></path>
             <polyline class="trace-temp" points="0,75 24,78 48,84 72,90 96,96 120,100 144,97 168,92 192,88 216,82 240,77 264,72 288,68 312,62 336,58 360,55 384,56 408,60 432,63 456,68 480,71"></polyline>
           </svg>
+          <div class="chart-cursor" id="cursor-temp"></div>
+          <div class="chart-dot" id="dot-temp" style="color:#e53935;"></div>
+          <div class="chart-tooltip" id="tip-temp"><span class="tt-time"></span><span class="tt-val"></span></div>
         </div>
         <div class="plot-foot">
           <span data-i18n="timeStart">00 h</span>
@@ -998,12 +1114,17 @@
           <div class="plot-name" data-i18n="activity">Activity</div>
           <div class="plot-note" data-i18n="activityNote">quiet sleep interval, irregular ambulatory peaks after noon</div>
         </div>
-        <div class="plot-shell tint-activity">
+        <div class="plot-shell tint-activity" id="chart-activity"
+          data-points="0,138 20,138 40,138 60,136 80,138 100,138 120,132 140,118 150,136 168,102 178,136 196,78 208,134 224,122 236,136 250,64 262,136 278,54 290,132 306,88 318,136 334,96 348,136 364,70 378,136 392,106 406,136 424,122 442,132 460,128 480,130"
+          data-unit="steps/h" data-min="0" data-max="1126" data-color="#7f90a7">
           <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
             <path class="guide" d="M0 138 L480 138"></path>
             <path class="area-activity" d="M0 138 L20 138 L40 138 L60 136 L80 138 L100 138 L120 132 L140 118 L150 136 L168 102 L178 136 L196 78 L208 134 L224 122 L236 136 L250 64 L262 136 L278 54 L290 132 L306 88 L318 136 L334 96 L348 136 L364 70 L378 136 L392 106 L406 136 L424 122 L442 132 L460 128 L480 130 L480 170 L0 170 Z"></path>
             <polyline class="trace-activity" points="0,138 20,138 40,138 60,136 80,138 100,138 120,132 140,118 150,136 168,102 178,136 196,78 208,134 224,122 236,136 250,64 262,136 278,54 290,132 306,88 318,136 334,96 348,136 364,70 378,136 392,106 406,136 424,122 442,132 460,128 480,130"></polyline>
           </svg>
+          <div class="chart-cursor" id="cursor-activity"></div>
+          <div class="chart-dot" id="dot-activity" style="color:#7f90a7;"></div>
+          <div class="chart-tooltip" id="tip-activity"><span class="tt-time"></span><span class="tt-val"></span></div>
         </div>
         <div class="plot-foot">
           <span data-i18n="timeStart">00 h</span>
@@ -1083,6 +1204,127 @@
       </article>
     </section>
   </main>
+  <script>
+    /* ── Chart hover interactions ── */
+    (function () {
+      const CHARTS = [
+        { id: 'chart-hrv',      cursorId: 'cursor-hrv',      dotId: 'dot-hrv',      tipId: 'tip-hrv' },
+        { id: 'chart-spo2',     cursorId: 'cursor-spo2',     dotId: 'dot-spo2',     tipId: 'tip-spo2' },
+        { id: 'chart-temp',     cursorId: 'cursor-temp',     dotId: 'dot-temp',     tipId: 'tip-temp' },
+        { id: 'chart-activity', cursorId: 'cursor-activity', dotId: 'dot-activity', tipId: 'tip-activity' },
+      ];
+
+      function parsePoints(str) {
+        return str.trim().split(/\s+/).map(p => {
+          const [x, y] = p.split(',').map(Number);
+          return { x, y };
+        });
+      }
+
+      function interpolateY(points, svgX) {
+        if (svgX <= points[0].x) return points[0].y;
+        if (svgX >= points[points.length - 1].x) return points[points.length - 1].y;
+        for (let i = 0; i < points.length - 1; i++) {
+          const a = points[i], b = points[i + 1];
+          if (svgX >= a.x && svgX <= b.x) {
+            const t = (svgX - a.x) / (b.x - a.x);
+            return a.y + t * (b.y - a.y);
+          }
+        }
+        return points[0].y;
+      }
+
+      function svgYToValue(svgY, minY, maxY, minVal, maxVal) {
+        // svgY=minY → maxVal, svgY=maxY → minVal
+        const t = (svgY - minY) / (maxY - minY);
+        return maxVal - t * (maxVal - minVal);
+      }
+
+      function formatHour(fraction) {
+        const totalMin = Math.round(fraction * 24 * 60);
+        const h = Math.floor(totalMin / 60).toString().padStart(2, '0');
+        const m = (totalMin % 60).toString().padStart(2, '0');
+        return h + ':' + m;
+      }
+
+      CHARTS.forEach(cfg => {
+        const shell   = document.getElementById(cfg.id);
+        if (!shell) return;
+        const cursor  = document.getElementById(cfg.cursorId);
+        const dot     = document.getElementById(cfg.dotId);
+        const tip     = document.getElementById(cfg.tipId);
+        const tipTime = tip.querySelector('.tt-time');
+        const tipVal  = tip.querySelector('.tt-val');
+
+        const pts        = parsePoints(shell.dataset.points);
+        const unit       = shell.dataset.unit || '';
+        const dataMin    = parseFloat(shell.dataset.min);
+        const dataMax    = parseFloat(shell.dataset.max);
+        const decimals   = parseInt(shell.dataset.decimals || '0', 10);
+
+        // SVG y-range from all points
+        const svgYValues = pts.map(p => p.y);
+        const svgYMin    = Math.min(...svgYValues);   // corresponds to dataMax
+        const svgYMax    = Math.max(...svgYValues);   // corresponds to dataMin
+
+        function onMove(e) {
+          const rect   = shell.getBoundingClientRect();
+          const px     = (e.clientX ?? (e.touches && e.touches[0].clientX)) - rect.left;
+          const pctX   = Math.max(0, Math.min(1, px / rect.width));
+          const svgX   = pctX * 480;
+          const svgY   = interpolateY(pts, svgX);
+          const dotPX  = pctX * rect.width;
+          const dotPY  = (svgY / 170) * rect.height;
+          const val    = svgYToValue(svgY, svgYMin, svgYMax, dataMin, dataMax);
+
+          // move cursor
+          cursor.style.left = dotPX + 'px';
+          cursor.classList.add('visible');
+
+          // move dot
+          dot.style.left = dotPX + 'px';
+          dot.style.top  = dotPY + 'px';
+          dot.classList.add('visible');
+
+          // update tooltip
+          tipTime.textContent = formatHour(pctX);
+          tipVal.textContent  = val.toFixed(decimals) + ' ' + unit;
+
+          // position tooltip
+          tip.style.left = dotPX + 'px';
+          tip.style.top  = dotPY + 'px';
+
+          // flip if near top
+          if (dotPY < 36) {
+            tip.style.transform = 'translate(-50%, 12px)';
+          } else {
+            tip.style.transform = 'translate(-50%, calc(-100% - 8px))';
+          }
+
+          // flip if near edges
+          if (dotPX < 54) {
+            tip.style.transform = tip.style.transform.replace('translate(-50%', 'translate(4px');
+          } else if (dotPX > rect.width - 54) {
+            tip.style.transform = tip.style.transform.replace('translate(-50%', 'translate(calc(-100% - 4px)');
+          }
+
+          tip.classList.add('visible');
+        }
+
+        function onLeave() {
+          cursor.classList.remove('visible');
+          dot.classList.remove('visible');
+          tip.classList.remove('visible');
+        }
+
+        shell.addEventListener('mousemove',  onMove);
+        shell.addEventListener('mouseleave', onLeave);
+        shell.addEventListener('touchmove',  e => { e.preventDefault(); onMove(e.touches[0]); }, { passive: false });
+        shell.addEventListener('touchend',   onLeave);
+      });
+    })();
+  </script>
+
   <script>
     const translations = {
       en: {
