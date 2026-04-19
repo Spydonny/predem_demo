@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Monitoring Dashboard</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card-bg: #ffffff;
+      --line: #e6eaf0;
+      --line-soft: #eef2f6;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --muted-warm: #81776e;
+      --green: #43a047;
+      --yellow: #fbc02d;
+      --orange: #fb8c00;
+      --red: #e53935;
+      --slate: #7f90a7;
+      --shadow-a: 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-b: 0 6px 16px rgba(15, 23, 42, 0.06);
+      --shadow-c: 0 10px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: -0.012em;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    sub {
+      font-size: 0.72em;
+      line-height: 0;
+      vertical-align: baseline;
+      position: relative;
+      bottom: -0.14em;
+    }
+
+    .shell {
+      max-width: 1430px;
+      margin: 0 auto;
+      padding: 34px 30px 42px;
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .row {
+      display: grid;
+      gap: var(--gap, 16px);
+    }
+
+    .col {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap, 12px);
+    }
+
+    .gap {
+      gap: var(--gap, 16px);
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow-a), var(--shadow-b);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: #dbe3ec;
+      box-shadow: var(--shadow-a), var(--shadow-c);
+    }
+
+    .badge {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      min-width: 136px;
+      padding: 11px 16px 12px;
+      border: 1px solid rgba(251, 140, 0, 0.18);
+      border-radius: 999px;
+      background: rgba(251, 140, 0, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      transform: translate(8px, 6px);
+    }
+
+    .badge span {
+      font-size: 11px;
+      color: rgba(141, 92, 29, 0.82);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .badge strong {
+      font-size: 30px;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      color: #8e5b19;
+      font-weight: 700;
+    }
+
+    .topbar {
+      grid-template-columns: minmax(0, 1.26fr) auto;
+      align-items: start;
+      margin-bottom: 26px;
+    }
+
+    .patient-tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+
+    .patient-name {
+      margin: 0;
+      font-size: 37px;
+      line-height: 1.02;
+      letter-spacing: -0.045em;
+      font-weight: 630;
+    }
+
+    .subcopy {
+      max-width: 720px;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--muted-warm);
+    }
+
+    .side-meta {
+      align-items: flex-start;
+      margin-right: 10px;
+      padding-top: 5px;
+    }
+
+    .datebox {
+      min-width: 176px;
+      padding-top: 3px;
+    }
+
+    .datebox .k {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+
+    .datebox .v {
+      font-size: 17px;
+      font-weight: 620;
+      margin-bottom: 5px;
+    }
+
+    .stats {
+      grid-template-columns: 1.05fr 0.98fr 0.96fr 1.14fr;
+      margin-bottom: 18px;
+    }
+
+    .plots {
+      grid-template-columns: 1.04fr 1fr 0.95fr 1.08fr;
+      margin-bottom: 18px;
+    }
+
+    .bottom {
+      grid-template-columns: 1.06fr 0.94fr;
+      align-items: start;
+    }
+
+    .stat {
+      min-height: 174px;
+      position: relative;
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .title {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    .title-side {
+      font-size: 11px;
+      color: var(--muted-warm);
+      text-align: right;
+      line-height: 1.3;
+    }
+
+    .value {
+      font-size: 35px;
+      line-height: 1;
+      letter-spacing: -0.055em;
+      font-weight: 650;
+    }
+
+    .unit {
+      font-size: 15px;
+      color: var(--muted);
+      margin-left: 6px;
+      font-weight: 550;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted-warm);
+      line-height: 1.45;
+    }
+
+    .meta-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .meta-k {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .meta-v {
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .trend-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(251, 140, 0, 0.08);
+      color: #9b6622;
+      font-size: 11px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .dot-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      color: var(--muted-warm);
+      white-space: nowrap;
+    }
+
+    .dot-note i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      display: inline-block;
+    }
+
+    .chip {
+      margin-left: auto;
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line-soft);
+      background: #fafbfd;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .heart {
+      padding: 17px 17px 14px;
+    }
+
+    .heart .meta-row {
+      padding-top: 12px;
+      border-top: 1px solid var(--line-soft);
+      margin-top: auto;
+    }
+
+    .spo2 {
+      padding: 18px 16px 15px 20px;
+      margin-top: 3px;
+    }
+
+    .spo2 .value {
+      margin-top: 1px;
+    }
+
+    .spo2 .hint {
+      max-width: 235px;
+    }
+
+    .temp {
+      padding: 15px 18px 18px 18px;
+      margin-top: 5px;
+    }
+
+    .temp .value {
+      font-size: 34px;
+      margin-top: 6px;
+    }
+
+    .temp .meta-row {
+      margin-top: auto;
+      justify-items: end;
+      text-align: right;
+    }
+
+    .gait {
+      padding: 18px 17px 15px 20px;
+      margin-top: 2px;
+    }
+
+    .gait .value {
+      font-size: 31px;
+      margin-top: 3px;
+    }
+
+    .gait .divider {
+      height: 1px;
+      background: var(--line-soft);
+      margin: 7px 0 3px;
+    }
+
+    .gait .meta-row {
+      margin-top: auto;
+    }
+
+    .plot-card {
+      min-height: 256px;
+      overflow: hidden;
+    }
+
+    .plot-a {
+      padding: 16px 15px 15px;
+    }
+
+    .plot-b {
+      padding: 16px 14px 14px 16px;
+      margin-top: 2px;
+    }
+
+    .plot-c {
+      padding: 15px 17px 15px 15px;
+      margin-top: 6px;
+    }
+
+    .plot-d {
+      padding: 16px 16px 16px 14px;
+      margin-top: 3px;
+    }
+
+    .plot-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 11px;
+    }
+
+    .plot-name {
+      font-size: 13px;
+      font-weight: 610;
+    }
+
+    .plot-note {
+      max-width: 132px;
+      text-align: right;
+      font-size: 12px;
+      line-height: 1.34;
+      color: var(--muted-warm);
+    }
+
+    .plot-shell {
+      height: 172px;
+      overflow: hidden;
+      border: 1px solid var(--line-soft);
+      border-radius: 10px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+      background-image:
+        linear-gradient(to bottom, rgba(31, 41, 55, 0.028) 1px, transparent 1px),
+        linear-gradient(to right, rgba(31, 41, 55, 0.022) 1px, transparent 1px);
+      background-size: 100% 34px, 48px 100%;
+    }
+
+    .tint-hrv {
+      background-color: #f8fbf8;
+    }
+
+    .tint-spo2 {
+      background-color: #fcfbf6;
+    }
+
+    .tint-temp {
+      background-color: #fcf8f7;
+    }
+
+    .tint-activity {
+      background-color: #f8fafc;
+    }
+
+    .plot-shell svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .guide {
+      fill: none;
+      stroke: rgba(107, 114, 128, 0.15);
+      stroke-width: 1;
+      stroke-dasharray: 4 6;
+    }
+
+    .trace-hrv {
+      fill: none;
+      stroke: rgba(67, 160, 71, 0.78);
+      stroke-width: 1.65;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .trace-spo2 {
+      fill: none;
+      stroke: rgba(214, 170, 49, 0.84);
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .trace-temp {
+      fill: none;
+      stroke: rgba(229, 57, 53, 0.72);
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .trace-activity {
+      fill: none;
+      stroke: rgba(127, 144, 167, 0.84);
+      stroke-width: 1.7;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+    }
+
+    .area-activity {
+      fill: rgba(127, 144, 167, 0.09);
+      stroke: none;
+    }
+
+    .plot-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .subs {
+      padding: 19px 18px 21px;
+    }
+
+    .breakdown {
+      padding: 18px 18px 20px 18px;
+      margin-top: 4px;
+    }
+
+    .section-k {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      margin-bottom: 15px;
+    }
+
+    .sub-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .sub {
+      display: grid;
+      gap: 7px;
+    }
+
+    .sub-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 14px;
+      font-size: 13px;
+    }
+
+    .sub-name {
+      color: var(--text);
+      font-weight: 520;
+      letter-spacing: 0.01em;
+    }
+
+    .sub-name span {
+      color: var(--muted);
+      margin-left: 8px;
+      font-weight: 420;
+    }
+
+    .share {
+      color: var(--muted-warm);
+      font-size: 12px;
+    }
+
+    .track {
+      overflow: hidden;
+      border-radius: 7px;
+      border: 1px solid var(--line-soft);
+      background: #f2f5f8;
+    }
+
+    .track > i {
+      display: block;
+      height: 100%;
+      border-radius: 6px;
+    }
+
+    .sub-one .track {
+      height: 8px;
+      margin-right: 14px;
+    }
+
+    .sub-two {
+      margin-left: 3px;
+    }
+
+    .sub-two .track {
+      height: 10px;
+      margin-right: 24px;
+    }
+
+    .sub-three .track {
+      height: 7px;
+      margin-left: 5px;
+      margin-right: 12px;
+    }
+
+    .sub-four {
+      margin-left: 1px;
+    }
+
+    .sub-four .track {
+      height: 11px;
+      margin-right: 8px;
+    }
+
+    .tone-amber {
+      background: rgba(251, 140, 0, 0.74);
+    }
+
+    .tone-warn {
+      background: rgba(251, 192, 45, 0.76);
+    }
+
+    .tone-risk {
+      background: rgba(229, 57, 53, 0.72);
+    }
+
+    .tone-green {
+      background: rgba(67, 160, 71, 0.74);
+    }
+
+    .break-layout {
+      display: grid;
+      grid-template-columns: 216px 1fr;
+      gap: 8px 18px;
+      align-items: start;
+    }
+
+    .ring {
+      position: relative;
+      width: 184px;
+      height: 184px;
+      border-radius: 50%;
+      margin: 10px 0 8px 18px;
+      background: conic-gradient(
+        rgba(251, 140, 0, 0.62) 0 27.2%,
+        rgba(251, 192, 45, 0.6) 27.2% 44.2%,
+        rgba(229, 57, 53, 0.62) 44.2% 71.2%,
+        rgba(67, 160, 71, 0.58) 71.2% 100%
+      );
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.42);
+    }
+
+    .ring::after {
+      content: "";
+      position: absolute;
+      inset: 26px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 1px solid var(--line-soft);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    }
+
+    .ring-center {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transform: translate(-4px, 4px);
+      text-align: center;
+    }
+
+    .ring-center .s {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .ring-center .b {
+      font-size: 29px;
+      font-weight: 660;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      margin: 7px 0 4px;
+      color: #243041;
+    }
+
+    .ring-center .t {
+      font-size: 12px;
+      color: var(--muted-warm);
+    }
+
+    .legend {
+      display: grid;
+      gap: 12px;
+      padding-top: 19px;
+    }
+
+    .legend-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .legend-row:nth-child(2) {
+      margin-left: 11px;
+    }
+
+    .legend-row:nth-child(3) {
+      margin-left: 4px;
+    }
+
+    .legend-row:nth-child(4) {
+      margin-left: 14px;
+    }
+
+    .legend-l {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot-amber {
+      background: rgba(251, 140, 0, 0.72);
+    }
+
+    .dot-warn {
+      background: rgba(251, 192, 45, 0.78);
+    }
+
+    .dot-risk {
+      background: rgba(229, 57, 53, 0.74);
+    }
+
+    .dot-green {
+      background: rgba(67, 160, 71, 0.74);
+    }
+
+    @media (max-width: 1180px) {
+      .stats,
+      .plots {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .bottom {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .shell {
+        padding: 20px 16px 28px;
+      }
+
+      .topbar,
+      .stats,
+      .plots {
+        grid-template-columns: 1fr;
+      }
+
+      .side-meta {
+        margin-right: 0;
+        justify-content: space-between;
+      }
+
+      .badge {
+        transform: translate(0, 0);
+      }
+
+      .break-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .ring {
+        margin-left: 0;
+      }
+
+      .legend {
+        padding-top: 4px;
+      }
+
+      .legend-row:nth-child(2),
+      .legend-row:nth-child(3),
+      .legend-row:nth-child(4) {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell col" style="--gap: 0;">
+    <header class="row topbar" style="--gap: 18px;">
+      <div class="col" style="--gap: 10px;">
+        <div class="patient-tag">Medical Monitoring Dashboard</div>
+        <h1 class="patient-name">Omralinov Tamerlan</h1>
+        <div class="subcopy">24 h telemetry snapshot with nocturnal oxygen dips, evening temperature elevation, reduced daytime HRV, and irregular daytime gait load.</div>
+      </div>
+      <div class="flex gap side-meta" style="--gap: 19px;">
+        <div class="datebox">
+          <div class="k">Recorded</div>
+          <div class="v">19 Apr 2026, 21:47</div>
+          <div class="muted" style="font-size: 12px;">Last packet 2 min ago</div>
+        </div>
+        <div class="badge">
+          <span>Risk Score</span>
+          <strong>68%</strong>
+        </div>
+      </div>
+    </header>
+
+    <section class="row stats" style="--gap: 14px;">
+      <article class="card stat heart col" style="--gap: 13px;">
+        <div class="title-row">
+          <div class="title">Heart Rate</div>
+          <div class="trend-chip">&uarr; 3.8 vs night low</div>
+        </div>
+        <div class="value">74<span class="unit">bpm</span></div>
+        <div class="hint">Lower after 01:00, broader daytime swings after 13:00</div>
+        <div class="meta-row">
+          <div>
+            <div class="meta-k">Avg</div>
+            <div class="meta-v">68.7 bpm</div>
+          </div>
+          <div>
+            <div class="meta-k">Min</div>
+            <div class="meta-v">54 bpm</div>
+          </div>
+          <div>
+            <div class="meta-k">Max</div>
+            <div class="meta-v">96 bpm</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card stat spo2 col" style="--gap: 11px;">
+        <div class="title-row">
+          <div class="title">SpO<sub>2</sub></div>
+          <div class="dot-note"><i></i><span>baseline stable</span></div>
+        </div>
+        <div class="value">96.8<span class="unit">%</span></div>
+        <div class="hint">Desaturation episodes clustered between 02:10 and 05:20</div>
+        <div class="flex gap" style="--gap: 8px; align-items: center;">
+          <div class="chip">3 overnight dips</div>
+        </div>
+        <div class="meta-row">
+          <div>
+            <div class="meta-k">Avg</div>
+            <div class="meta-v">96.6%</div>
+          </div>
+          <div>
+            <div class="meta-k">Min</div>
+            <div class="meta-v">91.8%</div>
+          </div>
+          <div>
+            <div class="meta-k">Max</div>
+            <div class="meta-v">98.2%</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card stat temp col" style="--gap: 11px;">
+        <div class="title-row">
+          <div class="title">Temperature</div>
+          <div class="title-side">evening crest<br>persisting</div>
+        </div>
+        <div class="value">37.18<span class="unit">&deg;C</span></div>
+        <div class="hint">Lowest near 07:30, evening crest sustained after 18:40</div>
+        <div class="meta-row">
+          <div>
+            <div class="meta-k">Avg</div>
+            <div class="meta-v">36.86&deg;C</div>
+          </div>
+          <div>
+            <div class="meta-k">Min</div>
+            <div class="meta-v">36.42&deg;C</div>
+          </div>
+          <div>
+            <div class="meta-k">Max</div>
+            <div class="meta-v">37.24&deg;C</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card stat gait col" style="--gap: 10px;">
+        <div class="title-row">
+          <div class="title">Gait / Activity</div>
+          <div class="title-side">active window<br>13:00 to 17:30</div>
+        </div>
+        <div class="value">5,843<span class="unit">steps</span></div>
+        <div class="hint">Near-zero movement overnight, uneven daytime bursts</div>
+        <div class="divider"></div>
+        <div class="meta-row">
+          <div>
+            <div class="meta-k">Avg/hr</div>
+            <div class="meta-v">243.5</div>
+          </div>
+          <div>
+            <div class="meta-k">Min/hr</div>
+            <div class="meta-v">0</div>
+          </div>
+          <div>
+            <div class="meta-k">Max/hr</div>
+            <div class="meta-v">1,126</div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="row plots" style="--gap: 14px;">
+      <article class="card plot-card plot-a">
+        <div class="plot-head">
+          <div class="plot-name">HRV &middot; RMSSD</div>
+          <div class="plot-note">higher spread during sleep, flatter after breakfast</div>
+        </div>
+        <div class="plot-shell tint-hrv">
+          <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
+            <path class="guide" d="M0 86 L480 86"></path>
+            <polyline class="trace-hrv" points="0,61 18,69 36,49 54,79 72,44 90,73 108,60 126,86 144,77 162,92 180,87 198,96 216,89 234,98 252,92 270,99 288,91 306,85 324,79 342,95 360,74 378,61 396,84 414,53 432,73 450,57 480,68"></polyline>
+          </svg>
+        </div>
+        <div class="plot-foot">
+          <span>00 h</span>
+          <span>night high 72 ms</span>
+          <span>24 h</span>
+        </div>
+      </article>
+
+      <article class="card plot-card plot-b">
+        <div class="plot-head">
+          <div class="plot-name">SpO<sub>2</sub></div>
+          <div class="plot-note">baseline 96 to 98% with short nocturnal drops</div>
+        </div>
+        <div class="plot-shell tint-spo2">
+          <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
+            <path class="guide" d="M0 48 L480 48"></path>
+            <polyline class="trace-spo2" points="0,44 18,43 36,42 54,77 66,45 84,43 102,82 114,44 132,44 150,71 162,44 180,43 198,45 216,44 234,43 252,45 270,44 288,42 306,44 324,45 342,43 360,44 378,42 396,44 414,46 432,44 450,43 480,45"></polyline>
+          </svg>
+        </div>
+        <div class="plot-foot">
+          <span>00 h</span>
+          <span>02:14 &middot; 03:58 &middot; 05:07</span>
+          <span>24 h</span>
+        </div>
+      </article>
+
+      <article class="card plot-card plot-c">
+        <div class="plot-head">
+          <div class="plot-name">Temperature</div>
+          <div class="plot-note">morning trough, then a broad evening rise</div>
+        </div>
+        <div class="plot-shell tint-temp">
+          <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
+            <path class="guide" d="M0 84 L480 84"></path>
+            <polyline class="trace-temp" points="0,75 24,78 48,84 72,90 96,96 120,100 144,97 168,92 192,88 216,82 240,77 264,72 288,68 312,62 336,58 360,55 384,56 408,60 432,63 456,68 480,71"></polyline>
+          </svg>
+        </div>
+        <div class="plot-foot">
+          <span>00 h</span>
+          <span>low 07:31 &middot; crest 18:46</span>
+          <span>24 h</span>
+        </div>
+      </article>
+
+      <article class="card plot-card plot-d">
+        <div class="plot-head">
+          <div class="plot-name">Activity</div>
+          <div class="plot-note">quiet sleep interval, irregular ambulatory peaks after noon</div>
+        </div>
+        <div class="plot-shell tint-activity">
+          <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
+            <path class="guide" d="M0 138 L480 138"></path>
+            <path class="area-activity" d="M0 138 L20 138 L40 138 L60 136 L80 138 L100 138 L120 132 L140 118 L150 136 L168 102 L178 136 L196 78 L208 134 L224 122 L236 136 L250 64 L262 136 L278 54 L290 132 L306 88 L318 136 L334 96 L348 136 L364 70 L378 136 L392 106 L406 136 L424 122 L442 132 L460 128 L480 130 L480 170 L0 170 Z"></path>
+            <polyline class="trace-activity" points="0,138 20,138 40,138 60,136 80,138 100,138 120,132 140,118 150,136 168,102 178,136 196,78 208,134 224,122 236,136 250,64 262,136 278,54 290,132 306,88 318,136 334,96 348,136 364,70 378,136 392,106 406,136 424,122 442,132 460,128 480,130"></polyline>
+          </svg>
+        </div>
+        <div class="plot-foot">
+          <span>00 h</span>
+          <span>largest burst 14:18</span>
+          <span>24 h</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="row bottom" style="--gap: 15px;">
+      <article class="card subs">
+        <div class="section-k">Subscores</div>
+        <div class="sub-list">
+          <div class="sub sub-one">
+            <div class="sub-head">
+              <div class="sub-name">R_hrv <span>0.74</span></div>
+              <div class="share">25% weight</div>
+            </div>
+            <div class="track"><i class="tone-amber" style="width: 74%;"></i></div>
+          </div>
+
+          <div class="sub sub-two">
+            <div class="sub-head">
+              <div class="sub-name">R_spo2 <span>0.58</span></div>
+              <div class="share">20% weight</div>
+            </div>
+            <div class="track"><i class="tone-warn" style="width: 58%;"></i></div>
+          </div>
+
+          <div class="sub sub-three">
+            <div class="sub-head">
+              <div class="sub-name">R_temp <span>0.92</span></div>
+              <div class="share">20% weight</div>
+            </div>
+            <div class="track"><i class="tone-risk" style="width: 92%;"></i></div>
+          </div>
+
+          <div class="sub sub-four">
+            <div class="sub-head">
+              <div class="sub-name">R_gait <span>0.56</span></div>
+              <div class="share">35% weight</div>
+            </div>
+            <div class="track"><i class="tone-green" style="width: 56%;"></i></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card breakdown">
+        <div class="section-k">Risk Score Breakdown</div>
+        <div class="break-layout">
+          <div class="ring">
+            <div class="ring-center">
+              <div class="s">Composite</div>
+              <div class="b">68.0</div>
+              <div class="t">points of 100</div>
+            </div>
+          </div>
+          <div class="legend">
+            <div class="legend-row">
+              <div class="legend-l"><span class="dot dot-amber"></span><span>HRV</span></div>
+              <div>18.5 pts</div>
+            </div>
+            <div class="legend-row">
+              <div class="legend-l"><span class="dot dot-warn"></span><span>SpO<sub>2</sub></span></div>
+              <div>11.6 pts</div>
+            </div>
+            <div class="legend-row">
+              <div class="legend-l"><span class="dot dot-risk"></span><span>Temperature</span></div>
+              <div>18.4 pts</div>
+            </div>
+            <div class="legend-row">
+              <div class="legend-l"><span class="dot dot-green"></span><span>Gait / Activity</span></div>
+              <div>19.6 pts</div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
