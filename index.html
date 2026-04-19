@@ -127,6 +127,48 @@
       margin-bottom: 26px;
     }
 
+    .toolbar {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .lang-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: var(--shadow-a);
+    }
+
+    .lang-btn {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.08em;
+      padding: 7px 10px;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: background 0.18s ease, color 0.18s ease;
+    }
+
+    .lang-btn:hover {
+      background: #f2f5f8;
+      color: var(--text);
+    }
+
+    .lang-btn.is-active {
+      background: #eef3f8;
+      color: var(--text);
+    }
+
     .patient-tag {
       font-size: 11px;
       text-transform: uppercase;
@@ -774,18 +816,25 @@
   <main class="shell col" style="--gap: 0;">
     <header class="row topbar" style="--gap: 18px;">
       <div class="col" style="--gap: 10px;">
-        <div class="patient-tag">Medical Monitoring Dashboard</div>
+        <div class="toolbar">
+          <div class="lang-switch" aria-label="Language switcher">
+            <button class="lang-btn is-active" type="button" data-lang="en">EN</button>
+            <button class="lang-btn" type="button" data-lang="kk">KZ</button>
+            <button class="lang-btn" type="button" data-lang="ru">RU</button>
+          </div>
+        </div>
+        <div class="patient-tag" data-i18n="patientTag">Medical Monitoring Dashboard</div>
         <h1 class="patient-name">Omralinov Tamerlan</h1>
-        <div class="subcopy">24 h telemetry snapshot with nocturnal oxygen dips, evening temperature elevation, reduced daytime HRV, and irregular daytime gait load.</div>
+        <div class="subcopy" data-i18n="subcopy">24 h telemetry snapshot with nocturnal oxygen dips, evening temperature elevation, reduced daytime HRV, and irregular daytime gait load.</div>
       </div>
       <div class="flex gap side-meta" style="--gap: 19px;">
         <div class="datebox">
-          <div class="k">Recorded</div>
-          <div class="v">19 Apr 2026, 21:47</div>
-          <div class="muted" style="font-size: 12px;">Last packet 2 min ago</div>
+          <div class="k" data-i18n="recorded">Recorded</div>
+          <div class="v" data-i18n="recordedValue">19 Apr 2026, 21:47</div>
+          <div class="muted" style="font-size: 12px;" data-i18n="lastPacket">Last packet 2 min ago</div>
         </div>
         <div class="badge">
-          <span>Risk Score</span>
+          <span data-i18n="riskScore">Risk Score</span>
           <strong>68%</strong>
         </div>
       </div>
@@ -794,22 +843,22 @@
     <section class="row stats" style="--gap: 14px;">
       <article class="card stat heart col" style="--gap: 13px;">
         <div class="title-row">
-          <div class="title">Heart Rate</div>
-          <div class="trend-chip">&uarr; 3.8 vs night low</div>
+          <div class="title" data-i18n="heartRate">Heart Rate</div>
+          <div class="trend-chip" data-i18n-html="heartTrend">&uarr; 3.8 vs night low</div>
         </div>
         <div class="value">74<span class="unit">bpm</span></div>
-        <div class="hint">Lower after 01:00, broader daytime swings after 13:00</div>
+        <div class="hint" data-i18n="heartHint">Lower after 01:00, broader daytime swings after 13:00</div>
         <div class="meta-row">
           <div>
-            <div class="meta-k">Avg</div>
+            <div class="meta-k" data-i18n="avg">Avg</div>
             <div class="meta-v">68.7 bpm</div>
           </div>
           <div>
-            <div class="meta-k">Min</div>
+            <div class="meta-k" data-i18n="min">Min</div>
             <div class="meta-v">54 bpm</div>
           </div>
           <div>
-            <div class="meta-k">Max</div>
+            <div class="meta-k" data-i18n="max">Max</div>
             <div class="meta-v">96 bpm</div>
           </div>
         </div>
@@ -818,24 +867,24 @@
       <article class="card stat spo2 col" style="--gap: 11px;">
         <div class="title-row">
           <div class="title">SpO<sub>2</sub></div>
-          <div class="dot-note"><i></i><span>baseline stable</span></div>
+          <div class="dot-note"><i></i><span data-i18n="spo2Stable">baseline stable</span></div>
         </div>
         <div class="value">96.8<span class="unit">%</span></div>
-        <div class="hint">Desaturation episodes clustered between 02:10 and 05:20</div>
+        <div class="hint" data-i18n="spo2Hint">Desaturation episodes clustered between 02:10 and 05:20</div>
         <div class="flex gap" style="--gap: 8px; align-items: center;">
-          <div class="chip">3 overnight dips</div>
+          <div class="chip" data-i18n="spo2Chip">3 overnight dips</div>
         </div>
         <div class="meta-row">
           <div>
-            <div class="meta-k">Avg</div>
+            <div class="meta-k" data-i18n="avg">Avg</div>
             <div class="meta-v">96.6%</div>
           </div>
           <div>
-            <div class="meta-k">Min</div>
+            <div class="meta-k" data-i18n="min">Min</div>
             <div class="meta-v">91.8%</div>
           </div>
           <div>
-            <div class="meta-k">Max</div>
+            <div class="meta-k" data-i18n="max">Max</div>
             <div class="meta-v">98.2%</div>
           </div>
         </div>
@@ -843,22 +892,22 @@
 
       <article class="card stat temp col" style="--gap: 11px;">
         <div class="title-row">
-          <div class="title">Temperature</div>
-          <div class="title-side">evening crest<br>persisting</div>
+          <div class="title" data-i18n="temperature">Temperature</div>
+          <div class="title-side" data-i18n-html="tempSide">evening crest<br>persisting</div>
         </div>
         <div class="value">37.18<span class="unit">&deg;C</span></div>
-        <div class="hint">Lowest near 07:30, evening crest sustained after 18:40</div>
+        <div class="hint" data-i18n="tempHint">Lowest near 07:30, evening crest sustained after 18:40</div>
         <div class="meta-row">
           <div>
-            <div class="meta-k">Avg</div>
+            <div class="meta-k" data-i18n="avg">Avg</div>
             <div class="meta-v">36.86&deg;C</div>
           </div>
           <div>
-            <div class="meta-k">Min</div>
+            <div class="meta-k" data-i18n="min">Min</div>
             <div class="meta-v">36.42&deg;C</div>
           </div>
           <div>
-            <div class="meta-k">Max</div>
+            <div class="meta-k" data-i18n="max">Max</div>
             <div class="meta-v">37.24&deg;C</div>
           </div>
         </div>
@@ -866,23 +915,23 @@
 
       <article class="card stat gait col" style="--gap: 10px;">
         <div class="title-row">
-          <div class="title">Gait / Activity</div>
-          <div class="title-side">active window<br>13:00 to 17:30</div>
+          <div class="title" data-i18n="gaitActivity">Gait / Activity</div>
+          <div class="title-side" data-i18n-html="gaitSide">active window<br>13:00 to 17:30</div>
         </div>
-        <div class="value">5,843<span class="unit">steps</span></div>
-        <div class="hint">Near-zero movement overnight, uneven daytime bursts</div>
+        <div class="value">5,843<span class="unit" data-i18n="steps">steps</span></div>
+        <div class="hint" data-i18n="gaitHint">Near-zero movement overnight, uneven daytime bursts</div>
         <div class="divider"></div>
         <div class="meta-row">
           <div>
-            <div class="meta-k">Avg/hr</div>
+            <div class="meta-k" data-i18n="avgHr">Avg/hr</div>
             <div class="meta-v">243.5</div>
           </div>
           <div>
-            <div class="meta-k">Min/hr</div>
+            <div class="meta-k" data-i18n="minHr">Min/hr</div>
             <div class="meta-v">0</div>
           </div>
           <div>
-            <div class="meta-k">Max/hr</div>
+            <div class="meta-k" data-i18n="maxHr">Max/hr</div>
             <div class="meta-v">1,126</div>
           </div>
         </div>
@@ -892,8 +941,8 @@
     <section class="row plots" style="--gap: 14px;">
       <article class="card plot-card plot-a">
         <div class="plot-head">
-          <div class="plot-name">HRV &middot; RMSSD</div>
-          <div class="plot-note">higher spread during sleep, flatter after breakfast</div>
+          <div class="plot-name" data-i18n-html="hrvTitle">HRV &middot; RMSSD</div>
+          <div class="plot-note" data-i18n="hrvNote">higher spread during sleep, flatter after breakfast</div>
         </div>
         <div class="plot-shell tint-hrv">
           <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
@@ -902,16 +951,16 @@
           </svg>
         </div>
         <div class="plot-foot">
-          <span>00 h</span>
-          <span>night high 72 ms</span>
-          <span>24 h</span>
+          <span data-i18n="timeStart">00 h</span>
+          <span data-i18n="hrvFoot">night high 72 ms</span>
+          <span data-i18n="timeEnd">24 h</span>
         </div>
       </article>
 
       <article class="card plot-card plot-b">
         <div class="plot-head">
           <div class="plot-name">SpO<sub>2</sub></div>
-          <div class="plot-note">baseline 96 to 98% with short nocturnal drops</div>
+          <div class="plot-note" data-i18n="spo2Note">baseline 96 to 98% with short nocturnal drops</div>
         </div>
         <div class="plot-shell tint-spo2">
           <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
@@ -920,16 +969,16 @@
           </svg>
         </div>
         <div class="plot-foot">
-          <span>00 h</span>
-          <span>02:14 &middot; 03:58 &middot; 05:07</span>
-          <span>24 h</span>
+          <span data-i18n="timeStart">00 h</span>
+          <span data-i18n-html="spo2Foot">02:14 &middot; 03:58 &middot; 05:07</span>
+          <span data-i18n="timeEnd">24 h</span>
         </div>
       </article>
 
       <article class="card plot-card plot-c">
         <div class="plot-head">
-          <div class="plot-name">Temperature</div>
-          <div class="plot-note">morning trough, then a broad evening rise</div>
+          <div class="plot-name" data-i18n="temperature">Temperature</div>
+          <div class="plot-note" data-i18n="tempNote">morning trough, then a broad evening rise</div>
         </div>
         <div class="plot-shell tint-temp">
           <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
@@ -938,16 +987,16 @@
           </svg>
         </div>
         <div class="plot-foot">
-          <span>00 h</span>
-          <span>low 07:31 &middot; crest 18:46</span>
-          <span>24 h</span>
+          <span data-i18n="timeStart">00 h</span>
+          <span data-i18n-html="tempFoot">low 07:31 &middot; crest 18:46</span>
+          <span data-i18n="timeEnd">24 h</span>
         </div>
       </article>
 
       <article class="card plot-card plot-d">
         <div class="plot-head">
-          <div class="plot-name">Activity</div>
-          <div class="plot-note">quiet sleep interval, irregular ambulatory peaks after noon</div>
+          <div class="plot-name" data-i18n="activity">Activity</div>
+          <div class="plot-note" data-i18n="activityNote">quiet sleep interval, irregular ambulatory peaks after noon</div>
         </div>
         <div class="plot-shell tint-activity">
           <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
@@ -957,21 +1006,21 @@
           </svg>
         </div>
         <div class="plot-foot">
-          <span>00 h</span>
-          <span>largest burst 14:18</span>
-          <span>24 h</span>
+          <span data-i18n="timeStart">00 h</span>
+          <span data-i18n="activityFoot">largest burst 14:18</span>
+          <span data-i18n="timeEnd">24 h</span>
         </div>
       </article>
     </section>
 
     <section class="row bottom" style="--gap: 15px;">
       <article class="card subs">
-        <div class="section-k">Subscores</div>
+        <div class="section-k" data-i18n="subscores">Subscores</div>
         <div class="sub-list">
           <div class="sub sub-one">
             <div class="sub-head">
               <div class="sub-name">R_hrv <span>0.74</span></div>
-              <div class="share">25% weight</div>
+              <div class="share" data-i18n="weight25">25% weight</div>
             </div>
             <div class="track"><i class="tone-amber" style="width: 74%;"></i></div>
           </div>
@@ -979,7 +1028,7 @@
           <div class="sub sub-two">
             <div class="sub-head">
               <div class="sub-name">R_spo2 <span>0.58</span></div>
-              <div class="share">20% weight</div>
+              <div class="share" data-i18n="weight20">20% weight</div>
             </div>
             <div class="track"><i class="tone-warn" style="width: 58%;"></i></div>
           </div>
@@ -987,7 +1036,7 @@
           <div class="sub sub-three">
             <div class="sub-head">
               <div class="sub-name">R_temp <span>0.92</span></div>
-              <div class="share">20% weight</div>
+              <div class="share" data-i18n="weight20">20% weight</div>
             </div>
             <div class="track"><i class="tone-risk" style="width: 92%;"></i></div>
           </div>
@@ -995,7 +1044,7 @@
           <div class="sub sub-four">
             <div class="sub-head">
               <div class="sub-name">R_gait <span>0.56</span></div>
-              <div class="share">35% weight</div>
+              <div class="share" data-i18n="weight35">35% weight</div>
             </div>
             <div class="track"><i class="tone-green" style="width: 56%;"></i></div>
           </div>
@@ -1003,18 +1052,18 @@
       </article>
 
       <article class="card breakdown">
-        <div class="section-k">Risk Score Breakdown</div>
+        <div class="section-k" data-i18n="riskBreakdown">Risk Score Breakdown</div>
         <div class="break-layout">
           <div class="ring">
             <div class="ring-center">
-              <div class="s">Composite</div>
+              <div class="s" data-i18n="composite">Composite</div>
               <div class="b">68.0</div>
-              <div class="t">points of 100</div>
+              <div class="t" data-i18n="pointsOf100">points of 100</div>
             </div>
           </div>
           <div class="legend">
             <div class="legend-row">
-              <div class="legend-l"><span class="dot dot-amber"></span><span>HRV</span></div>
+              <div class="legend-l"><span class="dot dot-amber"></span><span data-i18n="hrvShort">HRV</span></div>
               <div>18.5 pts</div>
             </div>
             <div class="legend-row">
@@ -1022,11 +1071,11 @@
               <div>11.6 pts</div>
             </div>
             <div class="legend-row">
-              <div class="legend-l"><span class="dot dot-risk"></span><span>Temperature</span></div>
+              <div class="legend-l"><span class="dot dot-risk"></span><span data-i18n="temperature">Temperature</span></div>
               <div>18.4 pts</div>
             </div>
             <div class="legend-row">
-              <div class="legend-l"><span class="dot dot-green"></span><span>Gait / Activity</span></div>
+              <div class="legend-l"><span class="dot dot-green"></span><span data-i18n="gaitActivity">Gait / Activity</span></div>
               <div>19.6 pts</div>
             </div>
           </div>
@@ -1034,5 +1083,188 @@
       </article>
     </section>
   </main>
+  <script>
+    const translations = {
+      en: {
+        pageTitle: "Medical Monitoring Dashboard",
+        patientTag: "Medical Monitoring Dashboard",
+        subcopy: "24 h telemetry snapshot with nocturnal oxygen dips, evening temperature elevation, reduced daytime HRV, and irregular daytime gait load.",
+        recorded: "Recorded",
+        recordedValue: "19 Apr 2026, 21:47",
+        lastPacket: "Last packet 2 min ago",
+        riskScore: "Risk Score",
+        heartRate: "Heart Rate",
+        heartTrend: "&uarr; 3.8 vs night low",
+        heartHint: "Lower after 01:00, broader daytime swings after 13:00",
+        avg: "Avg",
+        min: "Min",
+        max: "Max",
+        spo2Stable: "baseline stable",
+        spo2Hint: "Desaturation episodes clustered between 02:10 and 05:20",
+        spo2Chip: "3 overnight dips",
+        temperature: "Temperature",
+        tempSide: "evening crest<br>persisting",
+        tempHint: "Lowest near 07:30, evening crest sustained after 18:40",
+        gaitActivity: "Gait / Activity",
+        gaitSide: "active window<br>13:00 to 17:30",
+        steps: "steps",
+        gaitHint: "Near-zero movement overnight, uneven daytime bursts",
+        avgHr: "Avg/hr",
+        minHr: "Min/hr",
+        maxHr: "Max/hr",
+        hrvTitle: "HRV &middot; RMSSD",
+        hrvNote: "higher spread during sleep, flatter after breakfast",
+        timeStart: "00 h",
+        timeEnd: "24 h",
+        hrvFoot: "night high 72 ms",
+        spo2Note: "baseline 96 to 98% with short nocturnal drops",
+        spo2Foot: "02:14 &middot; 03:58 &middot; 05:07",
+        tempNote: "morning trough, then a broad evening rise",
+        tempFoot: "low 07:31 &middot; crest 18:46",
+        activity: "Activity",
+        activityNote: "quiet sleep interval, irregular ambulatory peaks after noon",
+        activityFoot: "largest burst 14:18",
+        subscores: "Subscores",
+        weight20: "20% weight",
+        weight25: "25% weight",
+        weight35: "35% weight",
+        riskBreakdown: "Risk Score Breakdown",
+        composite: "Composite",
+        pointsOf100: "points of 100",
+        hrvShort: "HRV"
+      },
+      kk: {
+        pageTitle: "Медициналық мониторинг панелі",
+        patientTag: "Медициналық мониторинг панелі",
+        subcopy: "Түнгі оттегі төмендеулері, кешкі температура көтерілуі, күндізгі HRV төмендеуі және біркелкі емес қимыл жүктемесі бар 24 сағаттық телеметрия көрінісі.",
+        recorded: "Жазылған уақыты",
+        recordedValue: "2026 ж. 19 сәуір, 21:47",
+        lastPacket: "Соңғы пакет 2 минут бұрын",
+        riskScore: "Қауіп ұпайы",
+        heartRate: "Жүрек соғу жиілігі",
+        heartTrend: "&uarr; түнгі минимумнан 3.8 жоғары",
+        heartHint: "01:00-ден кейін төменірек, 13:00-ден кейін күндізгі ауытқу кеңейеді",
+        avg: "Орташа",
+        min: "Мин",
+        max: "Макс",
+        spo2Stable: "базалық деңгей тұрақты",
+        spo2Hint: "Десатурация эпизодтары 02:10 мен 05:20 аралығында шоғырланған",
+        spo2Chip: "түнде 3 төмендеу",
+        temperature: "Температура",
+        tempSide: "кешкі шың<br>сақталып тұр",
+        tempHint: "Ең төмені 07:30 шамасында, кешкі шың 18:40-тан кейін сақталған",
+        gaitActivity: "Жүріс / Белсенділік",
+        gaitSide: "белсенді терезе<br>13:00 пен 17:30",
+        steps: "қадам",
+        gaitHint: "Түнде қозғалысқа жуық нөл, күндіз біркелкі емес серпіндер",
+        avgHr: "Орташа/сағ",
+        minHr: "Мин/сағ",
+        maxHr: "Макс/сағ",
+        hrvTitle: "HRV &middot; RMSSD",
+        hrvNote: "ұйқы кезінде ауытқу жоғары, таңғы астан кейін тегістеледі",
+        timeStart: "00 сағ",
+        timeEnd: "24 сағ",
+        hrvFoot: "түнгі шыңы 72 мс",
+        spo2Note: "96-98% базалық деңгей, қысқа түнгі төмендеулермен",
+        spo2Foot: "02:14 &middot; 03:58 &middot; 05:07",
+        tempNote: "таңертеңгі шұңқыр, артынан кең кешкі көтерілу",
+        tempFoot: "төмені 07:31 &middot; шыңы 18:46",
+        activity: "Белсенділік",
+        activityNote: "ұйқы аралығы тыныш, түстен кейін жүріс шоқтары біркелкі емес",
+        activityFoot: "ең үлкен серпін 14:18",
+        subscores: "Қосалқы ұпайлар",
+        weight20: "20% салмақ",
+        weight25: "25% салмақ",
+        weight35: "35% салмақ",
+        riskBreakdown: "Қауіп ұпайының құрамы",
+        composite: "Жалпы",
+        pointsOf100: "100 ұпайдан",
+        hrvShort: "HRV"
+      },
+      ru: {
+        pageTitle: "Панель медицинского мониторинга",
+        patientTag: "Панель медицинского мониторинга",
+        subcopy: "24-часовой телеметрический срез с ночными падениями кислорода, вечерним подъемом температуры, сниженной дневной HRV и неравномерной двигательной нагрузкой.",
+        recorded: "Записано",
+        recordedValue: "19 апр. 2026, 21:47",
+        lastPacket: "Последний пакет 2 мин назад",
+        riskScore: "Риск-скор",
+        heartRate: "Частота пульса",
+        heartTrend: "&uarr; на 3.8 выше ночного минимума",
+        heartHint: "Ниже после 01:00, после 13:00 дневной разброс шире",
+        avg: "Сред",
+        min: "Мин",
+        max: "Макс",
+        spo2Stable: "базовый уровень стабилен",
+        spo2Hint: "Эпизоды десатурации сгруппированы между 02:10 и 05:20",
+        spo2Chip: "3 ночных снижения",
+        temperature: "Температура",
+        tempSide: "вечерний пик<br>сохраняется",
+        tempHint: "Минимум около 07:30, вечерний пик держится после 18:40",
+        gaitActivity: "Походка / Активность",
+        gaitSide: "активное окно<br>13:00-17:30",
+        steps: "шагов",
+        gaitHint: "Ночью почти нулевая подвижность, днем неравномерные всплески",
+        avgHr: "Сред/ч",
+        minHr: "Мин/ч",
+        maxHr: "Макс/ч",
+        hrvTitle: "HRV &middot; RMSSD",
+        hrvNote: "во сне вариабельность выше, после завтрака кривая ровнее",
+        timeStart: "00 ч",
+        timeEnd: "24 ч",
+        hrvFoot: "ночной пик 72 мс",
+        spo2Note: "база 96-98% с короткими ночными провалами",
+        spo2Foot: "02:14 &middot; 03:58 &middot; 05:07",
+        tempNote: "утренний минимум, затем широкий вечерний подъем",
+        tempFoot: "минимум 07:31 &middot; пик 18:46",
+        activity: "Активность",
+        activityNote: "тихий сон, после полудня нерегулярные пики движения",
+        activityFoot: "крупнейший всплеск 14:18",
+        subscores: "Подоценки",
+        weight20: "вес 20%",
+        weight25: "вес 25%",
+        weight35: "вес 35%",
+        riskBreakdown: "Структура риск-скора",
+        composite: "Итог",
+        pointsOf100: "баллов из 100",
+        hrvShort: "HRV"
+      }
+    };
+
+    const setLanguage = (lang) => {
+      const dict = translations[lang] || translations.en;
+      document.documentElement.lang = lang === "kk" ? "kk" : lang === "ru" ? "ru" : "en";
+      document.title = dict.pageTitle;
+
+      document.querySelectorAll("[data-i18n]").forEach((node) => {
+        const key = node.getAttribute("data-i18n");
+        if (dict[key] !== undefined) {
+          node.textContent = dict[key];
+        }
+      });
+
+      document.querySelectorAll("[data-i18n-html]").forEach((node) => {
+        const key = node.getAttribute("data-i18n-html");
+        if (dict[key] !== undefined) {
+          node.innerHTML = dict[key];
+        }
+      });
+
+      document.querySelectorAll(".lang-btn").forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.lang === lang);
+      });
+
+      localStorage.setItem("dashboard-lang", lang);
+    };
+
+    const savedLang = localStorage.getItem("dashboard-lang");
+    const initialLang = translations[savedLang] ? savedLang : "en";
+
+    document.querySelectorAll(".lang-btn").forEach((button) => {
+      button.addEventListener("click", () => setLanguage(button.dataset.lang));
+    });
+
+    setLanguage(initialLang);
+  </script>
 </body>
 </html>
