@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Medical Monitoring Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Панель оценки риска деменции</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --bg: #f6f8fb;
@@ -40,14 +40,6 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       letter-spacing: -0.012em;
       -webkit-font-smoothing: antialiased;
-    }
-
-    sub {
-      font-size: 0.72em;
-      line-height: 0;
-      vertical-align: baseline;
-      position: relative;
-      bottom: -0.14em;
     }
 
     .shell {
@@ -120,7 +112,6 @@
       letter-spacing: -0.05em;
       color: #8e5b19;
       font-weight: 700;
-      transition: color 0.24s ease;
     }
 
     .topbar {
@@ -188,7 +179,7 @@
     }
 
     .subcopy {
-      max-width: 720px;
+      max-width: 780px;
       font-size: 14px;
       line-height: 1.55;
       color: var(--muted-warm);
@@ -220,23 +211,24 @@
     }
 
     .stats {
-      grid-template-columns: 1.05fr 0.98fr 0.96fr 1.14fr;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       margin-bottom: 18px;
     }
 
     .plots {
-      grid-template-columns: 1.04fr 1fr 0.95fr 1.08fr;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       margin-bottom: 18px;
     }
 
     .bottom {
-      grid-template-columns: 1.06fr 0.94fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       align-items: start;
     }
 
     .stat {
       min-height: 174px;
       position: relative;
+      padding: 17px 18px 16px;
     }
 
     .title-row {
@@ -250,6 +242,7 @@
       font-size: 12px;
       color: var(--muted);
       letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
 
     .title-side {
@@ -264,6 +257,7 @@
       line-height: 1;
       letter-spacing: -0.055em;
       font-weight: 650;
+      margin-top: 10px;
     }
 
     .unit {
@@ -277,12 +271,16 @@
       font-size: 12px;
       color: var(--muted-warm);
       line-height: 1.45;
+      margin-top: 8px;
     }
 
     .meta-row {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--line-soft);
     }
 
     .meta-k {
@@ -324,12 +322,14 @@
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: var(--green);
       display: inline-block;
+      background: var(--green);
     }
 
     .chip {
-      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
       padding: 5px 8px;
       border-radius: 999px;
       border: 1px solid var(--line-soft);
@@ -337,89 +337,13 @@
       color: var(--muted);
       font-size: 11px;
       line-height: 1;
-    }
-
-    .heart {
-      padding: 17px 17px 14px;
-    }
-
-    .heart .meta-row {
-      padding-top: 12px;
-      border-top: 1px solid var(--line-soft);
-      margin-top: auto;
-    }
-
-    .spo2 {
-      padding: 18px 16px 15px 20px;
-      margin-top: 3px;
-    }
-
-    .spo2 .value {
-      margin-top: 1px;
-    }
-
-    .spo2 .hint {
-      max-width: 235px;
-    }
-
-    .temp {
-      padding: 15px 18px 18px 18px;
-      margin-top: 5px;
-    }
-
-    .temp .value {
-      font-size: 34px;
-      margin-top: 6px;
-    }
-
-    .temp .meta-row {
-      margin-top: auto;
-      justify-items: end;
-      text-align: right;
-    }
-
-    .gait {
-      padding: 18px 17px 15px 20px;
-      margin-top: 2px;
-    }
-
-    .gait .value {
-      font-size: 31px;
-      margin-top: 3px;
-    }
-
-    .gait .divider {
-      height: 1px;
-      background: var(--line-soft);
-      margin: 7px 0 3px;
-    }
-
-    .gait .meta-row {
-      margin-top: auto;
+      margin-top: 8px;
     }
 
     .plot-card {
-      min-height: 256px;
+      min-height: 276px;
       overflow: hidden;
-    }
-
-    .plot-a {
       padding: 16px 15px 15px;
-    }
-
-    .plot-b {
-      padding: 16px 14px 14px 16px;
-      margin-top: 2px;
-    }
-
-    .plot-c {
-      padding: 15px 17px 15px 15px;
-      margin-top: 6px;
-    }
-
-    .plot-d {
-      padding: 16px 16px 16px 14px;
-      margin-top: 3px;
     }
 
     .plot-head {
@@ -436,7 +360,7 @@
     }
 
     .plot-note {
-      max-width: 132px;
+      max-width: 138px;
       text-align: right;
       font-size: 12px;
       line-height: 1.34;
@@ -444,7 +368,7 @@
     }
 
     .plot-shell {
-      height: 172px;
+      height: 188px;
       overflow: hidden;
       border: 1px solid var(--line-soft);
       border-radius: 10px;
@@ -453,72 +377,7 @@
         linear-gradient(to bottom, rgba(31, 41, 55, 0.028) 1px, transparent 1px),
         linear-gradient(to right, rgba(31, 41, 55, 0.022) 1px, transparent 1px);
       background-size: 100% 34px, 48px 100%;
-    }
-
-    .tint-hrv {
-      background-color: #f8fbf8;
-    }
-
-    .tint-spo2 {
-      background-color: #fcfbf6;
-    }
-
-    .tint-temp {
-      background-color: #fcf8f7;
-    }
-
-    .tint-activity {
-      background-color: #f8fafc;
-    }
-
-    .plot-shell svg {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-
-    .guide {
-      fill: none;
-      stroke: rgba(107, 114, 128, 0.15);
-      stroke-width: 1;
-      stroke-dasharray: 4 6;
-    }
-
-    .trace-hrv {
-      fill: none;
-      stroke: rgba(67, 160, 71, 0.78);
-      stroke-width: 1.65;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .trace-spo2 {
-      fill: none;
-      stroke: rgba(214, 170, 49, 0.84);
-      stroke-width: 1.75;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .trace-temp {
-      fill: none;
-      stroke: rgba(229, 57, 53, 0.72);
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .trace-activity {
-      fill: none;
-      stroke: rgba(127, 144, 167, 0.84);
-      stroke-width: 1.7;
-      stroke-linecap: square;
-      stroke-linejoin: miter;
-    }
-
-    .area-activity {
-      fill: rgba(127, 144, 167, 0.09);
-      stroke: none;
+      padding: 10px 10px 6px;
     }
 
     .plot-foot {
@@ -531,240 +390,44 @@
       color: var(--muted);
     }
 
-    .subs {
-      padding: 19px 18px 21px;
+    .tint-risk {
+      background-color: #fcfbf6;
     }
 
-    .breakdown {
-      padding: 18px 18px 20px 18px;
-      margin-top: 4px;
+    .tint-hrv {
+      background-color: #f8fbf8;
     }
 
-    .section-k {
-      font-size: 11px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.11em;
-      margin-bottom: 15px;
+    .tint-spo2 {
+      background-color: #fcfbf6;
     }
 
-    .sub-list {
-      display: grid;
-      gap: 14px;
+    .tint-sleep {
+      background-color: #f7fafc;
     }
 
-    .sub {
-      display: grid;
-      gap: 7px;
+    .tint-frag {
+      background-color: #fcf8f7;
     }
 
-    .sub-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 14px;
-      font-size: 13px;
+    .tint-sws {
+      background-color: #f8fafc;
     }
 
-    .sub-name {
-      color: var(--text);
-      font-weight: 520;
-      letter-spacing: 0.01em;
+    .tint-rem {
+      background-color: #f9f8fc;
     }
 
-    .sub-name span {
-      color: var(--muted);
-      margin-left: 8px;
-      font-weight: 420;
+    .tint-temp {
+      background-color: #fcf8f7;
     }
 
-    .share {
-      color: var(--muted-warm);
-      font-size: 12px;
-    }
-
-    .track {
-      overflow: hidden;
-      border-radius: 7px;
-      border: 1px solid var(--line-soft);
-      background: #f2f5f8;
-    }
-
-    .track>i {
-      display: block;
-      height: 100%;
-      border-radius: 6px;
-      transition: width 1.1s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .sub-one .track {
-      height: 8px;
-      margin-right: 14px;
-    }
-
-    .sub-two {
-      margin-left: 3px;
-    }
-
-    .sub-two .track {
-      height: 10px;
-      margin-right: 24px;
-    }
-
-    .sub-three .track {
-      height: 7px;
-      margin-left: 5px;
-      margin-right: 12px;
-    }
-
-    .sub-four {
-      margin-left: 1px;
-    }
-
-    .sub-four .track {
-      height: 11px;
-      margin-right: 8px;
-    }
-
-    .tone-amber {
-      background: rgba(251, 140, 0, 0.74);
-    }
-
-    .tone-warn {
-      background: rgba(251, 192, 45, 0.76);
-    }
-
-    .tone-risk {
-      background: rgba(229, 57, 53, 0.72);
-    }
-
-    .tone-green {
-      background: rgba(67, 160, 71, 0.74);
-    }
-
-    .break-layout {
-      display: grid;
-      grid-template-columns: 216px 1fr;
-      gap: 8px 18px;
-      align-items: start;
-    }
-
-    .ring {
-      position: relative;
-      width: 184px;
-      height: 184px;
-      border-radius: 50%;
-      margin: 10px 0 8px 18px;
-      background: conic-gradient(rgba(251, 140, 0, 0.62) 0 27.2%,
-          rgba(251, 192, 45, 0.6) 27.2% 44.2%,
-          rgba(229, 57, 53, 0.62) 44.2% 71.2%,
-          rgba(67, 160, 71, 0.58) 71.2% 100%);
-      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.42);
-      transition: background 0.7s ease;
-    }
-
-    .ring::after {
-      content: "";
-      position: absolute;
-      inset: 26px;
-      border-radius: 50%;
-      background: #ffffff;
-      border: 1px solid var(--line-soft);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
-    }
-
-    .ring-center {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transform: translate(-4px, 4px);
-      text-align: center;
-    }
-
-    .ring-center .s {
-      font-size: 10px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-    }
-
-    .ring-center .b {
-      font-size: 29px;
-      font-weight: 660;
-      line-height: 1;
-      letter-spacing: -0.05em;
-      margin: 7px 0 4px;
-      color: #243041;
-    }
-
-    .ring-center .t {
-      font-size: 12px;
-      color: var(--muted-warm);
-    }
-
-    .legend {
-      display: grid;
-      gap: 12px;
-      padding-top: 19px;
-    }
-
-    .legend-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .legend-row:nth-child(2) {
-      margin-left: 11px;
-    }
-
-    .legend-row:nth-child(3) {
-      margin-left: 4px;
-    }
-
-    .legend-row:nth-child(4) {
-      margin-left: 14px;
-    }
-
-    .legend-l {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text);
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-
-    .dot-amber {
-      background: rgba(251, 140, 0, 0.72);
-    }
-
-    .dot-warn {
-      background: rgba(251, 192, 45, 0.78);
-    }
-
-    .dot-risk {
-      background: rgba(229, 57, 53, 0.74);
-    }
-
-    .dot-green {
-      background: rgba(67, 160, 71, 0.74);
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
     }
 
     @media (max-width: 1180px) {
-
       .stats,
       .plots {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -775,1970 +438,1062 @@
       }
     }
 
-    @media (max-width: 760px) {
+    @media (max-width: 820px) {
       .shell {
-        padding: 20px 16px 28px;
+        padding: 22px 16px 28px;
       }
 
-      .topbar,
-      .stats,
-      .plots {
+      .topbar {
         grid-template-columns: 1fr;
       }
 
       .side-meta {
         margin-right: 0;
-        justify-content: space-between;
       }
 
-      .badge {
-        transform: translate(0, 0);
-      }
-
-      .break-layout {
+      .stats,
+      .plots {
         grid-template-columns: 1fr;
       }
 
-      .ring {
-        margin-left: 0;
+      .patient-name {
+        font-size: 30px;
       }
 
-      .legend {
-        padding-top: 4px;
+      .badge {
+        transform: none;
       }
-
-      .legend-row:nth-child(2),
-      .legend-row:nth-child(3),
-      .legend-row:nth-child(4) {
-        margin-left: 0;
-      }
-    }
-
-    /* ── Chart hover interaction ── */
-    .plot-shell {
-      position: relative;
-      cursor: crosshair;
-    }
-
-    .plot-shell svg {
-      pointer-events: none;
-    }
-
-    .chart-overlay {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      overflow: visible;
-    }
-
-    .chart-cursor {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 1px;
-      background: linear-gradient(to bottom, transparent 0%, rgba(100, 120, 160, 0.35) 20%, rgba(100, 120, 160, 0.35) 80%, transparent 100%);
-      transform: translateX(-50%);
-      opacity: 0;
-      transition: opacity 0.15s ease;
-      pointer-events: none;
-    }
-
-    .chart-dot {
-      position: absolute;
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: white;
-      border: 2.5px solid currentColor;
-      transform: translate(-50%, -50%) scale(0);
-      opacity: 0;
-      transition: opacity 0.12s ease, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-      pointer-events: none;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
-    }
-
-    .chart-tooltip {
-      position: absolute;
-      background: rgba(20, 28, 44, 0.92);
-      color: #f0f4f8;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      padding: 5px 9px 5px 9px;
-      border-radius: 8px;
-      white-space: nowrap;
-      pointer-events: none;
-      transform: translate(-50%, -100%);
-      margin-top: -8px;
-      opacity: 0;
-      transition: opacity 0.14s ease, transform 0.16s ease;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
-      backdrop-filter: blur(6px);
-      z-index: 10;
-    }
-
-    .chart-tooltip.visible {
-      opacity: 1;
-    }
-
-    .chart-dot.visible {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-
-    .chart-cursor.visible {
-      opacity: 1;
-    }
-
-    .plot-shell:hover .chart-cursor {
-      opacity: 1;
-    }
-
-    /* pulse on first hover */
-    @keyframes dot-pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(current, 0.4);
-      }
-
-      70% {
-        box-shadow: 0 0 0 7px rgba(current, 0);
-      }
-
-      100% {
-        box-shadow: 0 0 0 0 rgba(current, 0);
-      }
-    }
-
-    .chart-tooltip .tt-time {
-      font-size: 10px;
-      font-weight: 500;
-      opacity: 0.62;
-      display: block;
-      margin-bottom: 1px;
-    }
-
-    .chart-tooltip .tt-val {
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
     }
   </style>
 </head>
-
 <body>
   <main class="shell col" style="--gap: 0;">
     <header class="row topbar" style="--gap: 18px;">
       <div class="col" style="--gap: 10px;">
         <div class="toolbar">
           <div class="lang-switch" aria-label="Language switcher">
-            <button class="lang-btn is-active" type="button" data-lang="en">EN</button>
+            <button class="lang-btn is-active" type="button" data-lang="ru">RU</button>
             <button class="lang-btn" type="button" data-lang="kk">KZ</button>
-            <button class="lang-btn" type="button" data-lang="ru">RU</button>
           </div>
         </div>
-        <div class="patient-tag" data-i18n="patientTag">Medical Monitoring Dashboard</div>
-        <h1 class="patient-name">Тлеудин Ерасыл</h1>
-        <div class="subcopy" data-i18n="subcopy">24 h telemetry snapshot with nocturnal oxygen dips, evening temperature
-          elevation, reduced daytime HRV, and irregular daytime gait load.</div>
+        <div class="patient-tag" id="dashboardTag">Панель оценки риска деменции</div>
+        <h1 class="patient-name" id="pageTitle">Обзор мониторинга</h1>
+        <div class="subcopy" id="summaryCopy"></div>
       </div>
       <div class="flex gap side-meta" style="--gap: 19px;">
         <div class="datebox">
-          <div class="k" data-i18n="recorded">Recorded</div>
-          <div class="v" id="recorded-value" data-i18n="recordedValue">19 Apr 2026, 21:47</div>
-          <div class="muted" id="last-packet" style="font-size: 12px;" data-i18n="lastPacket">Last packet 2 min ago</div>
+          <div class="k" id="recordedLabel">Записано</div>
+          <div class="v" id="recordedValue"></div>
+          <div class="muted" id="lastPacket" style="font-size: 12px;"></div>
         </div>
         <div class="badge">
-          <span data-i18n="riskScore">Risk Score</span>
-          <strong id="risk-score-badge">68%</strong>
+          <span id="riskScoreLabel">Риск</span>
+          <strong id="riskScoreBadge">0%</strong>
         </div>
       </div>
     </header>
 
     <section class="row stats" style="--gap: 14px;">
-      <article class="card stat heart col" style="--gap: 13px;">
+      <article class="card stat col" style="--gap: 10px;">
         <div class="title-row">
-          <div class="title" data-i18n="heartRate">Heart Rate</div>
-          <div class="trend-chip" id="heart-trend" data-i18n-html="heartTrend">&uarr; 3.8 vs night low</div>
+          <div class="title" id="currentRiskLabel">Текущий риск</div>
+          <div class="trend-chip" id="riskTrend">stable</div>
         </div>
-        <div class="value"><span id="heart-current">74</span><span class="unit">bpm</span></div>
-        <div class="hint" id="heart-hint" data-i18n="heartHint">Lower after 01:00, broader daytime swings after 13:00</div>
+        <div class="value"><span id="riskValue">0</span><span class="unit">%</span></div>
+        <div class="hint" id="riskHint"></div>
         <div class="meta-row">
           <div>
-            <div class="meta-k" data-i18n="avg">Avg</div>
-            <div class="meta-v" id="heart-avg">68.7 bpm</div>
+            <div class="meta-k" id="ageLabel">Возраст</div>
+            <div class="meta-v" id="ageValue">45</div>
           </div>
           <div>
-            <div class="meta-k" data-i18n="min">Min</div>
-            <div class="meta-v" id="heart-min">54 bpm</div>
+            <div class="meta-k" id="riskAvgLabel">Среднее 30д</div>
+            <div class="meta-v" id="riskAvg">0%</div>
           </div>
           <div>
-            <div class="meta-k" data-i18n="max">Max</div>
-            <div class="meta-v" id="heart-max">96 bpm</div>
+            <div class="meta-k" id="riskPeakLabel">Пик</div>
+            <div class="meta-v" id="riskPeak">0%</div>
           </div>
         </div>
       </article>
 
-      <article class="card stat spo2 col" style="--gap: 11px;">
+      <article class="card stat col" style="--gap: 10px;">
         <div class="title-row">
-          <div class="title">SpO<sub>2</sub></div>
-          <div class="dot-note"><i></i><span id="spo2-status" data-i18n="spo2Stable">baseline stable</span></div>
+          <div class="title">HRV</div>
+          <div class="trend-chip" id="hrvTrend">без изменений относительно 1-й недели</div>
         </div>
-        <div class="value"><span id="spo2-current">96.8</span><span class="unit">%</span></div>
-        <div class="hint" id="spo2-hint" data-i18n="spo2Hint">Desaturation episodes clustered between 02:10 and 05:20</div>
-        <div class="flex gap" style="--gap: 8px; align-items: center;">
-          <div class="chip" id="spo2-chip" data-i18n="spo2Chip">3 overnight dips</div>
-        </div>
+        <div class="value"><span id="hrvCurrent">0</span><span class="unit">ms</span></div>
+        <div class="hint" id="hrvHint"></div>
         <div class="meta-row">
           <div>
-            <div class="meta-k" data-i18n="avg">Avg</div>
-            <div class="meta-v" id="spo2-avg">96.6%</div>
+            <div class="meta-k" id="avgLabelHrv">Среднее</div>
+            <div class="meta-v" id="hrvAvg">0 ms</div>
           </div>
           <div>
-            <div class="meta-k" data-i18n="min">Min</div>
-            <div class="meta-v" id="spo2-min">91.8%</div>
+            <div class="meta-k" id="minLabelHrv">Мин</div>
+            <div class="meta-v" id="hrvMin">0 ms</div>
           </div>
           <div>
-            <div class="meta-k" data-i18n="max">Max</div>
-            <div class="meta-v" id="spo2-max">98.2%</div>
+            <div class="meta-k" id="maxLabelHrv">Макс</div>
+            <div class="meta-v" id="hrvMax">0 ms</div>
           </div>
         </div>
       </article>
 
-      <article class="card stat temp col" style="--gap: 11px;">
+      <article class="card stat col" style="--gap: 10px;">
         <div class="title-row">
-          <div class="title" data-i18n="temperature">Temperature</div>
-          <div class="title-side" id="temp-side" data-i18n-html="tempSide">evening crest<br>persisting</div>
+          <div class="title">SpO2</div>
+          <div class="dot-note"><i id="spo2Dot"></i><span id="spo2Status">базовый уровень стабилен</span></div>
         </div>
-        <div class="value"><span id="temp-current">37.18</span><span class="unit">&deg;C</span></div>
-        <div class="hint" id="temp-hint" data-i18n="tempHint">Lowest near 07:30, evening crest sustained after 18:40</div>
+        <div class="value"><span id="spo2Current">0</span><span class="unit">%</span></div>
+        <div class="hint" id="spo2Hint"></div>
+        <div class="chip" id="spo2Chip"></div>
         <div class="meta-row">
           <div>
-            <div class="meta-k" data-i18n="avg">Avg</div>
-            <div class="meta-v" id="temp-avg">36.86&deg;C</div>
+            <div class="meta-k" id="avgLabelSpo2">Среднее</div>
+            <div class="meta-v" id="spo2Avg">0%</div>
           </div>
           <div>
-            <div class="meta-k" data-i18n="min">Min</div>
-            <div class="meta-v" id="temp-min">36.42&deg;C</div>
+            <div class="meta-k" id="minLabelSpo2">Мин</div>
+            <div class="meta-v" id="spo2Min">0%</div>
           </div>
           <div>
-            <div class="meta-k" data-i18n="max">Max</div>
-            <div class="meta-v" id="temp-max">37.24&deg;C</div>
+            <div class="meta-k" id="maxLabelSpo2">Макс</div>
+            <div class="meta-v" id="spo2Max">0%</div>
           </div>
         </div>
       </article>
 
-      <article class="card stat gait col" style="--gap: 10px;">
+      <article class="card stat col" style="--gap: 10px;">
         <div class="title-row">
-          <div class="title" data-i18n="gaitActivity">Gait / Activity</div>
-          <div class="title-side" id="gait-side" data-i18n-html="gaitSide">active window<br>13:00 to 17:30</div>
+          <div class="title" id="sleepDurationLabel">Длительность сна</div>
+          <div class="title-side" id="sleepSide">ночной ритм<br>в норме</div>
         </div>
-        <div class="value"><span id="gait-current">5,843</span><span class="unit" data-i18n="steps">steps</span></div>
-        <div class="hint" id="gait-hint" data-i18n="gaitHint">Near-zero movement overnight, uneven daytime bursts</div>
-        <div class="divider"></div>
+        <div class="value"><span id="sleepCurrent">0</span><span class="unit" id="sleepUnit">ч</span></div>
+        <div class="hint" id="sleepHint"></div>
         <div class="meta-row">
           <div>
-            <div class="meta-k" data-i18n="avgHr">Avg/hr</div>
-            <div class="meta-v" id="gait-avg">243.5</div>
+            <div class="meta-k" id="avgLabelSleep">Среднее</div>
+            <div class="meta-v" id="sleepAvg">0 hrs</div>
           </div>
           <div>
-            <div class="meta-k" data-i18n="minHr">Min/hr</div>
-            <div class="meta-v" id="gait-min">0</div>
+            <div class="meta-k" id="minLabelSleep">Мин</div>
+            <div class="meta-v" id="sleepMin">0 hrs</div>
           </div>
           <div>
-            <div class="meta-k" data-i18n="maxHr">Max/hr</div>
-            <div class="meta-v" id="gait-max">1,126</div>
+            <div class="meta-k" id="maxLabelSleep">Макс</div>
+            <div class="meta-v" id="sleepMax">0 hrs</div>
           </div>
         </div>
       </article>
     </section>
 
     <section class="row plots" style="--gap: 14px;">
-      <article class="card plot-card plot-a">
+      <article class="card plot-card">
         <div class="plot-head">
-          <div class="plot-name" data-i18n-html="hrvTitle">HRV &middot; RMSSD</div>
-          <div class="plot-note" data-i18n="hrvNote">higher spread during sleep, flatter after breakfast</div>
+          <div class="plot-name" id="riskTrendChartLabel">Динамика риска</div>
+          <div class="plot-note" id="riskTrendChartNote"></div>
         </div>
-        <div class="plot-shell tint-hrv" id="chart-hrv"
-          data-points="0,61 18,69 36,49 54,79 72,44 90,73 108,60 126,86 144,77 162,92 180,87 198,96 216,89 234,98 252,92 270,99 288,91 306,85 324,79 342,95 360,74 378,61 396,84 414,53 432,73 450,57 480,68"
-          data-unit="ms" data-min="28" data-max="72" data-color="#43a047">
-          <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
-            <path class="guide" d="M0 86 L480 86"></path>
-            <polyline class="trace-hrv" id="line-hrv"
-              points="0,61 18,69 36,49 54,79 72,44 90,73 108,60 126,86 144,77 162,92 180,87 198,96 216,89 234,98 252,92 270,99 288,91 306,85 324,79 342,95 360,74 378,61 396,84 414,53 432,73 450,57 480,68">
-            </polyline>
-          </svg>
-          <div class="chart-cursor" id="cursor-hrv"></div>
-          <div class="chart-dot" id="dot-hrv" style="color:#43a047;"></div>
-          <div class="chart-tooltip" id="tip-hrv"><span class="tt-time"></span><span class="tt-val"></span></div>
-        </div>
+        <div class="plot-shell tint-risk"><canvas id="riskChart"></canvas></div>
         <div class="plot-foot">
-          <span data-i18n="timeStart">00 h</span>
-          <span id="hrv-foot" data-i18n="hrvFoot">night high 72 ms</span>
-          <span data-i18n="timeEnd">24 h</span>
+          <span id="riskStartDay"></span>
+          <span id="riskFoot"></span>
+          <span id="riskEndDay"></span>
         </div>
       </article>
 
-      <article class="card plot-card plot-b">
+      <article class="card plot-card">
         <div class="plot-head">
-          <div class="plot-name">SpO<sub>2</sub></div>
-          <div class="plot-note" data-i18n="spo2Note">baseline 96 to 98% with short nocturnal drops</div>
+          <div class="plot-name">HRV</div>
+          <div class="plot-note" id="hrvChartNote"></div>
         </div>
-        <div class="plot-shell tint-spo2" id="chart-spo2"
-          data-points="0,44 18,43 36,42 54,77 66,45 84,43 102,82 114,44 132,44 150,71 162,44 180,43 198,45 216,44 234,43 252,45 270,44 288,42 306,44 324,45 342,43 360,44 378,42 396,44 414,46 432,44 450,43 480,45"
-          data-unit="%" data-min="91.8" data-max="98.2" data-color="#d6aa31" data-decimals="1">
-          <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
-            <path class="guide" d="M0 48 L480 48"></path>
-            <polyline class="trace-spo2" id="line-spo2"
-              points="0,44 18,43 36,42 54,77 66,45 84,43 102,82 114,44 132,44 150,71 162,44 180,43 198,45 216,44 234,43 252,45 270,44 288,42 306,44 324,45 342,43 360,44 378,42 396,44 414,46 432,44 450,43 480,45">
-            </polyline>
-          </svg>
-          <div class="chart-cursor" id="cursor-spo2"></div>
-          <div class="chart-dot" id="dot-spo2" style="color:#d6aa31;"></div>
-          <div class="chart-tooltip" id="tip-spo2"><span class="tt-time"></span><span class="tt-val"></span></div>
-        </div>
+        <div class="plot-shell tint-hrv"><canvas id="hrvChart"></canvas></div>
         <div class="plot-foot">
-          <span data-i18n="timeStart">00 h</span>
-          <span id="spo2-foot" data-i18n-html="spo2Foot">02:14 &middot; 03:58 &middot; 05:07</span>
-          <span data-i18n="timeEnd">24 h</span>
+          <span id="hrvStartDay"></span>
+          <span id="hrvFoot"></span>
+          <span id="hrvEndDay"></span>
         </div>
       </article>
 
-      <article class="card plot-card plot-c">
+      <article class="card plot-card">
         <div class="plot-head">
-          <div class="plot-name" data-i18n="temperature">Temperature</div>
-          <div class="plot-note" data-i18n="tempNote">morning trough, then a broad evening rise</div>
+          <div class="plot-name">SpO2</div>
+          <div class="plot-note" id="spo2ChartNote"></div>
         </div>
-        <div class="plot-shell tint-temp" id="chart-temp"
-          data-points="0,75 24,78 48,84 72,90 96,96 120,100 144,97 168,92 192,88 216,82 240,77 264,72 288,68 312,62 336,58 360,55 384,56 408,60 432,63 456,68 480,71"
-          data-unit="°C" data-min="36.42" data-max="37.24" data-color="#e53935" data-decimals="2">
-          <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
-            <path class="guide" d="M0 84 L480 84"></path>
-            <polyline class="trace-temp" id="line-temp"
-              points="0,75 24,78 48,84 72,90 96,96 120,100 144,97 168,92 192,88 216,82 240,77 264,72 288,68 312,62 336,58 360,55 384,56 408,60 432,63 456,68 480,71">
-            </polyline>
-          </svg>
-          <div class="chart-cursor" id="cursor-temp"></div>
-          <div class="chart-dot" id="dot-temp" style="color:#e53935;"></div>
-          <div class="chart-tooltip" id="tip-temp"><span class="tt-time"></span><span class="tt-val"></span></div>
-        </div>
+        <div class="plot-shell tint-spo2"><canvas id="spo2Chart"></canvas></div>
         <div class="plot-foot">
-          <span data-i18n="timeStart">00 h</span>
-          <span id="temp-foot" data-i18n-html="tempFoot">low 07:31 &middot; crest 18:46</span>
-          <span data-i18n="timeEnd">24 h</span>
+          <span id="spo2StartDay"></span>
+          <span id="spo2Foot"></span>
+          <span id="spo2EndDay"></span>
         </div>
       </article>
 
-      <article class="card plot-card plot-d">
+      <article class="card plot-card">
         <div class="plot-head">
-          <div class="plot-name" data-i18n="activity">Activity</div>
-          <div class="plot-note" data-i18n="activityNote">quiet sleep interval, irregular ambulatory peaks after noon
-          </div>
+          <div class="plot-name" id="sleepChartLabel">Длительность сна</div>
+          <div class="plot-note" id="sleepChartNote"></div>
         </div>
-        <div class="plot-shell tint-activity" id="chart-activity"
-          data-points="0,138 20,138 40,138 60,136 80,138 100,138 120,132 140,118 150,136 168,102 178,136 196,78 208,134 224,122 236,136 250,64 262,136 278,54 290,132 306,88 318,136 334,96 348,136 364,70 378,136 392,106 406,136 424,122 442,132 460,128 480,130"
-          data-unit="steps/h" data-min="0" data-max="1126" data-color="#7f90a7">
-          <svg viewBox="0 0 480 170" preserveAspectRatio="none" aria-hidden="true">
-            <path class="guide" d="M0 138 L480 138"></path>
-            <path class="area-activity" id="area-activity"
-              d="M0 138 L20 138 L40 138 L60 136 L80 138 L100 138 L120 132 L140 118 L150 136 L168 102 L178 136 L196 78 L208 134 L224 122 L236 136 L250 64 L262 136 L278 54 L290 132 L306 88 L318 136 L334 96 L348 136 L364 70 L378 136 L392 106 L406 136 L424 122 L442 132 L460 128 L480 130 L480 170 L0 170 Z">
-            </path>
-            <polyline class="trace-activity" id="line-activity"
-              points="0,138 20,138 40,138 60,136 80,138 100,138 120,132 140,118 150,136 168,102 178,136 196,78 208,134 224,122 236,136 250,64 262,136 278,54 290,132 306,88 318,136 334,96 348,136 364,70 378,136 392,106 406,136 424,122 442,132 460,128 480,130">
-            </polyline>
-          </svg>
-          <div class="chart-cursor" id="cursor-activity"></div>
-          <div class="chart-dot" id="dot-activity" style="color:#7f90a7;"></div>
-          <div class="chart-tooltip" id="tip-activity"><span class="tt-time"></span><span class="tt-val"></span></div>
-        </div>
+        <div class="plot-shell tint-sleep"><canvas id="sleepChart"></canvas></div>
         <div class="plot-foot">
-          <span data-i18n="timeStart">00 h</span>
-          <span id="activity-foot" data-i18n="activityFoot">largest burst 14:18</span>
-          <span data-i18n="timeEnd">24 h</span>
+          <span id="sleepStartDay"></span>
+          <span id="sleepFoot"></span>
+          <span id="sleepEndDay"></span>
         </div>
       </article>
     </section>
 
-    <section class="row bottom" style="--gap: 15px;">
-      <article class="card subs">
-        <div class="section-k" data-i18n="subscores">Subscores</div>
-          <div class="sub-list">
-          <div class="sub sub-one">
-            <div class="sub-head">
-              <div class="sub-name">R_hrv <span id="sub-hrv-value">0.74</span></div>
-              <div class="share" data-i18n="weight25">25% weight</div>
-            </div>
-            <div class="track"><i class="tone-amber" id="sub-hrv-track" style="width: 74%;"></i></div>
+    <section class="row bottom" style="--gap: 14px;">
+      <div class="col" style="--gap: 14px;">
+        <article class="card plot-card">
+          <div class="plot-head">
+            <div class="plot-name" id="fragChartLabel">Фрагментация</div>
+            <div class="plot-note" id="fragChartNote"></div>
           </div>
+          <div class="plot-shell tint-frag"><canvas id="fragChart"></canvas></div>
+          <div class="plot-foot">
+            <span id="fragStartDay"></span>
+            <span id="fragFoot"></span>
+            <span id="fragEndDay"></span>
+          </div>
+        </article>
 
-          <div class="sub sub-two">
-            <div class="sub-head">
-              <div class="sub-name">R_spo2 <span id="sub-spo2-value">0.58</span></div>
-              <div class="share" data-i18n="weight20">20% weight</div>
-            </div>
-            <div class="track"><i class="tone-warn" id="sub-spo2-track" style="width: 58%;"></i></div>
+        <article class="card plot-card">
+          <div class="plot-head">
+            <div class="plot-name" id="tempChartLabel">Температурная нестабильность</div>
+            <div class="plot-note" id="tempChartNote"></div>
           </div>
+          <div class="plot-shell tint-temp"><canvas id="tempChart"></canvas></div>
+          <div class="plot-foot">
+            <span id="tempStartDay"></span>
+            <span id="tempFoot"></span>
+            <span id="tempEndDay"></span>
+          </div>
+        </article>
+      </div>
 
-          <div class="sub sub-three">
-            <div class="sub-head">
-              <div class="sub-name">R_temp <span id="sub-temp-value">0.92</span></div>
-              <div class="share" data-i18n="weight20">20% weight</div>
-            </div>
-            <div class="track"><i class="tone-risk" id="sub-temp-track" style="width: 92%;"></i></div>
+      <div class="col" style="--gap: 14px;">
+        <article class="card plot-card">
+          <div class="plot-head">
+            <div class="plot-name" id="swsChartLabel">SWS Ratio</div>
+            <div class="plot-note" id="swsChartNote"></div>
           </div>
+          <div class="plot-shell tint-sws"><canvas id="swsChart"></canvas></div>
+          <div class="plot-foot">
+            <span id="swsStartDay"></span>
+            <span id="swsFoot"></span>
+            <span id="swsEndDay"></span>
+          </div>
+        </article>
 
-          <div class="sub sub-four">
-            <div class="sub-head">
-              <div class="sub-name">R_gait <span id="sub-gait-value">0.56</span></div>
-              <div class="share" data-i18n="weight35">35% weight</div>
-            </div>
-            <div class="track"><i class="tone-green" id="sub-gait-track" style="width: 56%;"></i></div>
+        <article class="card plot-card">
+          <div class="plot-head">
+            <div class="plot-name" id="remChartLabel">REM Ratio</div>
+            <div class="plot-note" id="remChartNote"></div>
           </div>
-        </div>
-      </article>
-
-      <article class="card breakdown">
-        <div class="section-k" data-i18n="riskBreakdown">Risk Score Breakdown</div>
-        <div class="break-layout">
-          <div class="ring" id="risk-ring">
-            <div class="ring-center">
-              <div class="s" data-i18n="composite">Composite</div>
-              <div class="b" id="risk-ring-value">68.0</div>
-              <div class="t" data-i18n="pointsOf100">points of 100</div>
-            </div>
+          <div class="plot-shell tint-rem"><canvas id="remChart"></canvas></div>
+          <div class="plot-foot">
+            <span id="remStartDay"></span>
+            <span id="remFoot"></span>
+            <span id="remEndDay"></span>
           </div>
-          <div class="legend">
-            <div class="legend-row">
-              <div class="legend-l"><span class="dot dot-amber"></span><span data-i18n="hrvShort">HRV</span></div>
-              <div id="legend-hrv-points">18.5 pts</div>
-            </div>
-            <div class="legend-row">
-              <div class="legend-l"><span class="dot dot-warn"></span><span>SpO<sub>2</sub></span></div>
-              <div id="legend-spo2-points">11.6 pts</div>
-            </div>
-            <div class="legend-row">
-              <div class="legend-l"><span class="dot dot-risk"></span><span data-i18n="temperature">Temperature</span>
-              </div>
-              <div id="legend-temp-points">18.4 pts</div>
-            </div>
-            <div class="legend-row">
-              <div class="legend-l"><span class="dot dot-green"></span><span data-i18n="gaitActivity">Gait /
-                  Activity</span></div>
-              <div id="legend-gait-points">19.6 pts</div>
-            </div>
-          </div>
-        </div>
-      </article>
+        </article>
+      </div>
     </section>
   </main>
+
   <script>
-    (() => {
-      const translations = {
-        en: {
-          pageTitle: "Clinical Dementia Risk Dashboard",
-          patientTag: "Clinical Dementia Risk Dashboard",
-          subcopy: "24 h wearable-derived dementia risk proxy with nocturnal RMSSD suppression, oxygen desaturation burden, circadian temperature disruption, and fragmented mobility signatures.",
-          recorded: "Displayed",
-          recordedValue: "19 Apr 2026, 21:47",
-          lastPacket: "Live stream · 2.4 s cadence",
-          riskScore: "Risk Score",
-          heartRate: "Autonomic Recovery",
-          heartTrend: "&darr; 18.4 vs sleep peak",
-          heartHint: "Night RMSSD rises after 02:00, daytime autonomic recovery remains blunted.",
-          heartUnit: "ms",
-          avg: "Avg",
-          min: "Min",
-          max: "Max",
-          spo2Stable: "sleep baseline stable",
-          spo2Hint: "Sleep desaturation burden concentrated between 02:10 and 05:20.",
-          spo2Chip: "3 dips · 9 min <93%",
-          temperature: "Circadian Temp",
-          tempSide: "night cooling<br>blunted",
-          tempHint: "Morning minimum near 06:50, nocturnal cooling remains weak after 22:00.",
-          gaitActivity: "Gait Irregularity",
-          gaitSide: "stable bout<br>11:40 to 12:25",
-          steps: "idx",
-          gaitHint: "Fragmented ambulation with reduced daytime consistency.",
-          avgHr: "Avg/hr",
-          minHr: "Min/hr",
-          maxHr: "Max/hr",
-          hrvTitle: "HRV &middot; RMSSD",
-          hrvNote: "higher overnight, daytime suppression and incomplete recovery after waking",
-          timeStart: "00 h",
-          timeEnd: "24 h",
-          hrvFoot: "sleep RMSSD peak 63 ms",
-          spo2Note: "stable daytime baseline with REM-linked nocturnal dips",
-          spo2Foot: "02:14 &middot; 03:58 &middot; 05:07",
-          tempNote: "morning minimum, blunted night cooling and delayed evening crest",
-          tempFoot: "low 07:31 &middot; crest 18:46",
-          activity: "Mobility Pattern",
-          activityNote: "near-zero night motion with fragmented daytime mobility bursts",
-          activityFoot: "peak walk 14:18",
-          subscores: "Subscores",
-          weight20: "20% weight",
-          weight25: "25% weight",
-          weight35: "35% weight",
-          riskBreakdown: "Dementia Risk Breakdown",
-          composite: "Composite",
-          pointsOf100: "points of 100",
-          hrvShort: "HRV",
-          lastPacketTpl: "Buffered stream · {delay} min delay · ingest {ingestTime}",
-          spo2StatusDip: "oxygen dips flagged",
-          tempSideRise: "phase delay<br>emerging",
-          tempSideLow: "morning nadir<br>tracked",
-          tempSideSettle: "profile near<br>expected",
-          heartTrendTpl: "{arrow} {delta} vs sleep peak",
-          heartHintTpl: "Night RMSSD peaked near {peakTime}, resting HR instability widened after {driftTime}",
-          spo2HintTpl: "Sleep desaturations clustered between {start} and {end}",
-          spo2HintNone: "No overnight desaturation events detected in the latest window",
-          spo2ChipTpl: "{count} dips · {minutes} min <93%",
-          spo2ChipNone: "no time <93%",
-          gaitSideTpl: "stable bout<br>{start} to {end}",
-          gaitHintTpl: "Fragmented ambulation, highest burst after {peakTime}",
-          tempHintTpl: "Morning minimum near {lowTime}, evening crest delayed toward {peakTime}",
-          hrvFootTpl: "sleep RMSSD peak {value} ms",
-          spo2FootNone: "no nocturnal desaturation",
-          tempFootTpl: "low {lowTime} &middot; crest {peakTime}",
-          activityFootTpl: "peak walk {time}"
+    const translations = {
+      ru: {
+        locale: "ru-RU",
+        title: "Панель оценки риска деменции",
+        dashboardTag: "Панель оценки риска деменции",
+        pageTitle: "Обзор мониторинга",
+        recorded: "Записано",
+        riskScore: "Риск",
+        currentRisk: "Текущий риск",
+        age: "Возраст",
+        avgPeriod: "Среднее за период",
+        peak: "Пик",
+        avg: "Среднее",
+        min: "Мин",
+        max: "Макс",
+        sleepDuration: "Длительность сна",
+        hrs: "ч",
+        riskTrendChart: "Динамика риска",
+        riskTrendChartNote: "оценка по rolling z-score сна, дыхания и восстановления",
+        hrvChartNote: "AR(1) ряд с влиянием сна, десатураций и температуры",
+        spo2ChartNote: "сатурация реагирует на OSA-подобные и алкогольные эпизоды",
+        sleepChartNote: "сон удлиняется на выходных и сокращается в стрессовые ночи",
+        fragChart: "Фрагментация",
+        fragChartNote: "фрагментация растет при коротком сне, низком HRV и десатурации",
+        tempChart: "Температурное отклонение",
+        tempChartNote: "алкоголь и стресс повышают ночную температурную нестабильность",
+        swsChart: "Доля SWS",
+        swsChartNote: "недосып и фрагментация уменьшают долю глубокого сна",
+        remChart: "Доля REM",
+        remChartNote: "стресс и алкоголь сильнее всего просаживают REM",
+        dayN: (day) => `День ${day}`,
+        riskFoot: (days, value) => `среднее за последние ${days} дн. ${value}%`,
+        hrvFoot: (days, min, max) => `диапазон за ${days} дн. ${min}-${max} мс`,
+        spo2Foot: (min) => `минимум ${min}%`,
+        sleepFoot: (days, value) => `среднее за последние ${days} дн. ${value} ч`,
+        fragFoot: (value) => `текущее ${value}`,
+        tempFoot: (value) => `текущее ${value} °C`,
+        swsFoot: (value) => `среднее ${value}`,
+        remFoot: (value) => `среднее ${value}`,
+        packet: (total, window) => `Период наблюдения ${total} дней · rolling окно ${window} дней`,
+        summary: (days, tone, badNights, desatNights, hrvShift) => `Период ${days} дней показывает ${tone}, ${badNights} плохих ночей, ${desatNights} ночей с десатурацией и сдвиг HRV на ${hrvShift} мс от начала к концу периода.`,
+        riskHint: (delta, isAbove, days) => `Текущий риск ${isAbove ? "выше" : "ниже"} среднего первых ${days} дней на ${delta} пункта.`,
+        hrvTrend: (word, amount, days) => `${word} на ${amount} мс относительно первых ${days} дней`,
+        trendRising: "рост",
+        trendEasing: "снижение",
+        trendWorsening: "ухудшение",
+        trendRecovering: "восстановление",
+        trendFlat: "без заметного сдвига относительно начала периода",
+        lowLoad: "низкая нагрузка",
+        moderateLoad: "умеренная нагрузка",
+        highLoad: "высокая нагрузка",
+        lowSummaryTone: "низкую нагрузку риска",
+        moderateSummaryTone: "умеренную нагрузку риска",
+        highSummaryTone: "высокую нагрузку риска",
+        hrvHint: (recent, max, window) => `Среднее HRV за последние ${window} дней составляет ${recent} мс, максимум периода ${max} мс.`,
+        spo2Stable: "десатурации редки",
+        spo2Dips: "есть выраженные провалы",
+        spo2HintSome: (nights, min, severe) => severe > 0
+          ? `${nights} ночей опускались ниже 95%, минимум ${min}%, из них ${severe} ночей ниже 92%.`
+          : `${nights} ночей опускались ниже 95%, минимум ${min}%.`,
+        spo2HintNone: "Ночей с падением сатурации ниже 95% не было.",
+        desatNights: (days) => `${days} ночей <95%`,
+        sleepSideNormal: "ритм сна<br>стабилен",
+        sleepSideCompressed: "соновая нагрузка<br>повышена",
+        sleepHint: (days, frag) => `${days} ночей были короче 6.5 часа; текущая фрагментация ${frag}.`
+      },
+      kk: {
+        locale: "kk-KZ",
+        title: "Деменция қаупін бағалау панелі",
+        dashboardTag: "Деменция қаупін бағалау панелі",
+        pageTitle: "Мониторингке шолу",
+        recorded: "Жазылған уақыты",
+        riskScore: "Қауіп",
+        currentRisk: "Ағымдағы қауіп",
+        age: "Жас",
+        avgPeriod: "Кезең бойынша орташа",
+        peak: "Шың",
+        avg: "Орташа",
+        min: "Мин",
+        max: "Макс",
+        sleepDuration: "Ұйқы ұзақтығы",
+        hrs: "сағ",
+        riskTrendChart: "Қауіп динамикасы",
+        riskTrendChartNote: "ұйқы, тыныс және қалпына келу rolling z-score бағасы",
+        hrvChartNote: "AR(1) қатары ұйқы, десатурация және температура әсерімен",
+        spo2ChartNote: "сатурация OSA-тәрізді және алкоголь эпизодтарына жауап береді",
+        sleepChartNote: "демалыс күндері ұйқы ұзарады, ал стресс түндерінде қысқарады",
+        fragChart: "Фрагментация",
+        fragChartNote: "ұйқы қысқарғанда, HRV төмендегенде және десатурацияда фрагментация өседі",
+        tempChart: "Температура ауытқуы",
+        tempChartNote: "алкоголь мен стресс түнгі температура тұрақсыздығын күшейтеді",
+        swsChart: "SWS үлесі",
+        swsChartNote: "ұйқының жетіспеуі мен фрагментация терең ұйқы үлесін азайтады",
+        remChart: "REM үлесі",
+        remChartNote: "стресс пен алкоголь REM үлесін көбірек төмендетеді",
+        dayN: (day) => `${day}-күн`,
+        riskFoot: (days, value) => `соңғы ${days} күн орташа ${value}%`,
+        hrvFoot: (days, min, max) => `${days} күн ауқымы ${min}-${max} мс`,
+        spo2Foot: (min) => `ең төмені ${min}%`,
+        sleepFoot: (days, value) => `соңғы ${days} күн орташа ${value} сағ`,
+        fragFoot: (value) => `ағымдағысы ${value}`,
+        tempFoot: (value) => `ағымдағысы ${value} °C`,
+        swsFoot: (value) => `орташа ${value}`,
+        remFoot: (value) => `орташа ${value}`,
+        packet: (total, window) => `Бақылау кезеңі ${total} күн · rolling терезе ${window} күн`,
+        summary: (days, tone, badNights, desatNights, hrvShift) => `${days} күндік кезең ${tone}, ${badNights} нашар түнді, ${desatNights} десатурация түні мен кезең басынан соңына дейін HRV ${hrvShift} мс ығысуын көрсетеді.`,
+        riskHint: (delta, isAbove, days) => `Ағымдағы қауіп алғашқы ${days} күннің орташа мәнінен ${delta} тармаққа ${isAbove ? "жоғары" : "төмен"}.`,
+        hrvTrend: (word, amount, days) => `алғашқы ${days} күнмен салыстырғанда ${amount} мс ${word}`,
+        trendRising: "өсу",
+        trendEasing: "төмендеу",
+        trendWorsening: "нашарлау",
+        trendRecovering: "қалпына келу",
+        trendFlat: "кезең басымен салыстырғанда айқын өзгеріс жоқ",
+        lowLoad: "төмен жүктеме",
+        moderateLoad: "орташа жүктеме",
+        highLoad: "жоғары жүктеме",
+        lowSummaryTone: "төмен қауіп жүктемесін",
+        moderateSummaryTone: "орташа қауіп жүктемесін",
+        highSummaryTone: "жоғары қауіп жүктемесін",
+        hrvHint: (recent, max, window) => `Соңғы ${window} күндегі орташа HRV ${recent} мс, ал кезең максимумі ${max} мс.`,
+        spo2Stable: "десатурациялар сирек",
+        spo2Dips: "айқын төмендеулер бар",
+        spo2HintSome: (nights, min, severe) => severe > 0
+          ? `${nights} түнде мән 95%-дан төмен түсті, ең төмені ${min}%, оның ${severe} түні 92%-дан төмен болды.`
+          : `${nights} түнде мән 95%-дан төмен түсті, ең төмені ${min}% болды.`,
+        spo2HintNone: "95%-дан төмен сатурация түндері болған жоқ.",
+        desatNights: (days) => `${days} түн <95%`,
+        sleepSideNormal: "ұйқы ырғағы<br>тұрақты",
+        sleepSideCompressed: "ұйқы жүктемесі<br>жоғары",
+        sleepHint: (days, frag) => `${days} түнде ұйқы 6.5 сағаттан аз болды; ағымдағы фрагментация ${frag}.`
+      }
+    };
+
+    let currentLang = "ru";
+    let chartInstances = {};
+
+    function t(key, ...args) {
+      const value = translations[currentLang][key];
+      return typeof value === "function" ? value(...args) : value;
+    }
+
+    function randn_bm() {
+      let u = 0;
+      let v = 0;
+      while (u === 0) u = Math.random();
+      while (v === 0) v = Math.random();
+      return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function sigmoid(value) {
+      return 1 / (1 + Math.exp(-value));
+    }
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function randomFloat(min, max) {
+      return min + Math.random() * (max - min);
+    }
+
+    function round(value, decimals = 2) {
+      const factor = 10 ** decimals;
+      return Math.round(value * factor) / factor;
+    }
+
+    function average(values) {
+      return values.reduce((sum, value) => sum + value, 0) / values.length;
+    }
+
+    function stdDev(values) {
+      if (values.length < 2) {
+        return 0;
+      }
+      const mean = average(values);
+      const variance = average(values.map((value) => (value - mean) ** 2));
+      return Math.sqrt(variance);
+    }
+
+    function minValue(values) {
+      return Math.min(...values);
+    }
+
+    function maxValue(values) {
+      return Math.max(...values);
+    }
+
+    function windowAverage(values, size, fromEnd = true) {
+      const slice = fromEnd ? values.slice(-size) : values.slice(0, size);
+      return average(slice);
+    }
+
+    function format(value, decimals = 0) {
+      return new Intl.NumberFormat(translations[currentLang].locale, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      }).format(value);
+    }
+
+    function formatRecordedDate() {
+      return new Intl.DateTimeFormat(translations[currentLang].locale, {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      }).format(new Date());
+    }
+
+    function createProfile(age) {
+      return {
+        age,
+        rollingWindow: randomInt(10, 14),
+        hrvBaseline: clamp(58 - (age - 45) * 0.28 + randn_bm() * 5, 40, 70),
+        sleepBaseline: clamp(7.15 + randn_bm() * 0.38, 6.5, 8.0),
+        spo2Baseline: clamp(96.9 - Math.max(age - 52, 0) * 0.035 + randn_bm() * 0.25, 95, 98),
+        swsBaseline: clamp(0.21 - Math.max(age - 45, 0) * 0.0015 + randn_bm() * 0.012, 0.15, 0.25),
+        remBaseline: clamp(0.21 + randn_bm() * 0.012, 0.18, 0.25),
+        tempBaseline: clamp(0.08 + Math.abs(randn_bm()) * 0.05, 0.0, 0.3),
+        phi: {
+          hrv: randomFloat(0.82, 0.92),
+          sleep: randomFloat(0.78, 0.88),
+          spo2: randomFloat(0.84, 0.93),
+          fragmentation: randomFloat(0.75, 0.88),
+          sws: randomFloat(0.78, 0.9),
+          rem: randomFloat(0.78, 0.9),
+          temp: randomFloat(0.8, 0.9)
         },
-        kk: {
-          pageTitle: "Медициналық мониторинг панелі",
-          patientTag: "Медициналық мониторинг панелі",
-          subcopy: "Түнгі оттегі төмендеулері, кешкі температура көтерілуі, күндізгі HRV төмендеуі және біркелкі емес қимыл жүктемесі бар 24 сағаттық телеметрия көрінісі.",
-          recorded: "Жазылған уақыты",
-          recordedValue: "2026 ж. 19 сәуір, 21:47",
-          lastPacket: "Тікелей ағын · 2.4 с қадамымен",
-          riskScore: "Қауіп ұпайы",
-          heartRate: "Жүрек соғу жиілігі",
-          heartTrend: "&uarr; түнгі минимумнан 3.8 жоғары",
-          heartHint: "01:00-ден кейін төменірек, 13:00-ден кейін күндізгі ауытқу кеңейеді",
-          avg: "Орташа",
-          min: "Мин",
-          max: "Макс",
-          spo2Stable: "базалық деңгей тұрақты",
-          spo2Hint: "Десатурация эпизодтары 02:10 мен 05:20 аралығында шоғырланған",
-          spo2Chip: "түнде 3 төмендеу",
-          temperature: "Температура",
-          tempSide: "кешкі шың<br>сақталып тұр",
-          tempHint: "Ең төмені 07:30 шамасында, кешкі шың 18:40-тан кейін сақталған",
-          gaitActivity: "Жүріс / Белсенділік",
-          gaitSide: "белсенді терезе<br>13:00 пен 17:30",
-          steps: "қадам",
-          gaitHint: "Түнде қозғалысқа жуық нөл, күндіз біркелкі емес серпіндер",
-          avgHr: "Орташа/сағ",
-          minHr: "Мин/сағ",
-          maxHr: "Макс/сағ",
-          hrvTitle: "HRV &middot; RMSSD",
-          hrvNote: "ұйқы кезінде ауытқу жоғары, таңғы астан кейін тегістеледі",
-          timeStart: "00 сағ",
-          timeEnd: "24 сағ",
-          hrvFoot: "түнгі шыңы 72 мс",
-          spo2Note: "96-98% базалық деңгей, қысқа түнгі төмендеулермен",
-          spo2Foot: "02:14 &middot; 03:58 &middot; 05:07",
-          tempNote: "таңертеңгі шұңқыр, артынан кең кешкі көтерілу",
-          tempFoot: "төмені 07:31 &middot; шыңы 18:46",
-          activity: "Белсенділік",
-          activityNote: "ұйқы аралығы тыныш, түстен кейін жүріс шоқтары біркелкі емес",
-          activityFoot: "ең үлкен серпін 14:18",
-          subscores: "Қосалқы ұпайлар",
-          weight20: "20% салмақ",
-          weight25: "25% салмақ",
-          weight35: "35% салмақ",
-          riskBreakdown: "Қауіп ұпайының құрамы",
-          composite: "Жалпы",
-          pointsOf100: "100 ұпайдан",
-          hrvShort: "HRV",
-          heartTrendTpl: "{arrow} түнгі минимумнан {delta} жоғары",
-          heartHintTpl: "Ең төмені {lowTime} шамасында, күндізгі тербеліс {swingTime}-ден кейін кеңейеді",
-          spo2HintTpl: "Десатурация эпизодтары {start} мен {end} аралығында шоғырланған",
-          spo2HintNone: "Соңғы терезеде түнгі десатурация анықталмады",
-          spo2ChipTpl: "түнде {count} төмендеу",
-          spo2ChipNone: "түнгі төмендеу жоқ",
-          gaitSideTpl: "белсенді терезе<br>{start} пен {end}",
-          gaitHintTpl: "Түнде қозғалысқа жуық нөл, {peakTime}-ден кейін серпін күштірек",
-          tempHintTpl: "Ең төмені {lowTime} шамасында, кешкі шың {peakTime}-ден кейін сақталады",
-          hrvFootTpl: "түнгі шыңы {value} мс",
-          spo2FootNone: "түнгі десатурация жоқ",
-          tempFootTpl: "төмені {lowTime} &middot; шыңы {peakTime}",
-          activityFootTpl: "ең үлкен серпін {time}"
-        },
-        ru: {
-          pageTitle: "Панель медицинского мониторинга",
-          patientTag: "Панель медицинского мониторинга",
-          subcopy: "24-часовой телеметрический срез с ночными падениями кислорода, вечерним подъемом температуры, сниженной дневной HRV и неравномерной двигательной нагрузкой.",
-          recorded: "Записано",
-          recordedValue: "19 апр. 2026, 21:47",
-          lastPacket: "Прямой поток · шаг 2.4 с",
-          riskScore: "Риск-скор",
-          heartRate: "Частота пульса",
-          heartTrend: "&uarr; на 3.8 выше ночного минимума",
-          heartHint: "Ниже после 01:00, после 13:00 дневной разброс шире",
-          avg: "Сред",
-          min: "Мин",
-          max: "Макс",
-          spo2Stable: "базовый уровень стабилен",
-          spo2Hint: "Эпизоды десатурации сгруппированы между 02:10 и 05:20",
-          spo2Chip: "3 ночных снижения",
-          temperature: "Температура",
-          tempSide: "вечерний пик<br>сохраняется",
-          tempHint: "Минимум около 07:30, вечерний пик держится после 18:40",
-          gaitActivity: "Походка / Активность",
-          gaitSide: "активное окно<br>13:00-17:30",
-          steps: "шагов",
-          gaitHint: "Ночью почти нулевая подвижность, днем неравномерные всплески",
-          avgHr: "Сред/ч",
-          minHr: "Мин/ч",
-          maxHr: "Макс/ч",
-          hrvTitle: "HRV &middot; RMSSD",
-          hrvNote: "во сне вариабельность выше, после завтрака кривая ровнее",
-          timeStart: "00 ч",
-          timeEnd: "24 ч",
-          hrvFoot: "ночной пик 72 мс",
-          spo2Note: "база 96-98% с короткими ночными провалами",
-          spo2Foot: "02:14 &middot; 03:58 &middot; 05:07",
-          tempNote: "утренний минимум, затем широкий вечерний подъем",
-          tempFoot: "минимум 07:31 &middot; пик 18:46",
-          activity: "Активность",
-          activityNote: "тихий сон, после полудня нерегулярные пики движения",
-          activityFoot: "крупнейший всплеск 14:18",
-          subscores: "Подоценки",
-          weight20: "вес 20%",
-          weight25: "вес 25%",
-          weight35: "вес 35%",
-          riskBreakdown: "Структура риск-скора",
-          composite: "Итог",
-          pointsOf100: "баллов из 100",
-          hrvShort: "HRV",
-          heartTrendTpl: "{arrow} на {delta} выше ночного минимума",
-          heartHintTpl: "Минимум около {lowTime}, дневной разброс шире после {swingTime}",
-          spo2HintTpl: "Эпизоды десатурации сгруппированы между {start} и {end}",
-          spo2HintNone: "В последнем окне ночных десатураций не выявлено",
-          spo2ChipTpl: "{count} ночных снижения",
-          spo2ChipNone: "ночных снижений нет",
-          gaitSideTpl: "активное окно<br>{start}-{end}",
-          gaitHintTpl: "Ночью почти нулевая подвижность, после {peakTime} всплески заметнее",
-          tempHintTpl: "Минимум около {lowTime}, вечерний пик держится после {peakTime}",
-          hrvFootTpl: "ночной пик {value} мс",
-          spo2FootNone: "ночных провалов нет",
-          tempFootTpl: "минимум {lowTime} &middot; пик {peakTime}",
-          activityFootTpl: "крупнейший всплеск {time}"
+        sigma: {
+          hrv: 3.4,
+          sleep: 0.34,
+          spo2: 0.28,
+          fragmentation: 0.34,
+          sws: 0.018,
+          rem: 0.016,
+          temp: 0.05
         }
       };
+    }
 
-      ["kk", "ru"].forEach((lang) => {
-        translations[lang] = { ...translations[lang], ...translations.en };
+    function ar1Step(previous, mu, phi, sigma, min, max) {
+      const next = mu + phi * (previous - mu) + randn_bm() * sigma;
+      return clamp(next, min, max);
+    }
+
+    function rollingStats(values, index, window, fallbackMean, fallbackStd, transform = (value) => value) {
+      const start = Math.max(0, index - window + 1);
+      const slice = values.slice(start, index + 1).map(transform);
+      const mean = slice.length > 1 ? average(slice) : fallbackMean;
+      const std = slice.length > 1 ? Math.max(stdDev(slice), fallbackStd * 0.35, 0.0001) : fallbackStd;
+      return { mean, std };
+    }
+
+    function annotateRisk(data, profile) {
+      const window = profile.rollingWindow;
+      const zAge = (profile.age - 47.5) / 10;
+
+      const hrvValues = data.map((sample) => Math.max(sample.hrv, 30));
+      const spo2Values = data.map((sample) => sample.spo2);
+      const fragValues = data.map((sample) => sample.fragmentation);
+      const sleepValues = data.map((sample) => sample.sleep_hours);
+      const tempValues = data.map((sample) => Math.abs(sample.temperature_dev));
+      const swsValues = data.map((sample) => sample.sws_ratio);
+      const remValues = data.map((sample) => sample.rem_ratio);
+
+      data.forEach((sample, index) => {
+        const hrvStats = rollingStats(hrvValues, index, window, profile.hrvBaseline, 6);
+        const spo2Stats = rollingStats(spo2Values, index, window, profile.spo2Baseline, 0.9);
+        const fragStats = rollingStats(fragValues, index, window, 1.0, 0.7);
+        const sleepStats = rollingStats(sleepValues, index, window, profile.sleepBaseline, 0.8);
+        const tempStats = rollingStats(tempValues, index, window, Math.abs(profile.tempBaseline), 0.08);
+        const swsStats = rollingStats(swsValues, index, window, profile.swsBaseline, 0.035);
+        const remStats = rollingStats(remValues, index, window, profile.remBaseline, 0.03);
+
+        const zLowHrv = (hrvStats.mean - Math.max(sample.hrv, 30)) / hrvStats.std;
+        const zSpo2Desat = Math.max(0, (spo2Stats.mean - sample.spo2) / spo2Stats.std);
+        const zSleepFragmentation = (sample.fragmentation - fragStats.mean) / fragStats.std;
+        const zShortTst = Math.max(0, (sleepStats.mean - sample.sleep_hours) / sleepStats.std);
+        const zTempInstability = Math.max(0, (Math.abs(sample.temperature_dev) - tempStats.mean) / tempStats.std);
+        const zSwsRatio = (sample.sws_ratio - swsStats.mean) / swsStats.std;
+        const zRemRatio = (sample.rem_ratio - remStats.mean) / remStats.std;
+
+        let raw =
+          0.9 * zAge +
+          0.85 * zLowHrv +
+          0.8 * zSpo2Desat +
+          0.6 * zSleepFragmentation +
+          0.5 * zShortTst +
+          0.3 * zTempInstability -
+          0.25 * zSwsRatio -
+          0.15 * zRemRatio;
+
+        if (sample.spo2 < 92) {
+          raw += 0.8 + (92 - sample.spo2) * 0.35;
+        }
+        if (sample.sleep_hours < 5) {
+          raw += 0.55 + (5 - sample.sleep_hours) * 0.35;
+        }
+
+        sample.risk = Math.round(clamp(100 * sigmoid(raw), 1, 99));
+        sample.z = {
+          age: round(zAge, 2),
+          lowHrv: round(zLowHrv, 2),
+          spo2Desat: round(zSpo2Desat, 2),
+          sleepFragmentation: round(zSleepFragmentation, 2),
+          shortTst: round(zShortTst, 2),
+          tempInstability: round(zTempInstability, 2),
+          swsRatio: round(zSwsRatio, 2),
+          remRatio: round(zRemRatio, 2)
+        };
+      });
+    }
+
+    function generateData(days = 60, age = 45) {
+      const profile = createProfile(age);
+      const data = [];
+
+      let prev = {
+        hrv: profile.hrvBaseline,
+        sleep_hours: profile.sleepBaseline,
+        spo2: profile.spo2Baseline,
+        fragmentation: clamp(0.9 + randn_bm() * 0.18, 0, 5),
+        sws_ratio: profile.swsBaseline,
+        rem_ratio: profile.remBaseline,
+        temperature_dev: profile.tempBaseline
+      };
+
+      let stressCarry = 0;
+      let osaCarry = 0;
+
+      for (let index = 0; index < days; index += 1) {
+        const dayOfWeek = index % 7;
+        const isMonday = dayOfWeek === 0;
+        const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
+
+        const badNight = Math.random() < 0.15;
+        const stressEvent = stressCarry > 0 || Math.random() < (isMonday ? 0.32 : 0.2);
+        const alcoholEvent = Math.random() < (isWeekend ? 0.18 : 0.06);
+        const osaLikeEvent = osaCarry > 0 || Math.random() < 0.1;
+
+        if (stressCarry === 0 && stressEvent) {
+          stressCarry = randomInt(1, 2);
+        }
+        if (osaCarry === 0 && osaLikeEvent) {
+          osaCarry = randomInt(1, 3);
+        }
+
+        const weekendSleepBonus = isWeekend ? randomFloat(0.5, 1.5) : 0;
+        const badSleepLoss = badNight ? randomFloat(1.5, 3.0) : 0;
+        const stressSleepLoss = stressEvent ? randomFloat(0.5, 1.5) : 0;
+        const alcoholSleepLoss = alcoholEvent ? randomFloat(0.2, 0.8) : 0;
+        const alcoholTempBoost = alcoholEvent ? randomFloat(0.2, 0.6) : 0;
+        const alcoholSpo2Dip = alcoholEvent ? randomFloat(0.2, 0.8) : 0;
+        const alcoholHrvDropPct = alcoholEvent ? randomFloat(0.1, 0.25) : 0;
+        const badHrvDropPct = badNight ? randomFloat(0.1, 0.2) : 0;
+        const stressHrvDropPct = stressEvent ? randomFloat(0.05, 0.15) : 0;
+        const osaSpo2Dip = osaLikeEvent ? randomFloat(2, 6) : 0;
+        const osaFragBoost = osaLikeEvent ? randomFloat(1.1, 2.0) : 0;
+        const badFragBoost = badNight ? randomFloat(1.0, 2.0) : 0;
+        const stressRemDrop = stressEvent ? randomFloat(0.015, 0.05) : 0;
+        const alcoholRemDrop = alcoholEvent ? randomFloat(0.04, 0.09) : 0;
+        const badSwsDrop = badNight ? randomFloat(0.03, 0.08) : 0;
+
+        const muSleep =
+          profile.sleepBaseline +
+          weekendSleepBonus -
+          badSleepLoss -
+          stressSleepLoss -
+          alcoholSleepLoss -
+          Math.max(0, prev.fragmentation - 1.1) * 0.18;
+        const sleepHours = ar1Step(prev.sleep_hours, muSleep, profile.phi.sleep, profile.sigma.sleep, 3.5, 10);
+        const shortSleepAmplifier = sleepHours < 5 ? 1.35 : 1;
+
+        const muSpo2 =
+          profile.spo2Baseline -
+          osaSpo2Dip -
+          alcoholSpo2Dip -
+          Math.max(0, prev.fragmentation - 1.4) * 0.12;
+        const spo2 = ar1Step(prev.spo2, muSpo2, profile.phi.spo2, profile.sigma.spo2, 88, 100);
+
+        const muTemp = clamp(
+          profile.tempBaseline +
+          alcoholTempBoost +
+          (stressEvent ? randomFloat(0.02, 0.08) : 0) +
+          (badNight ? randomFloat(0.02, 0.05) : 0) -
+          (isWeekend && !stressEvent && !alcoholEvent ? randomFloat(0.02, 0.08) : 0),
+          -0.3,
+          0.8
+        );
+        const temperatureDev = ar1Step(prev.temperature_dev, muTemp, profile.phi.temp, profile.sigma.temp, -0.5, 1.0);
+
+        const hrvPenaltyPct = badHrvDropPct + stressHrvDropPct + alcoholHrvDropPct + (osaLikeEvent ? randomFloat(0.05, 0.12) : 0);
+        const muHrv =
+          profile.hrvBaseline * (1 - hrvPenaltyPct) -
+          Math.max(0, profile.sleepBaseline - sleepHours) * 4.5 * shortSleepAmplifier -
+          Math.max(0, profile.spo2Baseline - spo2) * 2.4 -
+          Math.max(0, temperatureDev - profile.tempBaseline) * 14 -
+          Math.max(0, prev.fragmentation - 1.0) * 1.8 +
+          (isWeekend && !stressEvent && !alcoholEvent ? 2.5 : 0);
+        const hrv = ar1Step(prev.hrv, muHrv, profile.phi.hrv, profile.sigma.hrv, 20, 120);
+
+        let muFragmentation =
+          0.7 +
+          Math.max(0, profile.sleepBaseline - sleepHours) * 0.72 * shortSleepAmplifier +
+          Math.max(0, profile.hrvBaseline - hrv) / 18 +
+          Math.max(0, profile.spo2Baseline - spo2) * 0.35 +
+          Math.max(0, temperatureDev - profile.tempBaseline) * 0.6 +
+          badFragBoost +
+          (alcoholEvent ? randomFloat(0.4, 1.0) : 0) +
+          osaFragBoost;
+
+        if (spo2 < 92) {
+          muFragmentation += 1.0 + (92 - spo2) * 0.35;
+        }
+
+        let fragmentation = ar1Step(prev.fragmentation, muFragmentation, profile.phi.fragmentation, profile.sigma.fragmentation, 0, 5);
+        if (spo2 < 92) {
+          fragmentation = clamp(fragmentation + 0.4 + (92 - spo2) * 0.15, 0, 5);
+        }
+
+        let muSws =
+          profile.swsBaseline -
+          Math.max(0, profile.sleepBaseline - sleepHours) * 0.016 * shortSleepAmplifier -
+          Math.max(0, fragmentation - 1.0) * 0.02 -
+          badSwsDrop -
+          (alcoholEvent ? randomFloat(0.02, 0.06) : 0) +
+          (isWeekend && sleepHours > profile.sleepBaseline ? 0.01 : 0);
+        if (sleepHours < 5) {
+          muSws -= 0.03;
+        }
+        const swsRatio = ar1Step(prev.sws_ratio, muSws, profile.phi.sws, profile.sigma.sws, 0.05, 0.35);
+
+        let muRem =
+          profile.remBaseline -
+          Math.max(0, fragmentation - 1.0) * 0.016 -
+          stressRemDrop -
+          alcoholRemDrop -
+          (badNight ? randomFloat(0.01, 0.03) : 0) +
+          Math.max(0, sleepHours - profile.sleepBaseline) * 0.006;
+        if (sleepHours < 5) {
+          muRem -= 0.025;
+        }
+        const remRatio = ar1Step(prev.rem_ratio, muRem, profile.phi.rem, profile.sigma.rem, 0.1, 0.35);
+
+        const sample = {
+          day: index + 1,
+          hrv: Math.round(hrv),
+          sleep_hours: round(sleepHours, 2),
+          sleep: round(sleepHours, 2),
+          spo2: round(spo2, 1),
+          fragmentation: round(fragmentation, 2),
+          frag: round(fragmentation, 2),
+          sws_ratio: round(swsRatio, 2),
+          sws: round(swsRatio, 2),
+          rem_ratio: round(remRatio, 2),
+          rem: round(remRatio, 2),
+          temperature_dev: round(temperatureDev, 2),
+          temp: round(temperatureDev, 2),
+          risk: 0,
+          events: {
+            badNight,
+            stress: stressEvent,
+            alcohol: alcoholEvent,
+            osaLike: osaLikeEvent
+          }
+        };
+
+        data.push(sample);
+        prev = {
+          hrv: sample.hrv,
+          sleep_hours: sample.sleep_hours,
+          spo2: sample.spo2,
+          fragmentation: sample.fragmentation,
+          sws_ratio: sample.sws_ratio,
+          rem_ratio: sample.rem_ratio,
+          temperature_dev: sample.temperature_dev
+        };
+
+        stressCarry = Math.max(0, stressCarry - 1);
+        osaCarry = Math.max(0, osaCarry - 1);
+      }
+
+      annotateRisk(data, profile);
+      return { profile, data };
+    }
+
+    function toneForRisk(risk) {
+      if (risk < 34) return { name: "low", color: "#2c7a34", bg: "rgba(67, 160, 71, 0.1)" };
+      if (risk < 67) return { name: "moderate", color: "#8e5b19", bg: "rgba(251, 140, 0, 0.1)" };
+      return { name: "high", color: "#a33532", bg: "rgba(229, 57, 53, 0.1)" };
+    }
+
+    function setRiskTone(risk) {
+      const tone = toneForRisk(risk);
+      const badge = document.getElementById("riskScoreBadge");
+      const value = document.getElementById("riskValue");
+      const trend = document.getElementById("riskTrend");
+
+      badge.style.color = tone.color;
+      badge.parentElement.style.background = tone.bg;
+      badge.parentElement.style.borderColor = tone.bg;
+      value.style.color = tone.color;
+      trend.style.background = tone.bg;
+      trend.style.color = tone.color;
+      trend.textContent = tone.name === "low"
+        ? t("lowLoad")
+        : tone.name === "moderate"
+          ? t("moderateLoad")
+          : t("highLoad");
+    }
+
+    function describeTrend(current, baseline, comparisonDays, positiveWhenHigher = true) {
+      const delta = current - baseline;
+      const direction = delta > 0 ? "up" : delta < 0 ? "down" : "flat";
+      const amount = Math.abs(delta);
+      if (direction === "flat") {
+        return t("trendFlat");
+      }
+      const word = positiveWhenHigher
+        ? direction === "up" ? t("trendRising") : t("trendEasing")
+        : direction === "up" ? t("trendWorsening") : t("trendRecovering");
+      return t("hrvTrend", word, format(amount, 1), comparisonDays);
+    }
+
+    const AGE = randomInt(30, 65);
+    const DAYS = 60;
+    const simulation = generateData(DAYS, AGE);
+    const profile = simulation.profile;
+    const data = simulation.data;
+
+    const latest = data[data.length - 1];
+    const comparisonWindow = Math.min(profile.rollingWindow, data.length);
+    const risks = data.map((item) => item.risk);
+    const hrvs = data.map((item) => item.hrv);
+    const spo2s = data.map((item) => item.spo2);
+    const sleeps = data.map((item) => item.sleep);
+    const frags = data.map((item) => item.frag);
+    const swss = data.map((item) => item.sws);
+    const rems = data.map((item) => item.rem);
+    const temps = data.map((item) => item.temp);
+
+    const desatNights = data.filter((item) => item.spo2 < 95).length;
+    const severeDesatNights = data.filter((item) => item.spo2 < 92).length;
+    const shortSleepDays = data.filter((item) => item.sleep < 6.5).length;
+    const badNightCount = data.filter((item) => item.events.badNight).length;
+    const avgRisk = average(risks);
+    const baselineRisk = windowAverage(risks, comparisonWindow, false);
+    const recentRisk = windowAverage(risks, comparisonWindow, true);
+    const riskShift = latest.risk - baselineRisk;
+    const hrvShift = windowAverage(hrvs, comparisonWindow, true) - windowAverage(hrvs, comparisonWindow, false);
+
+    function setStaticLabels() {
+      document.title = t("title");
+      document.getElementById("dashboardTag").textContent = t("dashboardTag");
+      document.getElementById("pageTitle").textContent = t("pageTitle");
+      document.getElementById("recordedLabel").textContent = t("recorded");
+      document.getElementById("riskScoreLabel").textContent = t("riskScore");
+      document.getElementById("currentRiskLabel").textContent = t("currentRisk");
+      document.getElementById("ageLabel").textContent = t("age");
+      document.getElementById("riskAvgLabel").textContent = t("avgPeriod");
+      document.getElementById("riskPeakLabel").textContent = t("peak");
+      document.getElementById("avgLabelHrv").textContent = t("avg");
+      document.getElementById("minLabelHrv").textContent = t("min");
+      document.getElementById("maxLabelHrv").textContent = t("max");
+      document.getElementById("avgLabelSpo2").textContent = t("avg");
+      document.getElementById("minLabelSpo2").textContent = t("min");
+      document.getElementById("maxLabelSpo2").textContent = t("max");
+      document.getElementById("sleepDurationLabel").textContent = t("sleepDuration");
+      document.getElementById("sleepUnit").textContent = t("hrs");
+      document.getElementById("avgLabelSleep").textContent = t("avg");
+      document.getElementById("minLabelSleep").textContent = t("min");
+      document.getElementById("maxLabelSleep").textContent = t("max");
+      document.getElementById("riskTrendChartLabel").textContent = t("riskTrendChart");
+      document.getElementById("riskTrendChartNote").textContent = t("riskTrendChartNote");
+      document.getElementById("hrvChartNote").textContent = t("hrvChartNote");
+      document.getElementById("spo2ChartNote").textContent = t("spo2ChartNote");
+      document.getElementById("sleepChartLabel").textContent = t("sleepDuration");
+      document.getElementById("sleepChartNote").textContent = t("sleepChartNote");
+      document.getElementById("fragChartLabel").textContent = t("fragChart");
+      document.getElementById("fragChartNote").textContent = t("fragChartNote");
+      document.getElementById("tempChartLabel").textContent = t("tempChart");
+      document.getElementById("tempChartNote").textContent = t("tempChartNote");
+      document.getElementById("swsChartLabel").textContent = t("swsChart");
+      document.getElementById("swsChartNote").textContent = t("swsChartNote");
+      document.getElementById("remChartLabel").textContent = t("remChart");
+      document.getElementById("remChartNote").textContent = t("remChartNote");
+    }
+
+    function setDynamicText() {
+      const tone = toneForRisk(latest.risk);
+      const summaryTone = tone.name === "low"
+        ? t("lowSummaryTone")
+        : tone.name === "moderate"
+          ? t("moderateSummaryTone")
+          : t("highSummaryTone");
+
+      document.getElementById("recordedValue").textContent = formatRecordedDate();
+      document.getElementById("lastPacket").textContent = t("packet", data.length, profile.rollingWindow);
+      document.getElementById("riskScoreBadge").textContent = `${latest.risk}%`;
+      document.getElementById("riskValue").textContent = format(latest.risk);
+      document.getElementById("ageValue").textContent = AGE;
+      document.getElementById("riskAvg").textContent = `${format(avgRisk, 1)}%`;
+      document.getElementById("riskPeak").textContent = `${format(maxValue(risks))}%`;
+      document.getElementById("riskHint").textContent = t("riskHint", format(Math.abs(riskShift), 1), riskShift >= 0, comparisonWindow);
+      document.getElementById("riskFoot").textContent = t("riskFoot", comparisonWindow, format(recentRisk, 1));
+      document.getElementById("summaryCopy").textContent = t(
+        "summary",
+        data.length,
+        summaryTone,
+        format(badNightCount),
+        format(desatNights),
+        format(hrvShift, 1)
+      );
+
+      document.getElementById("hrvCurrent").textContent = format(latest.hrv);
+      document.getElementById("hrvTrend").textContent = describeTrend(
+        windowAverage(hrvs, comparisonWindow, true),
+        windowAverage(hrvs, comparisonWindow, false),
+        comparisonWindow,
+        true
+      );
+      document.getElementById("hrvHint").textContent = t(
+        "hrvHint",
+        format(windowAverage(hrvs, comparisonWindow, true), 1),
+        format(maxValue(hrvs)),
+        comparisonWindow
+      );
+      document.getElementById("hrvAvg").textContent = `${format(average(hrvs), 1)} ms`;
+      document.getElementById("hrvMin").textContent = `${format(minValue(hrvs))} ms`;
+      document.getElementById("hrvMax").textContent = `${format(maxValue(hrvs))} ms`;
+      document.getElementById("hrvFoot").textContent = t("hrvFoot", data.length, format(minValue(hrvs)), format(maxValue(hrvs)));
+
+      document.getElementById("spo2Current").textContent = format(latest.spo2, 1);
+      document.getElementById("spo2Status").textContent = severeDesatNights > 0 ? t("spo2Dips") : t("spo2Stable");
+      document.getElementById("spo2Hint").textContent = desatNights > 0
+        ? t("spo2HintSome", format(desatNights), format(minValue(spo2s), 1), format(severeDesatNights))
+        : t("spo2HintNone");
+      document.getElementById("spo2Chip").textContent = t("desatNights", format(desatNights));
+      document.getElementById("spo2Avg").textContent = `${format(average(spo2s), 1)}%`;
+      document.getElementById("spo2Min").textContent = `${format(minValue(spo2s), 1)}%`;
+      document.getElementById("spo2Max").textContent = `${format(maxValue(spo2s), 1)}%`;
+      document.getElementById("spo2Foot").textContent = t("spo2Foot", format(minValue(spo2s), 1));
+      document.getElementById("spo2Dot").style.background = severeDesatNights > 0 ? "#fb8c00" : "#43a047";
+
+      document.getElementById("sleepCurrent").textContent = format(latest.sleep, 2);
+      document.getElementById("sleepSide").innerHTML = shortSleepDays > Math.max(5, Math.round(data.length * 0.18))
+        ? t("sleepSideCompressed")
+        : t("sleepSideNormal");
+      document.getElementById("sleepHint").textContent = t("sleepHint", format(shortSleepDays), format(latest.frag, 2));
+      document.getElementById("sleepAvg").textContent = `${format(average(sleeps), 2)} ${t("hrs")}`;
+      document.getElementById("sleepMin").textContent = `${format(minValue(sleeps), 2)} ${t("hrs")}`;
+      document.getElementById("sleepMax").textContent = `${format(maxValue(sleeps), 2)} ${t("hrs")}`;
+      document.getElementById("sleepFoot").textContent = t("sleepFoot", comparisonWindow, format(windowAverage(sleeps, comparisonWindow, true), 2));
+
+      document.getElementById("fragFoot").textContent = t("fragFoot", format(latest.frag, 2));
+      document.getElementById("tempFoot").textContent = t("tempFoot", format(latest.temp, 2));
+      document.getElementById("swsFoot").textContent = t("swsFoot", format(average(swss), 2));
+      document.getElementById("remFoot").textContent = t("remFoot", format(average(rems), 2));
+
+      const dayStart = t("dayN", 1);
+      const dayEnd = t("dayN", data.length);
+      [
+        "riskStartDay", "hrvStartDay", "spo2StartDay", "sleepStartDay",
+        "fragStartDay", "tempStartDay", "swsStartDay", "remStartDay"
+      ].forEach((id) => {
+        document.getElementById(id).textContent = dayStart;
+      });
+      [
+        "riskEndDay", "hrvEndDay", "spo2EndDay", "sleepEndDay",
+        "fragEndDay", "tempEndDay", "swsEndDay", "remEndDay"
+      ].forEach((id) => {
+        document.getElementById(id).textContent = dayEnd;
       });
 
-      translations.en.lastPacket = "Pseudo-real-time stream - 2.4 s cadence";
-      translations.en.lastPacketTpl = "Buffered stream - {delay} min delay - ingest {ingestTime}";
-      translations.en.spo2Chip = "3 dips - 9 min <93%";
-      translations.en.spo2ChipTpl = "{count} dips - {minutes} min <93%";
-      ["kk", "ru"].forEach((lang) => {
-        translations[lang].lastPacket = translations.en.lastPacket;
-        translations[lang].lastPacketTpl = translations.en.lastPacketTpl;
-        translations[lang].spo2Chip = translations.en.spo2Chip;
-        translations[lang].spo2ChipTpl = translations.en.spo2ChipTpl;
+      setRiskTone(latest.risk);
+    }
+
+    function buildChartColor(hex, alpha) {
+      const map = {
+        green: `rgba(67, 160, 71, ${alpha})`,
+        yellow: `rgba(251, 192, 45, ${alpha})`,
+        orange: `rgba(251, 140, 0, ${alpha})`,
+        red: `rgba(229, 57, 53, ${alpha})`,
+        slate: `rgba(127, 144, 167, ${alpha})`,
+        violet: `rgba(124, 97, 196, ${alpha})`
+      };
+      return map[hex];
+    }
+
+    function makeChart(id, key, colorKey, fillKey) {
+      const ctx = document.getElementById(id).getContext("2d");
+
+      chartInstances[id] = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: data.map((item) => t("dayN", item.day)),
+          datasets: [{
+            data: data.map((item) => item[key]),
+            borderColor: buildChartColor(colorKey, 0.86),
+            backgroundColor: buildChartColor(fillKey, 0.12),
+            fill: true,
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            pointHoverBorderWidth: 2,
+            pointHoverBackgroundColor: "#ffffff",
+            pointHoverBorderColor: buildChartColor(colorKey, 1),
+            tension: 0.35
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            intersect: false,
+            mode: "index"
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              displayColors: false,
+              backgroundColor: "rgba(20, 28, 44, 0.92)",
+              titleColor: "#f0f4f8",
+              bodyColor: "#f0f4f8",
+              padding: 10,
+              cornerRadius: 8
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                color: "rgba(127, 144, 167, 0.08)"
+              },
+              border: {
+                display: false
+              },
+              ticks: {
+                color: "#7f90a7",
+                maxTicksLimit: 6
+              }
+            },
+            y: {
+              grid: {
+                color: "rgba(127, 144, 167, 0.12)"
+              },
+              border: {
+                display: false
+              },
+              ticks: {
+                color: "#7f90a7"
+              }
+            }
+          }
+        }
       });
+    }
 
-      const LOCALES = {
-        en: "en-US",
-        kk: "kk-KZ",
-        ru: "ru-RU"
-      };
+    function rebuildCharts() {
+      Object.values(chartInstances).forEach((chart) => chart.destroy());
+      chartInstances = {};
+      makeChart("riskChart", "risk", "orange", "orange");
+      makeChart("hrvChart", "hrv", "green", "green");
+      makeChart("spo2Chart", "spo2", "yellow", "yellow");
+      makeChart("sleepChart", "sleep", "slate", "slate");
+      makeChart("fragChart", "frag", "red", "red");
+      makeChart("swsChart", "sws", "slate", "slate");
+      makeChart("remChart", "rem", "violet", "violet");
+      makeChart("tempChart", "temp", "red", "red");
+    }
 
-      const DAY_MS = 24 * 60 * 60 * 1000;
-      const MINUTE_MS = 60 * 1000;
-      const DISPLAY_DELAY_MS = 1 * MINUTE_MS;
-      const STREAM_INTERVAL_MS = 2400;
-      const STREAM_STEP_MS = 1 * MINUTE_MS;
-      const RAW_SAMPLE_MS = 1 * MINUTE_MS;
-      const CHART_SAMPLE_MS = 5 * MINUTE_MS;
-      const ANIMATION_MS = 1500;
-      const SVG_WIDTH = 480;
-      const SVG_HEIGHT = 170;
-      const PLOT_TOP = 18;
-      const PLOT_BOTTOM = 146;
-      const SUB_WEIGHTS = { hrv: 0.25, spo2: 0.20, temp: 0.20, gait: 0.35 };
-      const RING_COLORS = {
-        hrv: "rgba(251, 140, 0, 0.62)",
-        spo2: "rgba(251, 192, 45, 0.60)",
-        temp: "rgba(229, 57, 53, 0.62)",
-        gait: "rgba(67, 160, 71, 0.58)",
-        rest: "rgba(230, 234, 240, 0.94)"
-      };
-
-      let currentLang = "en";
-      let latestSnapshot = null;
-      let simulationClock = new Date();
-      simulationClock.setSeconds(0, 0);
-
-      const patient = createPatientProfile();
-      const scheduleCache = new Map();
-
-      const ui = {
-        recordedValue: document.getElementById("recorded-value"),
-        lastPacket: document.getElementById("last-packet"),
-        riskScoreBadge: document.getElementById("risk-score-badge"),
-        heartTrend: document.getElementById("heart-trend"),
-        heartCurrent: document.getElementById("heart-current"),
-        heartUnit: document.querySelector(".heart .unit"),
-        heartHint: document.getElementById("heart-hint"),
-        heartAvg: document.getElementById("heart-avg"),
-        heartMin: document.getElementById("heart-min"),
-        heartMax: document.getElementById("heart-max"),
-        spo2Status: document.getElementById("spo2-status"),
-        spo2Current: document.getElementById("spo2-current"),
-        spo2Hint: document.getElementById("spo2-hint"),
-        spo2Chip: document.getElementById("spo2-chip"),
-        spo2Avg: document.getElementById("spo2-avg"),
-        spo2Min: document.getElementById("spo2-min"),
-        spo2Max: document.getElementById("spo2-max"),
-        tempSide: document.getElementById("temp-side"),
-        tempCurrent: document.getElementById("temp-current"),
-        tempHint: document.getElementById("temp-hint"),
-        tempAvg: document.getElementById("temp-avg"),
-        tempMin: document.getElementById("temp-min"),
-        tempMax: document.getElementById("temp-max"),
-        gaitSide: document.getElementById("gait-side"),
-        gaitCurrent: document.getElementById("gait-current"),
-        gaitUnit: document.querySelector(".gait .unit"),
-        gaitHint: document.getElementById("gait-hint"),
-        gaitAvg: document.getElementById("gait-avg"),
-        gaitMin: document.getElementById("gait-min"),
-        gaitMax: document.getElementById("gait-max"),
-        hrvFoot: document.getElementById("hrv-foot"),
-        spo2Foot: document.getElementById("spo2-foot"),
-        tempFoot: document.getElementById("temp-foot"),
-        activityFoot: document.getElementById("activity-foot"),
-        subHrvValue: document.getElementById("sub-hrv-value"),
-        subSpo2Value: document.getElementById("sub-spo2-value"),
-        subTempValue: document.getElementById("sub-temp-value"),
-        subGaitValue: document.getElementById("sub-gait-value"),
-        subHrvTrack: document.getElementById("sub-hrv-track"),
-        subSpo2Track: document.getElementById("sub-spo2-track"),
-        subTempTrack: document.getElementById("sub-temp-track"),
-        subGaitTrack: document.getElementById("sub-gait-track"),
-        riskRing: document.getElementById("risk-ring"),
-        riskRingValue: document.getElementById("risk-ring-value"),
-        legendHrvPoints: document.getElementById("legend-hrv-points"),
-        legendSpo2Points: document.getElementById("legend-spo2-points"),
-        legendTempPoints: document.getElementById("legend-temp-points"),
-        legendGaitPoints: document.getElementById("legend-gait-points")
-      };
-
-      const charts = {
-        hrv: buildChart("chart-hrv", "line-hrv", null, "cursor-hrv", "dot-hrv", "tip-hrv", 20, 90, 0, "ms"),
-        spo2: buildChart("chart-spo2", "line-spo2", null, "cursor-spo2", "dot-spo2", "tip-spo2", 90, 99, 1, "%"),
-        temp: buildChart("chart-temp", "line-temp", null, "cursor-temp", "dot-temp", "tip-temp", 36.3, 37.3, 2, "°C"),
-        activity: buildChart("chart-activity", "line-activity", "area-activity", "cursor-activity", "dot-activity", "tip-activity", 0, 1200, 0, "steps/h")
-      };
-
-      charts.temp.unit = "°C";
-      charts.temp.unit = "°C";
-      Object.values(charts).forEach(bindChartHover);
-
+    function render() {
+      setStaticLabels();
+      setDynamicText();
+      rebuildCharts();
       document.querySelectorAll(".lang-btn").forEach((button) => {
-        button.addEventListener("click", () => setLanguage(button.dataset.lang));
+        button.classList.toggle("is-active", button.dataset.lang === currentLang);
       });
-
-      const savedLang = localStorage.getItem("dashboard-lang");
-      setLanguage(translations[savedLang] ? savedLang : "en");
-      latestSnapshot = generateSnapshot(simulationClock.getTime());
-      renderSnapshot(latestSnapshot, false);
-
-      window.setInterval(() => {
-        simulationClock = new Date(simulationClock.getTime() + STREAM_STEP_MS);
-        latestSnapshot = generateSnapshot(simulationClock.getTime());
-        renderSnapshot(latestSnapshot, true);
-      }, STREAM_INTERVAL_MS);
-
-      function buildChart(shellId, lineId, areaId, cursorId, dotId, tipId, min, max, decimals, unit) {
-        const tip = document.getElementById(tipId);
-        return {
-          shell: document.getElementById(shellId),
-          line: document.getElementById(lineId),
-          area: areaId ? document.getElementById(areaId) : null,
-          cursor: document.getElementById(cursorId),
-          dot: document.getElementById(dotId),
-          tip,
-          tipTime: tip.querySelector(".tt-time"),
-          tipVal: tip.querySelector(".tt-val"),
-          min,
-          max,
-          decimals,
-          unit,
-          displayValues: null,
-          animationFrame: null
-        };
-      }
-
-      function setLanguage(lang) {
-        currentLang = translations[lang] ? lang : "en";
-        const dict = getDict();
-        document.documentElement.lang = currentLang;
-        document.title = dict.pageTitle;
-
-        document.querySelectorAll("[data-i18n]").forEach((node) => {
-          const key = node.getAttribute("data-i18n");
-          if (dict[key] !== undefined) {
-            node.textContent = dict[key];
-          }
-        });
-
-        document.querySelectorAll("[data-i18n-html]").forEach((node) => {
-          const key = node.getAttribute("data-i18n-html");
-          if (dict[key] !== undefined) {
-            node.innerHTML = dict[key];
-          }
-        });
-
-        document.querySelectorAll(".lang-btn").forEach((button) => {
-          button.classList.toggle("is-active", button.dataset.lang === currentLang);
-        });
-
-        localStorage.setItem("dashboard-lang", currentLang);
-
-        if (latestSnapshot) {
-          renderSnapshot(latestSnapshot, false);
-        }
-      }
-
-      function getDict() {
-        return translations[currentLang] || translations.en;
-      }
-
-      function t(key) {
-        return getDict()[key] ?? translations.en[key] ?? "";
-      }
-
-      function template(str, vars) {
-        return str.replace(/\{(\w+)\}/g, (_, key) => (vars[key] === undefined || vars[key] === null ? "" : String(vars[key])));
-      }
-
-      function createPatientProfile() {
-        const seed = (Date.now() ^ Math.floor(Math.random() * 0x7fffffff)) >>> 0;
-        const rng = mulberry32(seed);
-        const hrvRisk = 0.48 + rng() * 0.24;
-        const spo2Risk = 0.42 + rng() * 0.24;
-        const tempRisk = 0.44 + rng() * 0.24;
-        const gaitRisk = 0.50 + rng() * 0.22;
-        const sleepFragility = 0.45 + rng() * 0.28;
-        const mobilityReserve = 0.58 + rng() * 0.20;
-        return {
-          seed,
-          age: Math.round(70 + rng() * 5),
-          hrvRisk,
-          spo2Risk,
-          tempRisk,
-          gaitRisk,
-          sleepFragility,
-          mobilityReserve,
-          circadianDisruption: 0.42 + tempRisk * 0.42 + rng() * 0.08,
-          rhrInstability: 1.4 + hrvRisk * 2.0 + sleepFragility * 1.3 + rng() * 0.7,
-          hrRest: 56.5 + hrvRisk * 4.2 + sleepFragility * 2.2 + rng() * 1.8,
-          hrvDayBase: 35.5 - hrvRisk * 7.8 + rng() * 3.2,
-          hrvNightBase: 66.5 - hrvRisk * 10.5 - sleepFragility * 4.8 + rng() * 4.8,
-          spo2Base: 97.7 - spo2Risk * 1.15 + rng() * 0.24,
-          tempSetPoint: 36.66 + tempRisk * 0.08 + rng() * 0.04,
-          activityTarget: 6800 - gaitRisk * 2300 + rng() * 700,
-          phaseA: rng() * Math.PI * 2,
-          phaseB: rng() * Math.PI * 2,
-          phaseC: rng() * Math.PI * 2
-        };
-      }
-
-      function mulberry32(seed) {
-        return function () {
-          let tValue = (seed += 0x6d2b79f5);
-          tValue = Math.imul(tValue ^ (tValue >>> 15), tValue | 1);
-          tValue ^= tValue + Math.imul(tValue ^ (tValue >>> 7), tValue | 61);
-          return ((tValue ^ (tValue >>> 14)) >>> 0) / 4294967296;
-        };
-      }
-
-      function clamp(value, min, max) {
-        return Math.max(min, Math.min(max, value));
-      }
-
-      function lerp(a, b, tValue) {
-        return a + (b - a) * tValue;
-      }
-
-      function sigmoid(value) {
-        return 1 / (1 + Math.exp(-value));
-      }
-
-      function gaussian(value, center, width) {
-        const z = (value - center) / width;
-        return Math.exp(-0.5 * z * z);
-      }
-
-      function smoothStep(value) {
-        return value * value * (3 - 2 * value);
-      }
-
-      function hashedUnit(index, salt) {
-        const x = Math.sin((index + 1) * 12.9898 + salt * 78.233) * 43758.5453123;
-        return x - Math.floor(x);
-      }
-
-      function smoothNoise(position, salt) {
-        const left = Math.floor(position);
-        const frac = position - left;
-        const eased = smoothStep(frac);
-        const a = hashedUnit(left, salt);
-        const b = hashedUnit(left + 1, salt);
-        return lerp(a, b, eased) * 2 - 1;
-      }
-
-      function positiveNoise(position, salt) {
-        return Math.max(0, smoothNoise(position, salt));
-      }
-
-      function asymmetricPulse(value, center, riseWidth, fallWidth) {
-        const delta = value - center;
-        const width = delta < 0 ? riseWidth : fallWidth;
-        const z = delta / Math.max(width, 1);
-        return Math.exp(-0.5 * z * z);
-      }
-
-      function startOfDayMs(timeMs) {
-        const date = new Date(timeMs);
-        date.setHours(0, 0, 0, 0);
-        return date.getTime();
-      }
-
-      function getDaySchedule(dayStartMs) {
-        const normalizedDayStart = startOfDayMs(dayStartMs);
-        const key = String(normalizedDayStart);
-        if (scheduleCache.has(key)) {
-          return scheduleCache.get(key);
-        }
-
-        const rng = mulberry32((patient.seed ^ Math.floor(normalizedDayStart / DAY_MS)) >>> 0);
-        const sleepStartMin = Math.round((22.55 + rng() * 0.85 + patient.circadianDisruption * 0.18) * 60);
-        const sleepDurationMin = Math.round((6.25 + rng() * 0.85 - patient.sleepFragility * 0.75) * 60);
-        const activityScale = patient.activityTarget / 5400;
-        const activityWindows = [
-          { centerMin: 8 * 60 + 12 + Math.round(rng() * 50), widthMin: 30 + rng() * 16, amplitude: (150 + rng() * 110) * activityScale },
-          { centerMin: 11 * 60 + 35 + Math.round(rng() * 42), widthMin: 34 + rng() * 18, amplitude: (240 + rng() * 150) * activityScale },
-          { centerMin: 14 * 60 + 8 + Math.round(rng() * 58), widthMin: 40 + rng() * 24, amplitude: (470 + rng() * 220) * activityScale },
-          { centerMin: 16 * 60 + 2 + Math.round(rng() * 64), widthMin: 30 + rng() * 20, amplitude: (290 + rng() * 170) * activityScale },
-          { centerMin: 18 * 60 + 6 + Math.round(rng() * 48), widthMin: 26 + rng() * 16, amplitude: (135 + rng() * 90) * activityScale }
-        ];
-
-        const stressEvents = [];
-        const stressCount = 1 + Math.floor(rng() * 2);
-        for (let i = 0; i < stressCount; i += 1) {
-          stressEvents.push({
-            centerMin: 10 * 60 + 30 + i * 125 + Math.round(rng() * 55),
-            widthMin: 24 + rng() * 18,
-            magnitude: 0.22 + rng() * 0.28 + patient.sleepFragility * 0.10
-          });
-        }
-
-        const wakeBursts = [];
-        const wakeBurstCount = 2 + Math.floor(patient.sleepFragility * 2.4 + rng() * 2);
-        for (let i = 0; i < wakeBurstCount; i += 1) {
-          wakeBursts.push({
-            startMin: 70 + i * 78 + Math.round(rng() * 34),
-            durationMin: 4 + Math.round(rng() * 6 + patient.sleepFragility * 3)
-          });
-        }
-
-        const desatEvents = [];
-        const preferredCenters = [155, 248, 321, 372];
-        preferredCenters.forEach((baseCenter, index) => {
-          const probability = 0.24 + patient.spo2Risk * 0.58 - index * 0.05;
-          if (baseCenter < sleepDurationMin - 25 && rng() < probability) {
-            desatEvents.push({
-              centerMin: baseCenter + Math.round((rng() - 0.5) * 22),
-              widthMin: 8 + rng() * 8 + patient.spo2Risk * 3,
-              depth: 2.8 + patient.spo2Risk * 2.8 + rng() * 1.4
-            });
-          }
-        });
-        if (!desatEvents.length) {
-          desatEvents.push({
-            centerMin: Math.min(sleepDurationMin - 30, 218),
-            widthMin: 12,
-            depth: 3.8 + patient.spo2Risk * 1.6
-          });
-        }
-
-        const stageSegments = buildSleepStages(sleepDurationMin, rng);
-        const sleepStats = buildSleepStats(sleepDurationMin, stageSegments, wakeBursts);
-
-        const schedule = {
-          dayStartMs: normalizedDayStart,
-          sleepStartMin,
-          sleepDurationMin,
-          activityWindows,
-          stressEvents,
-          wakeBursts,
-          desatEvents,
-          stageSegments,
-          sleepStats
-        };
-
-        scheduleCache.set(key, schedule);
-        return schedule;
-      }
-
-      function buildSleepStages(durationMin, rng) {
-        const stages = [];
-        let cursor = 0;
-        let cycle = 0;
-        while (cursor < durationMin - 18) {
-          const remaining = durationMin - cursor;
-          const cycleLen = Math.min(remaining, 84 + rng() * 20);
-          const deepShare = clamp(0.24 - cycle * 0.04 + rng() * 0.03, 0.06, 0.28);
-          const remShare = clamp(0.14 + cycle * 0.035 + rng() * 0.025, 0.12, 0.30);
-          const lightLeadShare = clamp(0.28 + rng() * 0.05, 0.24, 0.34);
-
-          const deepLen = cycle < 4 ? Math.round(cycleLen * deepShare) : Math.round(cycleLen * 0.08);
-          const remLen = Math.round(cycleLen * remShare);
-          const lightLeadLen = Math.round(cycleLen * lightLeadShare);
-          let lightTailLen = Math.round(cycleLen) - deepLen - remLen - lightLeadLen;
-          if (lightTailLen < 12) {
-            lightTailLen = 12;
-          }
-
-          const pieces = [
-            { stage: "light", durationMin: lightLeadLen },
-            { stage: "deep", durationMin: deepLen },
-            { stage: "light", durationMin: lightTailLen },
-            { stage: "rem", durationMin: remLen }
-          ];
-
-          pieces.forEach((piece) => {
-            if (piece.durationMin <= 0 || cursor >= durationMin) {
-              return;
-            }
-            const actualDuration = Math.min(piece.durationMin, durationMin - cursor);
-            stages.push({
-              stage: piece.stage,
-              startMin: cursor,
-              endMin: cursor + actualDuration
-            });
-            cursor += actualDuration;
-          });
-
-          cycle += 1;
-        }
-
-        if (cursor < durationMin) {
-          stages.push({
-            stage: "light",
-            startMin: cursor,
-            endMin: durationMin
-          });
-        }
-
-        return stages;
-      }
-
-      function buildSleepStats(durationMin, stageSegments, wakeBursts) {
-        const totals = { light: 0, deep: 0, rem: 0, wake: 0 };
-        for (let minute = 0; minute < durationMin; minute += 1) {
-          const wakeBurst = wakeBursts.find((burst) => minute >= burst.startMin && minute < burst.startMin + burst.durationMin);
-          if (wakeBurst) {
-            totals.wake += 1;
-            continue;
-          }
-
-          const segment = stageSegments.find((stage) => minute >= stage.startMin && minute < stage.endMin) || stageSegments[stageSegments.length - 1];
-          totals[segment.stage] += 1;
-        }
-
-        const totalSleepMin = totals.light + totals.deep + totals.rem;
-        return {
-          totalSleepMin,
-          wasoMin: totals.wake,
-          fragmentationCount: wakeBursts.length,
-          swsRatio: totalSleepMin ? totals.deep / totalSleepMin : 0,
-          remRatio: totalSleepMin ? totals.rem / totalSleepMin : 0
-        };
-      }
-
-      function getSleepContext(timeMs) {
-        const dayStart = startOfDayMs(timeMs);
-        const schedules = [getDaySchedule(dayStart - DAY_MS), getDaySchedule(dayStart)];
-
-        for (const schedule of schedules) {
-          const sleepStartMs = schedule.dayStartMs + schedule.sleepStartMin * MINUTE_MS;
-          const sleepEndMs = sleepStartMs + schedule.sleepDurationMin * MINUTE_MS;
-          if (timeMs < sleepStartMs || timeMs > sleepEndMs) {
-            continue;
-          }
-
-          const relMin = (timeMs - sleepStartMs) / MINUTE_MS;
-          const wakeBurst = schedule.wakeBursts.find((burst) => relMin >= burst.startMin && relMin < burst.startMin + burst.durationMin);
-          const stage = wakeBurst ? "wake" : getStageAt(schedule.stageSegments, relMin);
-          return { inSleep: true, stage, relMin, schedule };
-        }
-
-        return { inSleep: false, stage: "wake", relMin: 0, schedule: null };
-      }
-
-      function getStageAt(stageSegments, relMin) {
-        const segment = stageSegments.find((stage) => relMin >= stage.startMin && relMin < stage.endMin);
-        return segment ? segment.stage : stageSegments[stageSegments.length - 1].stage;
-      }
-
-      function generateSnapshot(sourceMs) {
-        const endMs = sourceMs - DISPLAY_DELAY_MS;
-        const startMs = endMs - DAY_MS;
-        const samples = [];
-        let prevState = null;
-        let minuteIndex = 0;
-
-        for (let timeMs = startMs; timeMs <= endMs; timeMs += RAW_SAMPLE_MS) {
-          const sample = simulatePoint(timeMs, prevState, minuteIndex);
-          samples.push(sample);
-          prevState = sample;
-          minuteIndex += 1;
-        }
-
-        const chartSamples = downsampleSamples(samples, CHART_SAMPLE_MS);
-
-        return {
-          sourceMs,
-          startMs,
-          endMs,
-          stepMs: RAW_SAMPLE_MS,
-          samples,
-          chartSamples,
-          series: {
-            hr: chartSamples.map((sample) => sample.hr),
-            hrv: chartSamples.map((sample) => sample.hrv),
-            spo2: chartSamples.map((sample) => sample.spo2),
-            temp: chartSamples.map((sample) => sample.temp),
-            activity: chartSamples.map((sample) => sample.activity)
-          },
-          metrics: computeMetrics(samples, startMs, endMs, RAW_SAMPLE_MS)
-        };
-      }
-
-      function downsampleSamples(samples, intervalMs) {
-        const every = Math.max(1, Math.round(intervalMs / RAW_SAMPLE_MS));
-        return samples.filter((sample, index) => index % every === 0 || index === samples.length - 1);
-      }
-
-      function simulatePoint(timeMs, prevState, minuteIndex) {
-        const sleep = getSleepContext(timeMs);
-        const daySchedule = getDaySchedule(startOfDayMs(timeMs));
-        const date = new Date(timeMs);
-        const minuteOfDay = date.getHours() * 60 + date.getMinutes();
-
-        const activityTarget = computeActivityTarget(timeMs, minuteOfDay, daySchedule, sleep, minuteIndex);
-        const activity = clamp(
-          prevState
-            ? prevState.activity + (activityTarget - prevState.activity) * (sleep.inSleep ? 0.42 : 0.34)
-            : activityTarget,
-          0,
-          1126
-        );
-        const activityNorm = clamp(activity / 920, 0, 1.35);
-        const stressTarget = computeStressTarget(minuteOfDay, daySchedule, activityNorm, minuteIndex);
-        const stress = clamp(
-          prevState
-            ? prevState.stress + (stressTarget - prevState.stress) * 0.18
-            : stressTarget,
-          0,
-          1.35
-        );
-        const desatDrop = computeDesaturationDrop(sleep);
-        const hrTarget = computeHeartRateTarget(timeMs, minuteOfDay, activityNorm, stress, sleep, desatDrop, minuteIndex);
-        const hrvTarget = computeHrvTarget(timeMs, minuteOfDay, activityNorm, stress, sleep, desatDrop, minuteIndex);
-        const spo2Target = computeSpo2Target(timeMs, activityNorm, sleep, desatDrop, minuteIndex);
-        const tempTarget = computeTempTarget(timeMs, minuteOfDay, activityNorm, stress, sleep, minuteIndex);
-
-        const hr = clamp(
-          prevState
-            ? prevState.hr + (hrTarget - prevState.hr) * (sleep.inSleep ? 0.24 : 0.28)
-            : hrTarget,
-          50,
-          108
-        );
-        const hrv = clamp(
-          prevState
-            ? prevState.hrv + (hrvTarget - prevState.hrv) * (sleep.inSleep ? 0.18 : 0.16)
-            : hrvTarget,
-          22,
-          88
-        );
-        const spo2 = clamp(
-          prevState
-            ? prevState.spo2 + (spo2Target - prevState.spo2) * (sleep.inSleep ? 0.44 : 0.34)
-            : spo2Target,
-          90,
-          99.2
-        );
-        const temp = clamp(
-          prevState
-            ? prevState.temp + (tempTarget - prevState.temp) * (sleep.inSleep ? 0.07 : 0.085)
-            : tempTarget,
-          36.3,
-          37.3
-        );
-
-        return {
-          timeMs,
-          hr,
-          hrv,
-          spo2,
-          temp,
-          activity,
-          stress,
-          desatDrop,
-          inSleep: sleep.inSleep,
-          sleepStage: sleep.stage
-        };
-      }
-
-      function computeActivityTarget(timeMs, minuteOfDay, daySchedule, sleep, minuteIndex) {
-        if (sleep.inSleep) {
-          if (sleep.stage === "wake") {
-            const wakeTexture = 18 + 40 * positiveNoise(minuteIndex / 2.8, 11) + 18 * Math.max(0, Math.sin((sleep.relMin + 10) / 7));
-            return clamp(wakeTexture, 12, 104);
-          }
-          const twitch = sleep.stage === "rem" ? 6 + 8 * positiveNoise(minuteIndex / 5.6, 17) : 1.5 + 2 * positiveNoise(minuteIndex / 8.2, 23);
-          return clamp(twitch, 0, 18);
-        }
-
-        const wakeRamp = 18 * sigmoid((minuteOfDay - 380) / 34);
-        const sleepDown = 14 * sigmoid((minuteOfDay - 1230) / 52);
-        let activity = Math.max(0, wakeRamp - sleepDown) * (0.82 + patient.mobilityReserve * 0.24);
-
-        daySchedule.activityWindows.forEach((window) => {
-          activity += window.amplitude * asymmetricPulse(minuteOfDay, window.centerMin, window.widthMin * 0.75, window.widthMin * 1.35);
-        });
-
-        const fragmentation = 74 * patient.gaitRisk * positiveNoise(minuteIndex / 4.9, 27);
-        const microBursts = (74 + 52 * patient.gaitRisk) * positiveNoise(minuteIndex / 6.4, 29);
-        const rollingTexture = 0.08 * smoothNoise(minuteIndex / 12.5, 31) + 0.05 * patient.gaitRisk * smoothNoise(minuteIndex / 4.2, 35);
-        return clamp(activity * (1 + rollingTexture) + microBursts + fragmentation, 0, 1126);
-      }
-
-      function computeStressTarget(minuteOfDay, daySchedule, activityNorm, minuteIndex) {
-        let stress = Math.max(0, activityNorm - 0.32) * 0.34 + 0.06 * positiveNoise(minuteIndex / 8.5, 37) + 0.04 * patient.sleepFragility;
-        daySchedule.stressEvents.forEach((event) => {
-          stress += event.magnitude * asymmetricPulse(minuteOfDay, event.centerMin, event.widthMin * 0.55, event.widthMin * 1.75);
-        });
-        return clamp(stress, 0, 1.35);
-      }
-
-      function computeDesaturationDrop(sleep) {
-        if (!sleep.inSleep || !sleep.schedule) {
-          return 0;
-        }
-        return sleep.schedule.desatEvents.reduce((sum, event) => {
-          return sum + event.depth * asymmetricPulse(sleep.relMin, event.centerMin, event.widthMin * 0.55, event.widthMin * 1.85);
-        }, 0);
-      }
-
-      function computeHeartRateTarget(timeMs, minuteOfDay, activityNorm, stress, sleep, desatDrop, minuteIndex) {
-        const texture = 0.84 * smoothNoise(minuteIndex / 4.8, 41) + 0.42 * smoothNoise(minuteIndex / 12.2, 43);
-        const instability = patient.rhrInstability * (0.22 * smoothNoise(minuteIndex / 6.5, 45) + 0.12 * smoothNoise(minuteIndex / 17.2, 47));
-        if (sleep.inSleep) {
-          const stageBase = {
-            deep: patient.hrRest - 5.1 + 1.2 * patient.sleepFragility,
-            light: patient.hrRest - 2.3 + 0.9 * patient.sleepFragility,
-            rem: patient.hrRest + 1.8 + 1.5 * patient.spo2Risk,
-            wake: patient.hrRest + 5.1 + 1.8 * patient.sleepFragility
-          }[sleep.stage] ?? patient.hrRest;
-          return clamp(stageBase + 1.02 * desatDrop + instability + texture, 49, 96);
-        }
-
-        const morningRise = 4.2 * sigmoid((minuteOfDay - 392) / 34);
-        const eveningEase = 2.8 * sigmoid((minuteOfDay - 1180) / 70);
-        const circadian = patient.hrRest + 6.8 + morningRise - eveningEase + 1.3 * Math.sin((minuteOfDay - 760) / 185);
-        return clamp(circadian + 11.4 * activityNorm + 5.1 * stress + instability + texture, 53, 102);
-      }
-
-      function computeHrvTarget(timeMs, minuteOfDay, activityNorm, stress, sleep, desatDrop, minuteIndex) {
-        const texture = 1.55 * smoothNoise(minuteIndex / 9.5, 49) + 0.78 * smoothNoise(minuteIndex / 22, 53);
-        const reservePenalty = 5.0 * patient.hrvRisk + 2.2 * patient.sleepFragility;
-        if (sleep.inSleep) {
-          const stageBase = {
-            deep: patient.hrvNightBase + 10.5,
-            light: patient.hrvNightBase + 2.8,
-            rem: patient.hrvNightBase - 5.8,
-            wake: patient.hrvNightBase - 14.5
-          }[sleep.stage] ?? patient.hrvNightBase;
-          return clamp(stageBase - 1.9 * desatDrop - 2.1 * stress - reservePenalty * 0.34 + texture, 24, 84);
-        }
-
-        const eveningRecovery = 6.6 * sigmoid((minuteOfDay - 1080) / 96) * (1 - patient.hrvRisk * 0.20);
-        const dayBase = patient.hrvDayBase + eveningRecovery - 1.8 * patient.hrvRisk;
-        return clamp(dayBase - 13.4 * activityNorm - 12.6 * stress + texture, 18, 60);
-      }
-
-      function computeSpo2Target(timeMs, activityNorm, sleep, desatDrop, minuteIndex) {
-        const baseline = patient.spo2Base + (sleep.inSleep ? -0.22 : 0.10);
-        const texture = 0.05 * smoothNoise(minuteIndex / 14.5, 59);
-        const remPenalty = sleep.stage === "rem" ? 0.25 + 0.25 * patient.spo2Risk : 0;
-        const exertionPenalty = activityNorm > 1 ? 0.08 * (activityNorm - 1) : 0;
-        const instability = patient.spo2Risk * 0.05 * positiveNoise(minuteIndex / 5.8, 63);
-        return clamp(baseline + texture - remPenalty - exertionPenalty - desatDrop - instability, 89.8, 99.1);
-      }
-
-      function computeTempTarget(timeMs, minuteOfDay, activityNorm, stress, sleep, minuteIndex) {
-        const phaseShift = 24 * patient.circadianDisruption;
-        const amplitude = 0.34 - 0.10 * patient.tempRisk;
-        const circadian = patient.tempSetPoint
-          - amplitude * Math.cos((2 * Math.PI * (minuteOfDay - 355 - phaseShift)) / 1440)
-          + 0.035 * Math.sin((2 * Math.PI * (minuteOfDay - 965 - phaseShift)) / 1440);
-        const sleepCooling = sleep.inSleep ? -(0.05 - 0.03 * patient.tempRisk) : 0;
-        const loadDrift = sleep.inSleep ? sleepCooling : 0.028 * activityNorm + 0.022 * stress;
-        const nightBlunting = sleep.inSleep ? patient.tempRisk * 0.045 : 0;
-        const texture = 0.010 * smoothNoise(minuteIndex / 18.5, 61);
-        return clamp(circadian + loadDrift + nightBlunting + texture, 36.25, 37.32);
-      }
-
-      function computeMetrics(samples, startMs, endMs, stepMs) {
-        const hrValues = samples.map((sample) => sample.hr);
-        const hrvValues = samples.map((sample) => sample.hrv);
-        const spo2Values = samples.map((sample) => sample.spo2);
-        const tempValues = samples.map((sample) => sample.temp);
-        const activityValues = samples.map((sample) => sample.activity);
-
-        const sleepSamples = samples.filter((sample) => sample.inSleep);
-        const awakeSamples = samples.filter((sample) => !sample.inSleep);
-        const daytimeAwakeSamples = awakeSamples.filter((sample) => {
-          const hour = new Date(sample.timeMs).getHours();
-          return hour >= 8 && hour <= 20;
-        });
-        const sleepOnlySamples = sleepSamples.length ? sleepSamples : samples;
-
-        const hrvStats = buildBasicStats(samples, "hrv");
-        const spo2Stats = buildBasicStats(sleepOnlySamples, "spo2");
-        const tempStats = buildBasicStats(samples, "temp");
-        const activityStats = buildBasicStats(samples, "activity");
-        const nightHrvHigh = pickExtrema(sleepOnlySamples, "hrv", "max");
-        const dayHrvLow = pickExtrema(daytimeAwakeSamples.length ? daytimeAwakeSamples : awakeSamples.length ? awakeSamples : samples, "hrv", "min");
-        const tempLow = pickExtrema(samples, "temp", "min");
-        const tempHigh = pickExtrema(samples, "temp", "max");
-        const activityPeak = pickExtrema(samples, "activity", "max");
-        const dips = findDesaturationEvents(samples);
-        const activeRun = findLongestRun(samples, (sample) => !sample.inSleep && sample.activity > 170);
-        const steadyBout = findLongestRun(samples, (sample) => !sample.inSleep && sample.activity >= 110 && sample.activity <= 320);
-
-        const totalSteps = activityValues.reduce((sum, value) => sum + value * (stepMs / (60 * MINUTE_MS)), 0);
-        const primarySleepSession = getPrimarySleepSession(startMs, endMs);
-        const tstHours = primarySleepSession ? primarySleepSession.schedule.sleepStats.totalSleepMin / 60 : 6.5;
-        const fragmentationIndex = primarySleepSession
-          ? primarySleepSession.schedule.sleepStats.fragmentationCount / Math.max(tstHours, 1) + primarySleepSession.schedule.sleepStats.wasoMin / 90
-          : 0.7;
-
-        const awakeHrvMean = average(awakeSamples.map((sample) => sample.hrv));
-        const sleepHrvMean = average(sleepOnlySamples.map((sample) => sample.hrv));
-        const sleepHrMean = average(sleepOnlySamples.map((sample) => sample.hr));
-        const restLikeSamples = awakeSamples.filter((sample) => sample.activity < 140);
-        const restingHrInstability = stdDev((restLikeSamples.length ? restLikeSamples : awakeSamples).map((sample) => sample.hr));
-        const sdnnProxy = clamp(stdDev(hrValues) * 2.7 + stdDev(hrvValues) * 0.38, 16, 62);
-        const circadianRecovery = sleepHrvMean - awakeHrvMean;
-
-        const timeBelow93 = sleepOnlySamples.filter((sample) => sample.spo2 < 93).length * (stepMs / MINUTE_MS);
-        const meanDipDepth = dips.length ? average(dips.map((dip) => Math.max(0, 96.8 - dip.minValue))) : 0;
-        const sleepSpo2Variability = stdDev(differences(sleepOnlySamples.map((sample) => sample.spo2)));
-        const desatBurden = 1.15 * dips.length + 0.16 * timeBelow93 + 0.9 * meanDipDepth + 8 * sleepSpo2Variability;
-
-        const eveningTempSamples = samples.filter((sample) => {
-          const hour = new Date(sample.timeMs).getHours();
-          return hour >= 18 && hour <= 22;
-        });
-        const nightTempSamples = samples.filter((sample) => {
-          const hour = new Date(sample.timeMs).getHours();
-          return sample.inSleep || hour <= 5;
-        });
-        const eveningTempMean = average(eveningTempSamples.map((sample) => sample.temp));
-        const nightTempMean = average(nightTempSamples.map((sample) => sample.temp));
-        const nocturnalCooling = Math.max(0, eveningTempMean - nightTempMean);
-        const circadianAmplitude = tempStats.maxValue - tempStats.minValue;
-        const tempInstability = stdDev(differences(tempValues)) * 18;
-        const peakDelayHours = Math.abs(minutesOfDay(tempHigh.timeMs) - 19.5 * 60) / 60;
-
-        const hourlyActivity = buildHourlyActivity(daytimeAwakeSamples, stepMs);
-        const hourlyValues = hourlyActivity.map((entry) => entry.steps);
-        const hourlyMean = average(hourlyValues);
-        const hourlyCv = hourlyMean ? stdDev(hourlyValues) / hourlyMean : 0;
-        const activityBouts = findActivityBouts(samples, 120);
-        const boutDurations = activityBouts.map((bout) => bout.durationMin);
-        const boutDurationCv = boutDurations.length > 1 ? stdDev(boutDurations) / average(boutDurations) : 0.9;
-        const activityConsistencyRisk = normalizeRisk(hourlyCv, 0.48, 1.08);
-        const mobilityDeclineRisk = normalizeRisk(patient.activityTarget - totalSteps, 0, 2600);
-        const gaitVariabilityIndex = clamp(0.58 * normalizeRisk(boutDurationCv, 0.35, 1.15) + 0.42 * normalizeRisk(hourlyCv, 0.48, 1.08), 0, 1);
-
-        const subscores = {
-          hrv: clamp(
-            0.40 * normalizeRisk(sleepHrvMean, 58, 34) +
-            0.20 * normalizeRisk(sdnnProxy, 42, 24) +
-            0.20 * normalizeRisk(circadianRecovery, 24, 10) +
-            0.10 * normalizeRisk(fragmentationIndex, 0.55, 1.55) +
-            0.10 * normalizeRisk(restingHrInstability, 1.4, 5.0),
-            0,
-            1
-          ),
-          spo2: clamp(
-            0.45 * normalizeRisk(desatBurden, 4.5, 15.5) +
-            0.30 * normalizeRisk(timeBelow93, 1.5, 18) +
-            0.25 * normalizeRisk(sleepSpo2Variability, 0.05, 0.32),
-            0,
-            1
-          ),
-          temp: clamp(
-            0.35 * normalizeRisk(nocturnalCooling, 0.18, 0.05) +
-            0.25 * normalizeRisk(circadianAmplitude, 0.40, 0.20) +
-            0.20 * normalizeRisk(tempInstability, 0.05, 0.20) +
-            0.20 * normalizeRisk(peakDelayHours, 0.5, 2.5),
-            0,
-            1
-          ),
-          gait: clamp(
-            0.45 * gaitVariabilityIndex +
-            0.30 * mobilityDeclineRisk +
-            0.25 * activityConsistencyRisk,
-            0,
-            1
-          )
-        };
-
-        const riskScore = 100 * clamp(
-          SUB_WEIGHTS.hrv * subscores.hrv +
-          SUB_WEIGHTS.spo2 * subscores.spo2 +
-          SUB_WEIGHTS.temp * subscores.temp +
-          SUB_WEIGHTS.gait * subscores.gait,
-          0,
-          1
-        );
-
-        const ringPoints = {
-          hrv: 100 * SUB_WEIGHTS.hrv * subscores.hrv,
-          spo2: 100 * SUB_WEIGHTS.spo2 * subscores.spo2,
-          temp: 100 * SUB_WEIGHTS.temp * subscores.temp,
-          gait: 100 * SUB_WEIGHTS.gait * subscores.gait
-        };
-
-        return {
-          hrv: {
-            current: hrvValues[hrvValues.length - 1],
-            avg: hrvStats.avg,
-            min: hrvStats.minValue,
-            max: hrvStats.maxValue,
-            nightHigh: nightHrvHigh.value,
-            nightHighTime: nightHrvHigh.timeMs,
-            dayLowTime: dayHrvLow.timeMs,
-            sleepMean: sleepHrvMean,
-            awakeMean: awakeHrvMean,
-            sdnnProxy,
-            circadianRecovery,
-            restingHrInstability
-          },
-          spo2: {
-            current: spo2Stats.avg,
-            avg: spo2Stats.avg,
-            min: spo2Stats.minValue,
-            max: spo2Stats.maxValue,
-            dips,
-            timeBelow93,
-            burden: desatBurden
-          },
-          temp: {
-            current: nocturnalCooling,
-            avg: tempStats.avg,
-            min: tempStats.minValue,
-            max: tempStats.maxValue,
-            minTime: tempLow.timeMs,
-            maxTime: tempHigh.timeMs,
-            amplitude: circadianAmplitude,
-            instability: tempInstability,
-            phaseDelayHours
-          },
-          activity: {
-            current: gaitVariabilityIndex,
-            totalSteps,
-            avg: activityStats.avg,
-            min: activityStats.minValue,
-            max: activityStats.maxValue,
-            activeWindowStart: steadyBout.length ? steadyBout[0].timeMs : activeRun.length ? activeRun[0].timeMs : null,
-            activeWindowEnd: steadyBout.length ? steadyBout[steadyBout.length - 1].timeMs : activeRun.length ? activeRun[activeRun.length - 1].timeMs : null,
-            peakTime: activityPeak.timeMs,
-            consistencyRisk: activityConsistencyRisk,
-            mobilityDeclineRisk
-          },
-          sleep: {
-            tstHours,
-            fragmentationIndex
-          },
-          subscores,
-          ringPoints,
-          riskScore
-        };
-      }
-
-      function normalizeRisk(value, healthy, risky) {
-        const denominator = risky - healthy;
-        if (!denominator) {
-          return 0;
-        }
-        return clamp((value - healthy) / denominator, 0, 1);
-      }
-
-      function minutesOfDay(timeMs) {
-        const date = new Date(timeMs);
-        return date.getHours() * 60 + date.getMinutes();
-      }
-
-      function buildHourlyActivity(samples, stepMs) {
-        const buckets = new Map();
-        samples.forEach((sample) => {
-          const hourKey = new Date(sample.timeMs).getHours();
-          buckets.set(hourKey, (buckets.get(hourKey) || 0) + sample.activity * (stepMs / (60 * MINUTE_MS)));
-        });
-        return [...buckets.entries()]
-          .sort((left, right) => left[0] - right[0])
-          .map(([hour, steps]) => ({ hour, steps }));
-      }
-
-      function findActivityBouts(samples, threshold) {
-        const bouts = [];
-        let current = [];
-
-        const flush = () => {
-          if (!current.length) {
-            return;
-          }
-          bouts.push({
-            startMs: current[0].timeMs,
-            endMs: current[current.length - 1].timeMs,
-            durationMin: current.length
-          });
-          current = [];
-        };
-
-        samples.forEach((sample) => {
-          if (!sample.inSleep && sample.activity >= threshold) {
-            current.push(sample);
-          } else {
-            flush();
-          }
-        });
-
-        flush();
-        return bouts;
-      }
-
-      function buildBasicStats(samples, key) {
-        const values = samples.map((sample) => sample[key]);
-        return {
-          avg: average(values),
-          minValue: Math.min(...values),
-          maxValue: Math.max(...values)
-        };
-      }
-
-      function average(values) {
-        if (!values.length) {
-          return 0;
-        }
-        return values.reduce((sum, value) => sum + value, 0) / values.length;
-      }
-
-      function stdDev(values) {
-        if (!values.length) {
-          return 0;
-        }
-        const mean = average(values);
-        const variance = average(values.map((value) => (value - mean) ** 2));
-        return Math.sqrt(variance);
-      }
-
-      function differences(values) {
-        const result = [];
-        for (let index = 1; index < values.length; index += 1) {
-          result.push(values[index] - values[index - 1]);
-        }
-        return result;
-      }
-
-      function quantile(values, q) {
-        if (!values.length) {
-          return 0;
-        }
-        const sorted = [...values].sort((a, b) => a - b);
-        const position = (sorted.length - 1) * q;
-        const left = Math.floor(position);
-        const right = Math.ceil(position);
-        if (left === right) {
-          return sorted[left];
-        }
-        return lerp(sorted[left], sorted[right], position - left);
-      }
-
-      function pickExtrema(samples, key, mode) {
-        return samples.reduce((best, sample) => {
-          if (!best) {
-            return { value: sample[key], timeMs: sample.timeMs };
-          }
-          if (mode === "min" ? sample[key] < best.value : sample[key] > best.value) {
-            return { value: sample[key], timeMs: sample.timeMs };
-          }
-          return best;
-        }, null);
-      }
-
-      function findDesaturationEvents(samples) {
-        const events = [];
-        let bucket = [];
-
-        const flush = () => {
-          if (!bucket.length) {
-            return;
-          }
-          const nadir = bucket.reduce((best, sample) => (sample.spo2 < best.spo2 ? sample : best), bucket[0]);
-          events.push({
-            timeMs: nadir.timeMs,
-            minValue: nadir.spo2,
-            startMs: bucket[0].timeMs,
-            endMs: bucket[bucket.length - 1].timeMs
-          });
-          bucket = [];
-        };
-
-        samples.forEach((sample) => {
-          if (sample.inSleep && sample.spo2 < 94.4) {
-            bucket.push(sample);
-          } else {
-            flush();
-          }
-        });
-
-        flush();
-        return events;
-      }
-
-      function findLongestRun(samples, predicate) {
-        let best = [];
-        let current = [];
-        samples.forEach((sample) => {
-          if (predicate(sample)) {
-            current.push(sample);
-            if (current.length > best.length) {
-              best = [...current];
-            }
-          } else {
-            current = [];
-          }
-        });
-        return best;
-      }
-
-      function getPrimarySleepSession(startMs, endMs) {
-        const sessions = [];
-        for (let day = startOfDayMs(startMs) - DAY_MS; day <= startOfDayMs(endMs); day += DAY_MS) {
-          const schedule = getDaySchedule(day);
-          const sleepStartMs = schedule.dayStartMs + schedule.sleepStartMin * MINUTE_MS;
-          const sleepEndMs = sleepStartMs + schedule.sleepDurationMin * MINUTE_MS;
-          const overlap = Math.max(0, Math.min(endMs, sleepEndMs) - Math.max(startMs, sleepStartMs));
-          if (overlap > 0) {
-            sessions.push({ schedule, overlap });
-          }
-        }
-
-        sessions.sort((left, right) => right.overlap - left.overlap);
-        return sessions[0] || null;
-      }
-
-      function renderSnapshot(snapshot, animateCharts) {
-        renderCharts(snapshot, animateCharts);
-        renderMetrics(snapshot.metrics, snapshot.endMs, snapshot.sourceMs);
-      }
-
-      function renderCharts(snapshot, animateCharts) {
-        renderChart(charts.hrv, snapshot.series.hrv, animateCharts);
-        renderChart(charts.spo2, snapshot.series.spo2, animateCharts);
-        renderChart(charts.temp, snapshot.series.temp, animateCharts);
-        renderChart(charts.activity, snapshot.series.activity, animateCharts);
-      }
-
-      function renderChart(chart, nextValues, animate) {
-        if (!chart.displayValues || !animate) {
-          chart.displayValues = [...nextValues];
-          drawChart(chart, chart.displayValues);
-          return;
-        }
-
-        if (chart.animationFrame) {
-          cancelAnimationFrame(chart.animationFrame);
-        }
-
-        const startValues = [...chart.displayValues];
-        const targetValues = [...nextValues];
-        const startTime = performance.now();
-
-        const tick = (now) => {
-          const progress = clamp((now - startTime) / ANIMATION_MS, 0, 1);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          chart.displayValues = startValues.map((value, index) => lerp(value, targetValues[index], eased));
-          drawChart(chart, chart.displayValues);
-          if (progress < 1) {
-            chart.animationFrame = requestAnimationFrame(tick);
-          } else {
-            chart.displayValues = targetValues;
-            drawChart(chart, chart.displayValues);
-            chart.animationFrame = null;
-          }
-        };
-
-        chart.animationFrame = requestAnimationFrame(tick);
-      }
-
-      function drawChart(chart, values) {
-        const points = buildPolylinePoints(values, chart.min, chart.max);
-        chart.line.setAttribute("points", points);
-        if (chart.area) {
-          chart.area.setAttribute("d", buildAreaPath(values, chart.min, chart.max));
-        }
-      }
-
-      function buildPolylinePoints(values, min, max) {
-        const stepX = SVG_WIDTH / (values.length - 1);
-        return values
-          .map((value, index) => `${(index * stepX).toFixed(2)},${valueToSvgY(value, min, max).toFixed(2)}`)
-          .join(" ");
-      }
-
-      function buildAreaPath(values, min, max) {
-        const stepX = SVG_WIDTH / (values.length - 1);
-        let d = `M0 ${SVG_HEIGHT}`;
-        values.forEach((value, index) => {
-          const x = (index * stepX).toFixed(2);
-          const y = valueToSvgY(value, min, max).toFixed(2);
-          d += ` L${x} ${y}`;
-        });
-        return `${d} L${SVG_WIDTH} ${SVG_HEIGHT} L0 ${SVG_HEIGHT} Z`;
-      }
-
-      function valueToSvgY(value, min, max) {
-        const tValue = (max - value) / (max - min);
-        return PLOT_TOP + tValue * (PLOT_BOTTOM - PLOT_TOP);
-      }
-
-      function bindChartHover(chart) {
-        const showHover = (clientX) => {
-          if (!chart.displayValues || !latestSnapshot) {
-            return;
-          }
-
-          const rect = chart.shell.getBoundingClientRect();
-          const px = clamp(clientX - rect.left, 0, rect.width);
-          const pct = rect.width ? px / rect.width : 0;
-          const position = pct * (chart.displayValues.length - 1);
-          const leftIndex = Math.floor(position);
-          const rightIndex = Math.min(chart.displayValues.length - 1, leftIndex + 1);
-          const localT = position - leftIndex;
-          const value = lerp(chart.displayValues[leftIndex], chart.displayValues[rightIndex], localT);
-          const dotPX = pct * rect.width;
-          const dotPY = (valueToSvgY(value, chart.min, chart.max) / SVG_HEIGHT) * rect.height;
-
-          chart.cursor.style.left = `${dotPX}px`;
-          chart.cursor.classList.add("visible");
-          chart.dot.style.left = `${dotPX}px`;
-          chart.dot.style.top = `${dotPY}px`;
-          chart.dot.classList.add("visible");
-
-          chart.tip.style.left = `${dotPX}px`;
-          chart.tip.style.top = `${dotPY}px`;
-          chart.tipTime.textContent = formatTime(latestSnapshot.startMs + pct * (latestSnapshot.endMs - latestSnapshot.startMs));
-          chart.tipVal.textContent = `${formatNumber(value, chart.decimals)} ${chart.unit}`;
-
-          let transform = dotPY < 36 ? "translate(-50%, 12px)" : "translate(-50%, calc(-100% - 8px))";
-          if (dotPX < 54) {
-            transform = transform.replace("translate(-50%", "translate(4px");
-          } else if (dotPX > rect.width - 54) {
-            transform = transform.replace("translate(-50%", "translate(calc(-100% - 4px)");
-          }
-          chart.tip.style.transform = transform;
-          chart.tip.classList.add("visible");
-        };
-
-        const hideHover = () => {
-          chart.cursor.classList.remove("visible");
-          chart.dot.classList.remove("visible");
-          chart.tip.classList.remove("visible");
-        };
-
-        chart.shell.addEventListener("mousemove", (event) => showHover(event.clientX));
-        chart.shell.addEventListener("mouseleave", hideHover);
-        chart.shell.addEventListener("touchmove", (event) => {
-          event.preventDefault();
-          showHover(event.touches[0].clientX);
-        }, { passive: false });
-        chart.shell.addEventListener("touchend", hideHover);
-      }
-
-      function renderMetrics(metrics, endMs, sourceMs) {
-        const nightGap = metrics.hrv.current - metrics.hrv.nightHigh;
-        const spo2DipTimes = metrics.spo2.dips.map((dip) => formatTime(dip.timeMs)).slice(0, 4);
-
-        ui.recordedValue.textContent = formatDateTime(endMs);
-        ui.lastPacket.textContent = template(t("lastPacketTpl"), {
-          delay: formatNumber(DISPLAY_DELAY_MS / MINUTE_MS, 0),
-          ingestTime: formatTime(sourceMs)
-        });
-        ui.riskScoreBadge.textContent = `${formatNumber(metrics.riskScore, 0)}%`;
-        ui.riskRingValue.textContent = formatNumber(metrics.riskScore, 1);
-
-        ui.heartTrend.innerHTML = template(t("heartTrendTpl"), {
-          arrow: nightGap >= 0 ? "↑" : "↓",
-          delta: formatNumber(Math.abs(nightGap), 1)
-        });
-        ui.heartTrend.innerHTML = template(t("heartTrendTpl"), {
-          arrow: nightGap >= 0 ? "&uarr;" : "&darr;",
-          delta: formatNumber(Math.abs(nightGap), 1)
-        });
-        ui.heartCurrent.textContent = formatNumber(metrics.hrv.current, 0);
-        ui.heartUnit.textContent = t("heartUnit");
-        ui.heartHint.textContent = template(t("heartHintTpl"), {
-          peakTime: formatTime(metrics.hrv.nightHighTime),
-          driftTime: formatTime(metrics.hrv.dayLowTime)
-        });
-        ui.heartAvg.textContent = `${formatNumber(metrics.hrv.avg, 1)} ms`;
-        ui.heartMin.textContent = `${formatNumber(metrics.hrv.min, 0)} ms`;
-        ui.heartMax.textContent = `${formatNumber(metrics.hrv.max, 0)} ms`;
-
-        ui.spo2Status.textContent = metrics.spo2.dips.length ? t("spo2StatusDip") : t("spo2Stable");
-        ui.spo2Current.textContent = formatNumber(metrics.spo2.current, 1);
-        ui.spo2Hint.textContent = metrics.spo2.dips.length
-          ? template(t("spo2HintTpl"), {
-            start: formatTime(metrics.spo2.dips[0].startMs),
-            end: formatTime(metrics.spo2.dips[metrics.spo2.dips.length - 1].endMs)
-          })
-          : t("spo2HintNone");
-        ui.spo2Chip.textContent = metrics.spo2.dips.length
-          ? template(t("spo2ChipTpl"), {
-            count: metrics.spo2.dips.length,
-            minutes: formatNumber(metrics.spo2.timeBelow93, 0)
-          })
-          : t("spo2ChipNone");
-        ui.spo2Avg.textContent = `${formatNumber(metrics.spo2.avg, 1)}%`;
-        ui.spo2Min.textContent = `${formatNumber(metrics.spo2.min, 1)}%`;
-        ui.spo2Max.textContent = `${formatNumber(metrics.spo2.max, 1)}%`;
-
-        if (metrics.temp.current < 0.08) {
-          ui.tempSide.innerHTML = t("tempSide");
-        } else if (metrics.temp.phaseDelayHours > 1.35) {
-          ui.tempSide.innerHTML = t("tempSideRise");
-        } else if (metrics.temp.current < 0.14) {
-          ui.tempSide.innerHTML = t("tempSideLow");
-        } else {
-          ui.tempSide.innerHTML = t("tempSideSettle");
-        }
-        ui.tempCurrent.textContent = formatNumber(metrics.temp.current, 2);
-        ui.tempHint.textContent = template(t("tempHintTpl"), {
-          lowTime: formatTime(metrics.temp.minTime),
-          peakTime: formatTime(metrics.temp.maxTime)
-        });
-        ui.tempAvg.innerHTML = `${formatNumber(metrics.temp.avg, 2)}&deg;C`;
-        ui.tempMin.innerHTML = `${formatNumber(metrics.temp.min, 2)}&deg;C`;
-        ui.tempMax.innerHTML = `${formatNumber(metrics.temp.max, 2)}&deg;C`;
-
-        if (metrics.activity.activeWindowStart && metrics.activity.activeWindowEnd) {
-          ui.gaitSide.innerHTML = template(t("gaitSideTpl"), {
-            start: formatTime(metrics.activity.activeWindowStart),
-            end: formatTime(metrics.activity.activeWindowEnd)
-          });
-        }
-        ui.gaitCurrent.textContent = formatNumber(metrics.activity.current, 2);
-        ui.gaitUnit.textContent = t("steps");
-        ui.gaitHint.textContent = template(t("gaitHintTpl"), {
-          peakTime: formatTime(metrics.activity.peakTime)
-        });
-        ui.gaitAvg.textContent = formatNumber(metrics.activity.avg, 1);
-        ui.gaitMin.textContent = formatNumber(metrics.activity.min, 0);
-        ui.gaitMax.textContent = formatNumber(metrics.activity.max, 0);
-
-        ui.hrvFoot.textContent = template(t("hrvFootTpl"), {
-          value: formatNumber(metrics.hrv.nightHigh, 0)
-        });
-        ui.spo2Foot.innerHTML = spo2DipTimes.length ? spo2DipTimes.join(" &middot; ") : t("spo2FootNone");
-        ui.tempFoot.innerHTML = template(t("tempFootTpl"), {
-          lowTime: formatTime(metrics.temp.minTime),
-          peakTime: formatTime(metrics.temp.maxTime)
-        });
-        ui.activityFoot.textContent = template(t("activityFootTpl"), {
-          time: formatTime(metrics.activity.peakTime)
-        });
-
-        updateSubscore("hrv", metrics.subscores.hrv);
-        updateSubscore("spo2", metrics.subscores.spo2);
-        updateSubscore("temp", metrics.subscores.temp);
-        updateSubscore("gait", metrics.subscores.gait);
-
-        ui.legendHrvPoints.textContent = `${formatNumber(metrics.ringPoints.hrv, 1)} pts`;
-        ui.legendSpo2Points.textContent = `${formatNumber(metrics.ringPoints.spo2, 1)} pts`;
-        ui.legendTempPoints.textContent = `${formatNumber(metrics.ringPoints.temp, 1)} pts`;
-        ui.legendGaitPoints.textContent = `${formatNumber(metrics.ringPoints.gait, 1)} pts`;
-
-        const stop1 = metrics.ringPoints.hrv;
-        const stop2 = stop1 + metrics.ringPoints.spo2;
-        const stop3 = stop2 + metrics.ringPoints.temp;
-        const stop4 = stop3 + metrics.ringPoints.gait;
-        ui.riskRing.style.background = `conic-gradient(${RING_COLORS.hrv} 0 ${stop1}%, ${RING_COLORS.spo2} ${stop1}% ${stop2}%, ${RING_COLORS.temp} ${stop2}% ${stop3}%, ${RING_COLORS.gait} ${stop3}% ${stop4}%, ${RING_COLORS.rest} ${stop4}% 100%)`;
-
-        const badgeTone = metrics.riskScore >= 72 ? "#a33532" : metrics.riskScore >= 50 ? "#8e5b19" : "#2c7a34";
-        ui.riskScoreBadge.style.color = badgeTone;
-      }
-
-      function updateSubscore(key, value) {
-        const pct = clamp(value * 100, 0, 100);
-        if (key === "hrv") {
-          ui.subHrvValue.textContent = formatNumber(value, 2);
-          ui.subHrvTrack.style.width = `${pct}%`;
-          return;
-        }
-        if (key === "spo2") {
-          ui.subSpo2Value.textContent = formatNumber(value, 2);
-          ui.subSpo2Track.style.width = `${pct}%`;
-          return;
-        }
-        if (key === "temp") {
-          ui.subTempValue.textContent = formatNumber(value, 2);
-          ui.subTempTrack.style.width = `${pct}%`;
-          return;
-        }
-        ui.subGaitValue.textContent = formatNumber(value, 2);
-        ui.subGaitTrack.style.width = `${pct}%`;
-      }
-
-      function formatNumber(value, decimals) {
-        return new Intl.NumberFormat(LOCALES[currentLang] || LOCALES.en, {
-          minimumFractionDigits: decimals,
-          maximumFractionDigits: decimals
-        }).format(value);
-      }
-
-      function formatTime(timeMs) {
-        return new Intl.DateTimeFormat(LOCALES[currentLang] || LOCALES.en, {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false
-        }).format(new Date(timeMs));
-      }
-
-      function formatDateTime(timeMs) {
-        return new Intl.DateTimeFormat(LOCALES[currentLang] || LOCALES.en, {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false
-        }).format(new Date(timeMs));
-      }
-    })();
+    }
+
+    document.querySelectorAll(".lang-btn").forEach((button) => {
+      button.addEventListener("click", () => {
+        currentLang = button.dataset.lang;
+        render();
+      });
+    });
+
+    render();
   </script>
 </body>
-
 </html>
