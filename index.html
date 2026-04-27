@@ -380,6 +380,11 @@
       padding: 10px 10px 6px;
     }
 
+    .plot-shell.no-grid {
+      background-image: none;
+      padding: 12px;
+    }
+
     .plot-foot {
       display: flex;
       justify-content: space-between;
@@ -420,6 +425,86 @@
 
     .tint-temp {
       background-color: #fcf8f7;
+    }
+
+    .legend-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      display: inline-block;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.65);
+    }
+
+    .heatmap-shell {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 12px;
+      height: 100%;
+    }
+
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: repeat(24, minmax(0, 1fr));
+      grid-auto-rows: minmax(0, 1fr);
+      gap: 4px;
+      height: 100%;
+    }
+
+    .heatmap-cell {
+      min-height: 22px;
+      border-radius: 6px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.62);
+    }
+
+    .timeline-shell {
+      display: grid;
+      gap: 12px;
+      align-content: center;
+      height: 100%;
+    }
+
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 64px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+    }
+
+    .timeline-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .timeline-track {
+      display: grid;
+      grid-template-columns: repeat(144, minmax(0, 1fr));
+      gap: 2px;
+    }
+
+    .timeline-cell {
+      min-height: 12px;
+      border-radius: 999px;
+      background: rgba(127, 144, 167, 0.08);
+    }
+
+    .timeline-cell.is-active {
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.58);
     }
 
     canvas {
@@ -649,7 +734,7 @@
             <div class="plot-name" id="fragChartLabel">Фрагментация</div>
             <div class="plot-note" id="fragChartNote"></div>
           </div>
-          <div class="plot-shell tint-frag"><canvas id="fragChart"></canvas></div>
+          <div class="plot-shell tint-frag no-grid"><div id="fragChart"></div></div>
           <div class="plot-foot">
             <span id="fragStartDay"></span>
             <span id="fragFoot"></span>
@@ -674,7 +759,7 @@
       <div class="col" style="--gap: 14px;">
         <article class="card plot-card">
           <div class="plot-head">
-            <div class="plot-name" id="swsChartLabel">SWS Ratio</div>
+            <div class="plot-name" id="swsChartLabel">Структура сна</div>
             <div class="plot-note" id="swsChartNote"></div>
           </div>
           <div class="plot-shell tint-sws"><canvas id="swsChart"></canvas></div>
@@ -687,10 +772,10 @@
 
         <article class="card plot-card">
           <div class="plot-head">
-            <div class="plot-name" id="remChartLabel">REM Ratio</div>
+            <div class="plot-name" id="remChartLabel">Лента событий</div>
             <div class="plot-note" id="remChartNote"></div>
           </div>
-          <div class="plot-shell tint-rem"><canvas id="remChart"></canvas></div>
+          <div class="plot-shell tint-rem no-grid"><div id="remChart" class="timeline-shell"></div></div>
           <div class="plot-foot">
             <span id="remStartDay"></span>
             <span id="remFoot"></span>
@@ -707,133 +792,165 @@
         locale: "ru-RU",
         title: "Панель оценки риска деменции",
         dashboardTag: "Панель оценки риска деменции",
-        pageTitle: "Обзор мониторинга",
-        recorded: "Записано",
+        pageTitle: "Мониторинг за последние 24 часа",
+        recorded: "Период",
         riskScore: "Риск",
         currentRisk: "Текущий риск",
         age: "Возраст",
-        avgPeriod: "Среднее за период",
+        avgPeriod: "Среднее 24ч",
         peak: "Пик",
         avg: "Среднее",
         min: "Мин",
         max: "Макс",
-        sleepDuration: "Длительность сна",
+        sleepDuration: "Сон за 24 часа",
         hrs: "ч",
-        riskTrendChart: "Динамика риска",
-        riskTrendChartNote: "оценка по rolling z-score сна, дыхания и восстановления",
-        hrvChartNote: "AR(1) ряд с влиянием сна, десатураций и температуры",
-        spo2ChartNote: "сатурация реагирует на OSA-подобные и алкогольные эпизоды",
-        sleepChartNote: "сон удлиняется на выходных и сокращается в стрессовые ночи",
+        riskTrendChart: "Риск за сутки",
+        riskTrendChartNote: "фон сразу показывает: спокойно, внимание или риск",
+        hrvChartNote: "пунктир — ваш обычный уровень, красная заливка — ниже нормы",
+        spo2ChartNote: "оранжевые и красные точки отмечают падения сатурации",
+        sleepChartNote: "столбцы показывают, когда сон набирался и хватило ли его",
         fragChart: "Фрагментация",
-        fragChartNote: "фрагментация растет при коротком сне, низком HRV и десатурации",
-        tempChart: "Температурное отклонение",
-        tempChartNote: "алкоголь и стресс повышают ночную температурную нестабильность",
-        swsChart: "Доля SWS",
-        swsChartNote: "недосып и фрагментация уменьшают долю глубокого сна",
-        remChart: "Доля REM",
-        remChartNote: "стресс и алкоголь сильнее всего просаживают REM",
-        dayN: (day) => `День ${day}`,
-        riskFoot: (days, value) => `среднее за последние ${days} дн. ${value}%`,
-        hrvFoot: (days, min, max) => `диапазон за ${days} дн. ${min}-${max} мс`,
-        spo2Foot: (min) => `минимум ${min}%`,
-        sleepFoot: (days, value) => `среднее за последние ${days} дн. ${value} ч`,
-        fragFoot: (value) => `текущее ${value}`,
-        tempFoot: (value) => `текущее ${value} °C`,
-        swsFoot: (value) => `среднее ${value}`,
-        remFoot: (value) => `среднее ${value}`,
-        packet: (total, window) => `Период наблюдения ${total} дней · rolling окно ${window} дней`,
-        summary: (days, tone, badNights, desatNights, hrvShift) => `Период ${days} дней показывает ${tone}, ${badNights} плохих ночей, ${desatNights} ночей с десатурацией и сдвиг HRV на ${hrvShift} мс от начала к концу периода.`,
-        riskHint: (delta, isAbove, days) => `Текущий риск ${isAbove ? "выше" : "ниже"} среднего первых ${days} дней на ${delta} пункта.`,
-        hrvTrend: (word, amount, days) => `${word} на ${amount} мс относительно первых ${days} дней`,
+        fragChartNote: "чем насыщеннее цвет, тем больше ночных прерываний",
+        tempChart: "Температура тела",
+        tempChartNote: "пунктир — обычная температура, красные зоны — перегрев",
+        swsChart: "Структура сна",
+        swsChartNote: "серый — легкий сон, зеленый — глубокий, фиолетовый — REM",
+        remChart: "Лента событий",
+        remChartNote: "стресс, плохой сон, алкоголь и десатурации объясняют скачки",
+        packet: (hours, step, points, windowHours) => `${hours} ч · шаг ${step} мин · ${points} точек · окно риска ${windowHours} ч`,
+        summary: (tone, stress, desat, alcohol, hrvShift) => `За последние 24 часа видно ${tone}: стрессовых окон ${stress}, десатураций ${desat}, алкогольных эпизодов ${alcohol}; HRV к концу окна изменился на ${hrvShift} мс.`,
+        riskHint: (delta, isAbove, hours) => `Текущий риск ${isAbove ? "выше" : "ниже"} среднего за первые ${hours} ч на ${delta} пункта.`,
+        hrvTrend: (word, amount, hours) => `${word} на ${amount} мс относительно первых ${hours} ч`,
         trendRising: "рост",
         trendEasing: "снижение",
         trendWorsening: "ухудшение",
         trendRecovering: "восстановление",
-        trendFlat: "без заметного сдвига относительно начала периода",
-        lowLoad: "низкая нагрузка",
-        moderateLoad: "умеренная нагрузка",
-        highLoad: "высокая нагрузка",
-        lowSummaryTone: "низкую нагрузку риска",
-        moderateSummaryTone: "умеренную нагрузку риска",
-        highSummaryTone: "высокую нагрузку риска",
-        hrvHint: (recent, max, window) => `Среднее HRV за последние ${window} дней составляет ${recent} мс, максимум периода ${max} мс.`,
-        spo2Stable: "десатурации редки",
-        spo2Dips: "есть выраженные провалы",
-        spo2HintSome: (nights, min, severe) => severe > 0
-          ? `${nights} ночей опускались ниже 95%, минимум ${min}%, из них ${severe} ночей ниже 92%.`
-          : `${nights} ночей опускались ниже 95%, минимум ${min}%.`,
-        spo2HintNone: "Ночей с падением сатурации ниже 95% не было.",
-        desatNights: (days) => `${days} ночей <95%`,
-        sleepSideNormal: "ритм сна<br>стабилен",
-        sleepSideCompressed: "соновая нагрузка<br>повышена",
-        sleepHint: (days, frag) => `${days} ночей были короче 6.5 часа; текущая фрагментация ${frag}.`
+        trendFlat: "без заметного сдвига относительно начала окна",
+        lowLoad: "спокойно",
+        moderateLoad: "нужно внимание",
+        highLoad: "зона риска",
+        lowSummaryTone: "спокойную картину",
+        moderateSummaryTone: "умеренную нагрузку",
+        highSummaryTone: "напряженную картину",
+        hrvHint: (recent, baseline, hours) => `Среднее HRV за последние ${hours} ч: ${recent} мс при обычном уровне ${baseline} мс.`,
+        spo2Stable: "провалов почти нет",
+        spo2Dips: "есть падения сатурации",
+        spo2HintSome: (minutes, min, severeMinutes) => severeMinutes > 0
+          ? `${minutes} мин ниже 95%, минимум ${min}%, из них ${severeMinutes} мин ниже 92%.`
+          : `${minutes} мин ниже 95%, минимум ${min}%.`,
+        spo2HintNone: "Падений сатурации ниже 95% за окно не было.",
+        desatMinutes: (minutes) => `${minutes} мин <95%`,
+        sleepSideNormal: "цель сна<br>достигнута",
+        sleepSideCompressed: "сна за сутки<br>не хватило",
+        sleepHint: (windowText, wakeups, goalText) => `Основное окно сна: ${windowText}; пробуждений ${wakeups}; ${goalText}.`,
+        sleepWindowMeta: "Окно сна",
+        wakeupsMeta: "Пробужд.",
+        goalMeta: "Цель",
+        goalMet: "цель выполнена",
+        goalMissed: "ниже цели",
+        riskFoot: (hours, value) => `последние ${hours} ч в среднем ${value}%`,
+        hrvFoot: (hours, min, max) => `за ${hours} ч: ${min}-${max} мс`,
+        spo2Foot: (min) => `минимум ${min}%`,
+        sleepFoot: (goal, wakeups) => `цель ${goal} ч · пробуждений ${wakeups}`,
+        fragFoot: (time) => `пик около ${time}`,
+        tempFoot: (baseline) => `обычно ${baseline} °C`,
+        swsFoot: (sws, rem) => `глубокий сон ${sws}% · REM ${rem}%`,
+        remFoot: (stress, desat) => `стресс ${stress} · десатурации ${desat}`,
+        eventStress: "Стресс",
+        eventSleep: "Сон",
+        eventAlcohol: "Алк",
+        eventDesat: "O2",
+        noSleep: "без сна",
+        calm: "спокойно",
+        medium: "внимание",
+        severe: "сильнее"
       },
       kk: {
         locale: "kk-KZ",
         title: "Деменция қаупін бағалау панелі",
         dashboardTag: "Деменция қаупін бағалау панелі",
-        pageTitle: "Мониторингке шолу",
-        recorded: "Жазылған уақыты",
+        pageTitle: "Соңғы 24 сағат мониторингі",
+        recorded: "Кезең",
         riskScore: "Қауіп",
         currentRisk: "Ағымдағы қауіп",
         age: "Жас",
-        avgPeriod: "Кезең бойынша орташа",
+        avgPeriod: "24 сағ орташа",
         peak: "Шың",
         avg: "Орташа",
         min: "Мин",
         max: "Макс",
-        sleepDuration: "Ұйқы ұзақтығы",
+        sleepDuration: "24 сағаттағы ұйқы",
         hrs: "сағ",
-        riskTrendChart: "Қауіп динамикасы",
-        riskTrendChartNote: "ұйқы, тыныс және қалпына келу rolling z-score бағасы",
-        hrvChartNote: "AR(1) қатары ұйқы, десатурация және температура әсерімен",
-        spo2ChartNote: "сатурация OSA-тәрізді және алкоголь эпизодтарына жауап береді",
-        sleepChartNote: "демалыс күндері ұйқы ұзарады, ал стресс түндерінде қысқарады",
+        riskTrendChart: "Тәуліктік қауіп",
+        riskTrendChartNote: "фон жағдайдың қаншалықты тыныш не қауіпті екенін бірден көрсетеді",
+        hrvChartNote: "үзік сызық — қалыпты деңгей, қызыл аймақ — нормадан төмен",
+        spo2ChartNote: "қызғылт және қызыл нүктелер сатурация түсуін белгілейді",
+        sleepChartNote: "бағандар ұйқының қашан жиналғанын және жеткілікті ме екенін көрсетеді",
         fragChart: "Фрагментация",
-        fragChartNote: "ұйқы қысқарғанда, HRV төмендегенде және десатурацияда фрагментация өседі",
-        tempChart: "Температура ауытқуы",
-        tempChartNote: "алкоголь мен стресс түнгі температура тұрақсыздығын күшейтеді",
-        swsChart: "SWS үлесі",
-        swsChartNote: "ұйқының жетіспеуі мен фрагментация терең ұйқы үлесін азайтады",
-        remChart: "REM үлесі",
-        remChartNote: "стресс пен алкоголь REM үлесін көбірек төмендетеді",
-        dayN: (day) => `${day}-күн`,
-        riskFoot: (days, value) => `соңғы ${days} күн орташа ${value}%`,
-        hrvFoot: (days, min, max) => `${days} күн ауқымы ${min}-${max} мс`,
-        spo2Foot: (min) => `ең төмені ${min}%`,
-        sleepFoot: (days, value) => `соңғы ${days} күн орташа ${value} сағ`,
-        fragFoot: (value) => `ағымдағысы ${value}`,
-        tempFoot: (value) => `ағымдағысы ${value} °C`,
-        swsFoot: (value) => `орташа ${value}`,
-        remFoot: (value) => `орташа ${value}`,
-        packet: (total, window) => `Бақылау кезеңі ${total} күн · rolling терезе ${window} күн`,
-        summary: (days, tone, badNights, desatNights, hrvShift) => `${days} күндік кезең ${tone}, ${badNights} нашар түнді, ${desatNights} десатурация түні мен кезең басынан соңына дейін HRV ${hrvShift} мс ығысуын көрсетеді.`,
-        riskHint: (delta, isAbove, days) => `Ағымдағы қауіп алғашқы ${days} күннің орташа мәнінен ${delta} тармаққа ${isAbove ? "жоғары" : "төмен"}.`,
-        hrvTrend: (word, amount, days) => `алғашқы ${days} күнмен салыстырғанда ${amount} мс ${word}`,
-        trendRising: "өсу",
-        trendEasing: "төмендеу",
-        trendWorsening: "нашарлау",
-        trendRecovering: "қалпына келу",
-        trendFlat: "кезең басымен салыстырғанда айқын өзгеріс жоқ",
-        lowLoad: "төмен жүктеме",
-        moderateLoad: "орташа жүктеме",
-        highLoad: "жоғары жүктеме",
-        lowSummaryTone: "төмен қауіп жүктемесін",
-        moderateSummaryTone: "орташа қауіп жүктемесін",
-        highSummaryTone: "жоғары қауіп жүктемесін",
-        hrvHint: (recent, max, window) => `Соңғы ${window} күндегі орташа HRV ${recent} мс, ал кезең максимумі ${max} мс.`,
-        spo2Stable: "десатурациялар сирек",
-        spo2Dips: "айқын төмендеулер бар",
-        spo2HintSome: (nights, min, severe) => severe > 0
-          ? `${nights} түнде мән 95%-дан төмен түсті, ең төмені ${min}%, оның ${severe} түні 92%-дан төмен болды.`
-          : `${nights} түнде мән 95%-дан төмен түсті, ең төмені ${min}% болды.`,
-        spo2HintNone: "95%-дан төмен сатурация түндері болған жоқ.",
-        desatNights: (days) => `${days} түн <95%`,
-        sleepSideNormal: "ұйқы ырғағы<br>тұрақты",
-        sleepSideCompressed: "ұйқы жүктемесі<br>жоғары",
-        sleepHint: (days, frag) => `${days} түнде ұйқы 6.5 сағаттан аз болды; ағымдағы фрагментация ${frag}.`
+        fragChartNote: "түстік қаныққан сайын түнгі бөліну көбірек",
+        tempChart: "Дене температурасы",
+        tempChartNote: "үзік сызық — әдеттегі температура, қызыл аймақ — қызу",
+        swsChart: "Ұйқы құрылымы",
+        swsChartNote: "сұр — жеңіл ұйқы, жасыл — терең, күлгін — REM",
+        remChart: "Оқиғалар лентасы",
+        remChartNote: "стресс, нашар ұйқы, алкоголь және десатурация өзгерістерді түсіндіреді",
+        packet: (hours, step, points, windowHours) => `${hours} сағ · қадам ${step} мин · ${points} нүкте · қауіп терезесі ${windowHours} сағ`,
+        summary: (tone, stress, desat, alcohol, hrvShift) => `Соңғы 24 сағатта ${tone}: стресс терезелері ${stress}, десатурациялар ${desat}, алкоголь эпизодтары ${alcohol}; HRV терезе соңына қарай ${hrvShift} мс өзгерді.`,
+        riskHint: (delta, isAbove, hours) => `Ағымдағы қауіп алғашқы ${hours} сағаттың орташа мәнінен ${delta} тармаққа ${isAbove ? "жоғары" : "төмен"}.`,
+        hrvTrend: (word, amount, hours) => `алғашқы ${hours} сағатпен салыстырғанда ${amount} мс ${word}`,
+        trendRising: "өсті",
+        trendEasing: "төмендеді",
+        trendWorsening: "нашарлады",
+        trendRecovering: "қалпына келді",
+        trendFlat: "терезе басымен салыстырғанда айқын өзгеріс жоқ",
+        lowLoad: "тыныш",
+        moderateLoad: "назар керек",
+        highLoad: "қауіп аймағы",
+        lowSummaryTone: "тыныш көрініс",
+        moderateSummaryTone: "орташа жүктеме",
+        highSummaryTone: "күшті жүктеме",
+        hrvHint: (recent, baseline, hours) => `Соңғы ${hours} сағаттағы орташа HRV ${recent} мс, қалыпты деңгей ${baseline} мс.`,
+        spo2Stable: "түсулер сирек",
+        spo2Dips: "сатурация төмендеулері бар",
+        spo2HintSome: (minutes, min, severeMinutes) => severeMinutes > 0
+          ? `${minutes} мин 95%-дан төмен, ең төмені ${min}%, оның ${severeMinutes} минуты 92%-дан төмен.`
+          : `${minutes} мин 95%-дан төмен, ең төмені ${min}%.`,
+        spo2HintNone: "Бұл терезеде 95%-дан төмен түсу болған жоқ.",
+        desatMinutes: (minutes) => `${minutes} мин <95%`,
+        sleepSideNormal: "ұйқы мақсаты<br>орындалды",
+        sleepSideCompressed: "тәуліктік ұйқы<br>жетпеді",
+        sleepHint: (windowText, wakeups, goalText) => `Негізгі ұйқы терезесі: ${windowText}; ояну саны ${wakeups}; ${goalText}.`,
+        sleepWindowMeta: "Ұйқы уақыты",
+        wakeupsMeta: "Ояну",
+        goalMeta: "Мақсат",
+        goalMet: "мақсат орындалды",
+        goalMissed: "мақсаттан төмен",
+        riskFoot: (hours, value) => `соңғы ${hours} сағ орташа ${value}%`,
+        hrvFoot: (hours, min, max) => `${hours} сағ ішінде: ${min}-${max} мс`,
+        spo2Foot: (min) => `минимум ${min}%`,
+        sleepFoot: (goal, wakeups) => `мақсат ${goal} сағ · ояну ${wakeups}`,
+        fragFoot: (time) => `шамамен ${time} кезінде шың`,
+        tempFoot: (baseline) => `әдетте ${baseline} °C`,
+        swsFoot: (sws, rem) => `терең ұйқы ${sws}% · REM ${rem}%`,
+        remFoot: (stress, desat) => `стресс ${stress} · десатурация ${desat}`,
+        eventStress: "Стресс",
+        eventSleep: "Ұйқы",
+        eventAlcohol: "Алк",
+        eventDesat: "O2",
+        noSleep: "ұйқы жоқ",
+        calm: "тыныш",
+        medium: "назар",
+        severe: "күшті"
       }
     };
+
+    const TOTAL_HOURS = 24;
+    const INTERVAL_MINUTES = 10;
+    const INTERVAL_MS = INTERVAL_MINUTES * 60 * 1000;
+    const POINTS = (TOTAL_HOURS * 60) / INTERVAL_MINUTES;
+    const SLEEP_GOAL_HOURS = 7.5;
+    const SLEEP_LOW_HOURS = 6.5;
+    const HEATMAP_COLUMNS = 24;
 
     let currentLang = "ru";
     let chartInstances = {};
@@ -873,6 +990,9 @@
     }
 
     function average(values) {
+      if (!values.length) {
+        return 0;
+      }
       return values.reduce((sum, value) => sum + value, 0) / values.length;
     }
 
@@ -886,11 +1006,11 @@
     }
 
     function minValue(values) {
-      return Math.min(...values);
+      return values.length ? Math.min(...values) : 0;
     }
 
     function maxValue(values) {
-      return Math.max(...values);
+      return values.length ? Math.max(...values) : 0;
     }
 
     function windowAverage(values, size, fromEnd = true) {
@@ -905,44 +1025,91 @@
       }).format(value);
     }
 
-    function formatRecordedDate() {
+    function alignToInterval(date, minutes) {
+      const aligned = new Date(date);
+      aligned.setSeconds(0, 0);
+      aligned.setMinutes(Math.floor(aligned.getMinutes() / minutes) * minutes);
+      return aligned;
+    }
+
+    function minuteOfDay(date) {
+      return date.getHours() * 60 + date.getMinutes();
+    }
+
+    function isWithinWindow(minute, start, end) {
+      if (start <= end) {
+        return minute >= start && minute < end;
+      }
+      return minute >= start || minute < end;
+    }
+
+    function formatDateTime(date) {
       return new Intl.DateTimeFormat(translations[currentLang].locale, {
         day: "2-digit",
         month: "short",
-        year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
         hour12: false
-      }).format(new Date());
+      }).format(date);
+    }
+
+    function formatTime(date) {
+      return new Intl.DateTimeFormat(translations[currentLang].locale, {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      }).format(date);
+    }
+
+    function countEpisodes(collection, predicate) {
+      let count = 0;
+      let active = false;
+
+      collection.forEach((item) => {
+        const matches = predicate(item);
+        if (matches && !active) {
+          count += 1;
+          active = true;
+        } else if (!matches) {
+          active = false;
+        }
+      });
+
+      return count;
     }
 
     function createProfile(age) {
+      const sleepStartMinute = randomInt(22 * 60, 23 * 60 + 20);
+      const sleepDuration = clamp(7.1 + randn_bm() * 0.55, 6.1, 8.3);
+
       return {
         age,
-        rollingWindow: randomInt(10, 14),
-        hrvBaseline: clamp(58 - (age - 45) * 0.28 + randn_bm() * 5, 40, 70),
-        sleepBaseline: clamp(7.15 + randn_bm() * 0.38, 6.5, 8.0),
-        spo2Baseline: clamp(96.9 - Math.max(age - 52, 0) * 0.035 + randn_bm() * 0.25, 95, 98),
-        swsBaseline: clamp(0.21 - Math.max(age - 45, 0) * 0.0015 + randn_bm() * 0.012, 0.15, 0.25),
-        remBaseline: clamp(0.21 + randn_bm() * 0.012, 0.18, 0.25),
-        tempBaseline: clamp(0.08 + Math.abs(randn_bm()) * 0.05, 0.0, 0.3),
+        rollingWindow: randomInt(18, 30),
+        sleepStartMinute,
+        sleepEndMinute: (sleepStartMinute + Math.round(sleepDuration * 60)) % (24 * 60),
+        hrvBaseline: clamp(58 - (age - 45) * 0.28 + randn_bm() * 4.5, 40, 72),
+        sleepBaseline: clamp(7.05 + randn_bm() * 0.45, 5.8, 8.7),
+        spo2Baseline: clamp(97.0 - Math.max(age - 55, 0) * 0.03 + randn_bm() * 0.2, 95, 98.6),
+        swsBaseline: clamp(0.21 - Math.max(age - 45, 0) * 0.0015 + randn_bm() * 0.01, 0.14, 0.25),
+        remBaseline: clamp(0.22 + randn_bm() * 0.012, 0.17, 0.26),
+        temperatureBaseAbs: clamp(36.45 + randn_bm() * 0.12, 36.1, 36.8),
         phi: {
-          hrv: randomFloat(0.82, 0.92),
-          sleep: randomFloat(0.78, 0.88),
-          spo2: randomFloat(0.84, 0.93),
-          fragmentation: randomFloat(0.75, 0.88),
-          sws: randomFloat(0.78, 0.9),
-          rem: randomFloat(0.78, 0.9),
-          temp: randomFloat(0.8, 0.9)
+          hrv: randomFloat(0.84, 0.92),
+          sleep: randomFloat(0.88, 0.95),
+          spo2: randomFloat(0.85, 0.94),
+          fragmentation: randomFloat(0.76, 0.88),
+          sws: randomFloat(0.74, 0.86),
+          rem: randomFloat(0.74, 0.86),
+          temp: randomFloat(0.84, 0.92)
         },
         sigma: {
-          hrv: 3.4,
-          sleep: 0.34,
-          spo2: 0.28,
-          fragmentation: 0.34,
-          sws: 0.018,
-          rem: 0.016,
-          temp: 0.05
+          hrv: 2.8,
+          sleep: 0.12,
+          spo2: 0.18,
+          fragmentation: 0.24,
+          sws: 0.012,
+          rem: 0.013,
+          temp: 0.035
         }
       };
     }
@@ -952,9 +1119,9 @@
       return clamp(next, min, max);
     }
 
-    function rollingStats(values, index, window, fallbackMean, fallbackStd, transform = (value) => value) {
+    function rollingStats(values, index, window, fallbackMean, fallbackStd) {
       const start = Math.max(0, index - window + 1);
-      const slice = values.slice(start, index + 1).map(transform);
+      const slice = values.slice(start, index + 1);
       const mean = slice.length > 1 ? average(slice) : fallbackMean;
       const std = slice.length > 1 ? Math.max(stdDev(slice), fallbackStd * 0.35, 0.0001) : fallbackStd;
       return { mean, std };
@@ -963,240 +1130,323 @@
     function annotateRisk(data, profile) {
       const window = profile.rollingWindow;
       const zAge = (profile.age - 47.5) / 10;
-
       const hrvValues = data.map((sample) => Math.max(sample.hrv, 30));
       const spo2Values = data.map((sample) => sample.spo2);
       const fragValues = data.map((sample) => sample.fragmentation);
       const sleepValues = data.map((sample) => sample.sleep_hours);
-      const tempValues = data.map((sample) => Math.abs(sample.temperature_dev));
+      const tempValues = data.map((sample) => Math.abs(sample.temperature - profile.temperatureBaseAbs));
       const swsValues = data.map((sample) => sample.sws_ratio);
       const remValues = data.map((sample) => sample.rem_ratio);
 
       data.forEach((sample, index) => {
-        const hrvStats = rollingStats(hrvValues, index, window, profile.hrvBaseline, 6);
-        const spo2Stats = rollingStats(spo2Values, index, window, profile.spo2Baseline, 0.9);
-        const fragStats = rollingStats(fragValues, index, window, 1.0, 0.7);
-        const sleepStats = rollingStats(sleepValues, index, window, profile.sleepBaseline, 0.8);
-        const tempStats = rollingStats(tempValues, index, window, Math.abs(profile.tempBaseline), 0.08);
-        const swsStats = rollingStats(swsValues, index, window, profile.swsBaseline, 0.035);
-        const remStats = rollingStats(remValues, index, window, profile.remBaseline, 0.03);
+        const hrvStats = rollingStats(hrvValues, index, window, profile.hrvBaseline, 5.2);
+        const spo2Stats = rollingStats(spo2Values, index, window, profile.spo2Baseline, 0.7);
+        const fragStats = rollingStats(fragValues, index, window, 1.0, 0.55);
+        const sleepStats = rollingStats(sleepValues, index, window, profile.sleepBaseline, 0.45);
+        const tempStats = rollingStats(tempValues, index, window, 0.08, 0.05);
+        const swsStats = rollingStats(swsValues, index, window, profile.swsBaseline * 0.5, 0.05);
+        const remStats = rollingStats(remValues, index, window, profile.remBaseline * 0.5, 0.05);
 
         const zLowHrv = (hrvStats.mean - Math.max(sample.hrv, 30)) / hrvStats.std;
         const zSpo2Desat = Math.max(0, (spo2Stats.mean - sample.spo2) / spo2Stats.std);
         const zSleepFragmentation = (sample.fragmentation - fragStats.mean) / fragStats.std;
-        const zShortTst = Math.max(0, (sleepStats.mean - sample.sleep_hours) / sleepStats.std);
-        const zTempInstability = Math.max(0, (Math.abs(sample.temperature_dev) - tempStats.mean) / tempStats.std);
+        const zShortSleep = Math.max(0, (sleepStats.mean - sample.sleep_hours) / sleepStats.std);
+        const zTempInstability = Math.max(0, (Math.abs(sample.temperature - profile.temperatureBaseAbs) - tempStats.mean) / tempStats.std);
         const zSwsRatio = (sample.sws_ratio - swsStats.mean) / swsStats.std;
         const zRemRatio = (sample.rem_ratio - remStats.mean) / remStats.std;
 
         let raw =
-          0.9 * zAge +
-          0.85 * zLowHrv +
-          0.8 * zSpo2Desat +
-          0.6 * zSleepFragmentation +
-          0.5 * zShortTst +
-          0.3 * zTempInstability -
-          0.25 * zSwsRatio -
-          0.15 * zRemRatio;
+          0.88 * zAge +
+          0.82 * zLowHrv +
+          0.78 * zSpo2Desat +
+          0.62 * zSleepFragmentation +
+          0.44 * zShortSleep +
+          0.34 * zTempInstability -
+          0.22 * zSwsRatio -
+          0.16 * zRemRatio +
+          (sample.events.stress ? 0.35 : 0) +
+          (sample.events.alcohol ? 0.46 : 0) +
+          (sample.events.badSleep ? 0.3 : 0);
 
         if (sample.spo2 < 92) {
-          raw += 0.8 + (92 - sample.spo2) * 0.35;
+          raw += 0.95 + (92 - sample.spo2) * 0.22;
         }
-        if (sample.sleep_hours < 5) {
-          raw += 0.55 + (5 - sample.sleep_hours) * 0.35;
+
+        if (sample.sleep_hours < SLEEP_LOW_HOURS) {
+          raw += 0.3 + (SLEEP_LOW_HOURS - sample.sleep_hours) * 0.22;
         }
 
         sample.risk = Math.round(clamp(100 * sigmoid(raw), 1, 99));
-        sample.z = {
-          age: round(zAge, 2),
-          lowHrv: round(zLowHrv, 2),
-          spo2Desat: round(zSpo2Desat, 2),
-          sleepFragmentation: round(zSleepFragmentation, 2),
-          shortTst: round(zShortTst, 2),
-          tempInstability: round(zTempInstability, 2),
-          swsRatio: round(zSwsRatio, 2),
-          remRatio: round(zRemRatio, 2)
-        };
       });
     }
 
-    function generateData(days = 60, age = 45) {
+    function generateData(points = POINTS, age = 45) {
       const profile = createProfile(age);
       const data = [];
+      const endTime = alignToInterval(new Date(), INTERVAL_MINUTES);
+      const startTime = new Date(endTime.getTime() - points * INTERVAL_MS);
 
       let prev = {
         hrv: profile.hrvBaseline,
-        sleep_hours: profile.sleepBaseline,
+        sleepHours: profile.sleepBaseline,
         spo2: profile.spo2Baseline,
-        fragmentation: clamp(0.9 + randn_bm() * 0.18, 0, 5),
-        sws_ratio: profile.swsBaseline,
-        rem_ratio: profile.remBaseline,
-        temperature_dev: profile.tempBaseline
+        fragmentation: clamp(0.8 + randn_bm() * 0.15, 0, 5),
+        sws: profile.swsBaseline,
+        rem: profile.remBaseline,
+        temperature: profile.temperatureBaseAbs
       };
 
       let stressCarry = 0;
-      let osaCarry = 0;
+      let alcoholCarry = 0;
+      let desatCarry = 0;
+      let badSleepCarry = 0;
+      let wakeups = 0;
+      let wasAsleep = false;
 
-      for (let index = 0; index < days; index += 1) {
-        const dayOfWeek = index % 7;
-        const isMonday = dayOfWeek === 0;
-        const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
+      for (let index = 0; index < points; index += 1) {
+        const timestamp = new Date(startTime.getTime() + (index + 1) * INTERVAL_MS);
+        const minute = minuteOfDay(timestamp);
+        const workHours = minute >= 8 * 60 && minute < 18 * 60;
+        const evening = minute >= 19 * 60 && minute < 24 * 60;
+        const inBedWindow = isWithinWindow(minute, profile.sleepStartMinute, profile.sleepEndMinute);
 
-        const badNight = Math.random() < 0.15;
-        const stressEvent = stressCarry > 0 || Math.random() < (isMonday ? 0.32 : 0.2);
-        const alcoholEvent = Math.random() < (isWeekend ? 0.18 : 0.06);
-        const osaLikeEvent = osaCarry > 0 || Math.random() < 0.1;
-
-        if (stressCarry === 0 && stressEvent) {
-          stressCarry = randomInt(1, 2);
+        if (stressCarry === 0 && workHours && Math.random() < (index > points * 0.55 ? 0.08 : 0.05)) {
+          stressCarry = randomInt(3, 8);
         }
-        if (osaCarry === 0 && osaLikeEvent) {
-          osaCarry = randomInt(1, 3);
+        if (alcoholCarry === 0 && evening && Math.random() < 0.045) {
+          alcoholCarry = randomInt(6, 12);
+        }
+        if (desatCarry === 0 && inBedWindow && Math.random() < 0.07) {
+          desatCarry = randomInt(2, 8);
+        }
+        if (badSleepCarry === 0 && inBedWindow && Math.random() < ((stressCarry > 0 || alcoholCarry > 0 || desatCarry > 0) ? 0.1 : 0.03)) {
+          badSleepCarry = randomInt(3, 7);
         }
 
-        const weekendSleepBonus = isWeekend ? randomFloat(0.5, 1.5) : 0;
-        const badSleepLoss = badNight ? randomFloat(1.5, 3.0) : 0;
-        const stressSleepLoss = stressEvent ? randomFloat(0.5, 1.5) : 0;
-        const alcoholSleepLoss = alcoholEvent ? randomFloat(0.2, 0.8) : 0;
-        const alcoholTempBoost = alcoholEvent ? randomFloat(0.2, 0.6) : 0;
-        const alcoholSpo2Dip = alcoholEvent ? randomFloat(0.2, 0.8) : 0;
-        const alcoholHrvDropPct = alcoholEvent ? randomFloat(0.1, 0.25) : 0;
-        const badHrvDropPct = badNight ? randomFloat(0.1, 0.2) : 0;
-        const stressHrvDropPct = stressEvent ? randomFloat(0.05, 0.15) : 0;
-        const osaSpo2Dip = osaLikeEvent ? randomFloat(2, 6) : 0;
-        const osaFragBoost = osaLikeEvent ? randomFloat(1.1, 2.0) : 0;
-        const badFragBoost = badNight ? randomFloat(1.0, 2.0) : 0;
-        const stressRemDrop = stressEvent ? randomFloat(0.015, 0.05) : 0;
-        const alcoholRemDrop = alcoholEvent ? randomFloat(0.04, 0.09) : 0;
-        const badSwsDrop = badNight ? randomFloat(0.03, 0.08) : 0;
+        const stressEvent = stressCarry > 0;
+        const alcoholEvent = alcoholCarry > 0;
+        const desatEvent = desatCarry > 0;
+        const badSleepEvent = badSleepCarry > 0;
+        const microAwake = inBedWindow && (badSleepEvent ? Math.random() < 0.22 : Math.random() < 0.05);
+        const asleep = inBedWindow && !microAwake;
 
-        const muSleep =
-          profile.sleepBaseline +
-          weekendSleepBonus -
-          badSleepLoss -
-          stressSleepLoss -
-          alcoholSleepLoss -
-          Math.max(0, prev.fragmentation - 1.1) * 0.18;
-        const sleepHours = ar1Step(prev.sleep_hours, muSleep, profile.phi.sleep, profile.sigma.sleep, 3.5, 10);
-        const shortSleepAmplifier = sleepHours < 5 ? 1.35 : 1;
+        if (!asleep && wasAsleep && inBedWindow) {
+          wakeups += 1;
+        }
+        wasAsleep = asleep;
 
-        const muSpo2 =
-          profile.spo2Baseline -
-          osaSpo2Dip -
-          alcoholSpo2Dip -
-          Math.max(0, prev.fragmentation - 1.4) * 0.12;
-        const spo2 = ar1Step(prev.spo2, muSpo2, profile.phi.spo2, profile.sigma.spo2, 88, 100);
-
-        const muTemp = clamp(
-          profile.tempBaseline +
-          alcoholTempBoost +
-          (stressEvent ? randomFloat(0.02, 0.08) : 0) +
-          (badNight ? randomFloat(0.02, 0.05) : 0) -
-          (isWeekend && !stressEvent && !alcoholEvent ? randomFloat(0.02, 0.08) : 0),
-          -0.3,
-          0.8
+        const sleepHours = ar1Step(
+          prev.sleepHours,
+          clamp(
+            profile.sleepBaseline +
+            (asleep ? 0.12 : -0.02) -
+            (badSleepEvent ? randomFloat(0.18, 0.55) : 0) -
+            (stressEvent ? randomFloat(0.08, 0.32) : 0) -
+            (alcoholEvent ? randomFloat(0.12, 0.45) : 0),
+            4.6,
+            9.1
+          ),
+          profile.phi.sleep,
+          profile.sigma.sleep,
+          4.4,
+          9.5
         );
-        const temperatureDev = ar1Step(prev.temperature_dev, muTemp, profile.phi.temp, profile.sigma.temp, -0.5, 1.0);
 
-        const hrvPenaltyPct = badHrvDropPct + stressHrvDropPct + alcoholHrvDropPct + (osaLikeEvent ? randomFloat(0.05, 0.12) : 0);
-        const muHrv =
-          profile.hrvBaseline * (1 - hrvPenaltyPct) -
-          Math.max(0, profile.sleepBaseline - sleepHours) * 4.5 * shortSleepAmplifier -
-          Math.max(0, profile.spo2Baseline - spo2) * 2.4 -
-          Math.max(0, temperatureDev - profile.tempBaseline) * 14 -
-          Math.max(0, prev.fragmentation - 1.0) * 1.8 +
-          (isWeekend && !stressEvent && !alcoholEvent ? 2.5 : 0);
-        const hrv = ar1Step(prev.hrv, muHrv, profile.phi.hrv, profile.sigma.hrv, 20, 120);
+        const spo2 = ar1Step(
+          prev.spo2,
+          clamp(
+            profile.spo2Baseline -
+            (asleep ? 0.1 : 0) -
+            (desatEvent ? randomFloat(1.8, 4.8) : 0) -
+            (alcoholEvent ? randomFloat(0.25, 0.8) : 0) -
+            (badSleepEvent ? randomFloat(0.05, 0.25) : 0),
+            89,
+            99
+          ),
+          profile.phi.spo2,
+          profile.sigma.spo2,
+          88.5,
+          99.5
+        );
 
-        let muFragmentation =
-          0.7 +
-          Math.max(0, profile.sleepBaseline - sleepHours) * 0.72 * shortSleepAmplifier +
-          Math.max(0, profile.hrvBaseline - hrv) / 18 +
-          Math.max(0, profile.spo2Baseline - spo2) * 0.35 +
-          Math.max(0, temperatureDev - profile.tempBaseline) * 0.6 +
-          badFragBoost +
-          (alcoholEvent ? randomFloat(0.4, 1.0) : 0) +
-          osaFragBoost;
+        const temperature = ar1Step(
+          prev.temperature,
+          clamp(
+            profile.temperatureBaseAbs +
+            (stressEvent ? randomFloat(0.05, 0.18) : 0) +
+            (alcoholEvent ? randomFloat(0.12, 0.28) : 0) +
+            (badSleepEvent ? randomFloat(0.03, 0.1) : 0) +
+            (asleep ? -0.05 : 0.03),
+            35.9,
+            37.7
+          ),
+          profile.phi.temp,
+          profile.sigma.temp,
+          35.8,
+          37.8
+        );
 
-        if (spo2 < 92) {
-          muFragmentation += 1.0 + (92 - spo2) * 0.35;
+        const hrv = ar1Step(
+          prev.hrv,
+          clamp(
+            profile.hrvBaseline +
+            (asleep ? randomFloat(2.5, 5.2) : 0) -
+            (stressEvent ? randomFloat(5, 11) : 0) -
+            (alcoholEvent ? randomFloat(6, 14) : 0) -
+            (badSleepEvent ? randomFloat(4, 10) : 0) -
+            Math.max(0, profile.spo2Baseline - spo2) * 3.1 -
+            Math.max(0, temperature - profile.temperatureBaseAbs) * 12,
+            22,
+            108
+          ),
+          profile.phi.hrv,
+          profile.sigma.hrv,
+          22,
+          110
+        );
+
+        let fragmentation = ar1Step(
+          prev.fragmentation,
+          clamp(
+            0.55 +
+            (asleep ? 0.2 : 0) +
+            (badSleepEvent ? randomFloat(1.0, 1.8) : 0) +
+            (desatEvent ? randomFloat(1.0, 2.1) : 0) +
+            (stressEvent ? randomFloat(0.3, 0.8) : 0) +
+            (alcoholEvent ? randomFloat(0.45, 0.95) : 0) +
+            Math.max(0, profile.hrvBaseline - hrv) / 18,
+            0,
+            5
+          ),
+          profile.phi.fragmentation,
+          profile.sigma.fragmentation,
+          0,
+          5
+        );
+
+        if (desatEvent && spo2 < 92) {
+          fragmentation = clamp(fragmentation + 0.3, 0, 5);
         }
 
-        let fragmentation = ar1Step(prev.fragmentation, muFragmentation, profile.phi.fragmentation, profile.sigma.fragmentation, 0, 5);
-        if (spo2 < 92) {
-          fragmentation = clamp(fragmentation + 0.4 + (92 - spo2) * 0.15, 0, 5);
-        }
+        let swsRatio = 0;
+        let remRatio = 0;
+        let otherSleepRatio = 0;
 
-        let muSws =
-          profile.swsBaseline -
-          Math.max(0, profile.sleepBaseline - sleepHours) * 0.016 * shortSleepAmplifier -
-          Math.max(0, fragmentation - 1.0) * 0.02 -
-          badSwsDrop -
-          (alcoholEvent ? randomFloat(0.02, 0.06) : 0) +
-          (isWeekend && sleepHours > profile.sleepBaseline ? 0.01 : 0);
-        if (sleepHours < 5) {
-          muSws -= 0.03;
-        }
-        const swsRatio = ar1Step(prev.sws_ratio, muSws, profile.phi.sws, profile.sigma.sws, 0.05, 0.35);
+        if (asleep) {
+          swsRatio = ar1Step(
+            prev.sws,
+            clamp(
+              profile.swsBaseline -
+              (badSleepEvent ? randomFloat(0.03, 0.08) : 0) -
+              (alcoholEvent ? randomFloat(0.02, 0.05) : 0) -
+              Math.max(0, fragmentation - 1.1) * 0.02,
+              0.05,
+              0.29
+            ),
+            profile.phi.sws,
+            profile.sigma.sws,
+            0.05,
+            0.3
+          );
 
-        let muRem =
-          profile.remBaseline -
-          Math.max(0, fragmentation - 1.0) * 0.016 -
-          stressRemDrop -
-          alcoholRemDrop -
-          (badNight ? randomFloat(0.01, 0.03) : 0) +
-          Math.max(0, sleepHours - profile.sleepBaseline) * 0.006;
-        if (sleepHours < 5) {
-          muRem -= 0.025;
+          remRatio = ar1Step(
+            prev.rem,
+            clamp(
+              profile.remBaseline -
+              (stressEvent ? randomFloat(0.02, 0.05) : 0) -
+              (alcoholEvent ? randomFloat(0.03, 0.07) : 0) -
+              Math.max(0, fragmentation - 1.0) * 0.015,
+              0.08,
+              0.32
+            ),
+            profile.phi.rem,
+            profile.sigma.rem,
+            0.08,
+            0.32
+          );
+
+          otherSleepRatio = clamp(1 - swsRatio - remRatio, 0.32, 0.86);
+          const total = swsRatio + remRatio + otherSleepRatio;
+          swsRatio /= total;
+          remRatio /= total;
+          otherSleepRatio /= total;
         }
-        const remRatio = ar1Step(prev.rem_ratio, muRem, profile.phi.rem, profile.sigma.rem, 0.1, 0.35);
 
         const sample = {
-          day: index + 1,
+          index,
+          timestamp,
           hrv: Math.round(hrv),
           sleep_hours: round(sleepHours, 2),
-          sleep: round(sleepHours, 2),
+          sleep: asleep ? 1 : 0,
           spo2: round(spo2, 1),
           fragmentation: round(fragmentation, 2),
           frag: round(fragmentation, 2),
-          sws_ratio: round(swsRatio, 2),
-          sws: round(swsRatio, 2),
-          rem_ratio: round(remRatio, 2),
-          rem: round(remRatio, 2),
-          temperature_dev: round(temperatureDev, 2),
-          temp: round(temperatureDev, 2),
+          sws_ratio: round(asleep ? swsRatio : 0, 2),
+          sws: round(asleep ? swsRatio : 0, 2),
+          rem_ratio: round(asleep ? remRatio : 0, 2),
+          rem: round(asleep ? remRatio : 0, 2),
+          other_sleep: round(asleep ? otherSleepRatio : 0, 2),
+          temperature: round(temperature, 2),
+          temp: round(temperature, 2),
+          asleep,
           risk: 0,
           events: {
-            badNight,
             stress: stressEvent,
+            badSleep: badSleepEvent,
             alcohol: alcoholEvent,
-            osaLike: osaLikeEvent
+            desat: desatEvent
           }
         };
 
         data.push(sample);
+
         prev = {
           hrv: sample.hrv,
-          sleep_hours: sample.sleep_hours,
+          sleepHours: sample.sleep_hours,
           spo2: sample.spo2,
           fragmentation: sample.fragmentation,
-          sws_ratio: sample.sws_ratio,
-          rem_ratio: sample.rem_ratio,
-          temperature_dev: sample.temperature_dev
+          sws: asleep ? sample.sws_ratio : prev.sws,
+          rem: asleep ? sample.rem_ratio : prev.rem,
+          temperature: sample.temperature
         };
 
         stressCarry = Math.max(0, stressCarry - 1);
-        osaCarry = Math.max(0, osaCarry - 1);
+        alcoholCarry = Math.max(0, alcoholCarry - 1);
+        desatCarry = Math.max(0, desatCarry - 1);
+        badSleepCarry = Math.max(0, badSleepCarry - 1);
       }
 
       annotateRisk(data, profile);
-      return { profile, data };
+
+      return {
+        profile,
+        data,
+        startTime,
+        endTime,
+        wakeups
+      };
     }
 
     function toneForRisk(risk) {
       if (risk < 34) return { name: "low", color: "#2c7a34", bg: "rgba(67, 160, 71, 0.1)" };
       if (risk < 67) return { name: "moderate", color: "#8e5b19", bg: "rgba(251, 140, 0, 0.1)" };
       return { name: "high", color: "#a33532", bg: "rgba(229, 57, 53, 0.1)" };
+    }
+
+    function describeTrend(current, baseline, comparisonHours, positiveWhenHigher = true) {
+      const delta = current - baseline;
+      const direction = delta > 0 ? "up" : delta < 0 ? "down" : "flat";
+      const amount = Math.abs(delta);
+
+      if (direction === "flat" || amount < 0.1) {
+        return t("trendFlat");
+      }
+
+      const word = positiveWhenHigher
+        ? direction === "up" ? t("trendRising") : t("trendEasing")
+        : direction === "up" ? t("trendWorsening") : t("trendRecovering");
+
+      return t("hrvTrend", word, format(amount, 1), format(comparisonHours, 1));
     }
 
     function setRiskTone(risk) {
@@ -1218,47 +1468,143 @@
           : t("highLoad");
     }
 
-    function describeTrend(current, baseline, comparisonDays, positiveWhenHigher = true) {
-      const delta = current - baseline;
-      const direction = delta > 0 ? "up" : delta < 0 ? "down" : "flat";
-      const amount = Math.abs(delta);
-      if (direction === "flat") {
-        return t("trendFlat");
+    function createVerticalGradient(chart, stops, fallback) {
+      const { ctx, chartArea } = chart;
+      if (!chartArea) {
+        return fallback;
       }
-      const word = positiveWhenHigher
-        ? direction === "up" ? t("trendRising") : t("trendEasing")
-        : direction === "up" ? t("trendWorsening") : t("trendRecovering");
-      return t("hrvTrend", word, format(amount, 1), comparisonDays);
+      const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+      stops.forEach(([offset, color]) => gradient.addColorStop(offset, color));
+      return gradient;
     }
 
+    function buildChartColor(key, alpha) {
+      const map = {
+        green: `rgba(67, 160, 71, ${alpha})`,
+        yellow: `rgba(251, 192, 45, ${alpha})`,
+        orange: `rgba(251, 140, 0, ${alpha})`,
+        red: `rgba(229, 57, 53, ${alpha})`,
+        slate: `rgba(127, 144, 167, ${alpha})`,
+        violet: `rgba(124, 97, 196, ${alpha})`,
+        warm: `rgba(141, 92, 29, ${alpha})`
+      };
+      return map[key];
+    }
+
+    const riskZonesPlugin = {
+      id: "riskZones",
+      beforeDraw(chart, args, options) {
+        if (!options || !options.zones || !chart.chartArea) {
+          return;
+        }
+
+        const { ctx, chartArea, scales: { y } } = chart;
+        ctx.save();
+        options.zones.forEach((zone) => {
+          const top = y.getPixelForValue(zone.to);
+          const bottom = y.getPixelForValue(zone.from);
+          ctx.fillStyle = zone.color;
+          ctx.fillRect(chartArea.left, top, chartArea.right - chartArea.left, bottom - top);
+        });
+        ctx.restore();
+      }
+    };
+
+    Chart.register(riskZonesPlugin);
+
     const AGE = randomInt(30, 65);
-    const DAYS = 60;
-    const simulation = generateData(DAYS, AGE);
+    const simulation = generateData(POINTS, AGE);
     const profile = simulation.profile;
     const data = simulation.data;
+    const startTime = simulation.startTime;
+    const endTime = simulation.endTime;
+    const wakeups = simulation.wakeups;
 
     const latest = data[data.length - 1];
     const comparisonWindow = Math.min(profile.rollingWindow, data.length);
+    const comparisonHours = round((comparisonWindow * INTERVAL_MINUTES) / 60, 1);
+    const labels = data.map((item) => formatTime(item.timestamp));
     const risks = data.map((item) => item.risk);
     const hrvs = data.map((item) => item.hrv);
     const spo2s = data.map((item) => item.spo2);
-    const sleeps = data.map((item) => item.sleep);
+    const sleepMetricValues = data.map((item) => item.sleep_hours);
+    const sleepBars = data.map((item) => item.sleep);
     const frags = data.map((item) => item.frag);
-    const swss = data.map((item) => item.sws);
-    const rems = data.map((item) => item.rem);
+    const swss = data.filter((item) => item.asleep).map((item) => item.sws);
+    const rems = data.filter((item) => item.asleep).map((item) => item.rem);
     const temps = data.map((item) => item.temp);
 
-    const desatNights = data.filter((item) => item.spo2 < 95).length;
-    const severeDesatNights = data.filter((item) => item.spo2 < 92).length;
-    const shortSleepDays = data.filter((item) => item.sleep < 6.5).length;
-    const badNightCount = data.filter((item) => item.events.badNight).length;
+    const desatIntervals = data.filter((item) => item.spo2 < 95).length;
+    const severeDesatIntervals = data.filter((item) => item.spo2 < 92).length;
+    const desatMinutes = desatIntervals * INTERVAL_MINUTES;
+    const severeDesatMinutes = severeDesatIntervals * INTERVAL_MINUTES;
+    const stressEpisodes = countEpisodes(data, (item) => item.events.stress);
+    const alcoholEpisodes = countEpisodes(data, (item) => item.events.alcohol);
+    const badSleepEpisodes = countEpisodes(data, (item) => item.events.badSleep);
+    const desatEpisodes = countEpisodes(data, (item) => item.spo2 < 95);
     const avgRisk = average(risks);
     const baselineRisk = windowAverage(risks, comparisonWindow, false);
     const recentRisk = windowAverage(risks, comparisonWindow, true);
     const riskShift = latest.risk - baselineRisk;
     const hrvShift = windowAverage(hrvs, comparisonWindow, true) - windowAverage(hrvs, comparisonWindow, false);
+    const totalSleepHours = round(sleepBars.filter(Boolean).length * INTERVAL_MINUTES / 60, 2);
+    const sleepStartSample = data.find((item) => item.asleep);
+    const sleepEndSample = [...data].reverse().find((item) => item.asleep);
+    const sleepWindowText = sleepStartSample && sleepEndSample
+      ? `${formatTime(sleepStartSample.timestamp)} - ${formatTime(new Date(sleepEndSample.timestamp.getTime() + INTERVAL_MS))}`
+      : "--:-- - --:--";
+    const sleepGoalReached = totalSleepHours >= SLEEP_GOAL_HOURS;
+    const averageSws = average(swss) * 100;
+    const averageRem = average(rems) * 100;
+    const maxFragIndex = frags.indexOf(maxValue(frags));
+    const peakFragTime = maxFragIndex >= 0 ? formatTime(data[maxFragIndex].timestamp) : formatTime(startTime);
+
+    let cumulativeSleep = 0;
+    const sleepBarColors = data.map((item) => {
+      if (!item.asleep) {
+        return "rgba(127, 144, 167, 0.14)";
+      }
+      cumulativeSleep += INTERVAL_MINUTES / 60;
+      if (cumulativeSleep < SLEEP_LOW_HOURS) {
+        return buildChartColor("red", 0.78);
+      }
+      if (cumulativeSleep < SLEEP_GOAL_HOURS) {
+        return buildChartColor("orange", 0.76);
+      }
+      return buildChartColor("green", 0.82);
+    });
+
+    function getAdaptiveTickStep(chartWidth) {
+      if (chartWidth <= 360) {
+        return 36;
+      }
+      if (chartWidth <= 520) {
+        return 24;
+      }
+      if (chartWidth <= 760) {
+        return 18;
+      }
+      if (chartWidth <= 1040) {
+        return 12;
+      }
+      return 9;
+    }
+
+    function axisTickLabel(index, chartWidth = window.innerWidth) {
+      const step = getAdaptiveTickStep(chartWidth);
+      return index % step === 0 || index === labels.length - 1 ? labels[index] : "";
+    }
+
+    function tooltipTitle(items) {
+      const raw = items[0].raw;
+      const sourceIndex = raw && typeof raw.originalIndex === "number"
+        ? raw.originalIndex
+        : items[0].dataIndex;
+      return formatDateTime(data[sourceIndex].timestamp);
+    }
 
     function setStaticLabels() {
+      document.documentElement.lang = currentLang === "kk" ? "kk" : "ru";
       document.title = t("title");
       document.getElementById("dashboardTag").textContent = t("dashboardTag");
       document.getElementById("pageTitle").textContent = t("pageTitle");
@@ -1276,9 +1622,9 @@
       document.getElementById("maxLabelSpo2").textContent = t("max");
       document.getElementById("sleepDurationLabel").textContent = t("sleepDuration");
       document.getElementById("sleepUnit").textContent = t("hrs");
-      document.getElementById("avgLabelSleep").textContent = t("avg");
-      document.getElementById("minLabelSleep").textContent = t("min");
-      document.getElementById("maxLabelSleep").textContent = t("max");
+      document.getElementById("avgLabelSleep").textContent = t("sleepWindowMeta");
+      document.getElementById("minLabelSleep").textContent = t("wakeupsMeta");
+      document.getElementById("maxLabelSleep").textContent = t("goalMeta");
       document.getElementById("riskTrendChartLabel").textContent = t("riskTrendChart");
       document.getElementById("riskTrendChartNote").textContent = t("riskTrendChartNote");
       document.getElementById("hrvChartNote").textContent = t("hrvChartNote");
@@ -1303,21 +1649,21 @@
           ? t("moderateSummaryTone")
           : t("highSummaryTone");
 
-      document.getElementById("recordedValue").textContent = formatRecordedDate();
-      document.getElementById("lastPacket").textContent = t("packet", data.length, profile.rollingWindow);
+      document.getElementById("recordedValue").textContent = `${formatDateTime(startTime)} - ${formatDateTime(endTime)}`;
+      document.getElementById("lastPacket").textContent = t("packet", TOTAL_HOURS, INTERVAL_MINUTES, POINTS, format(comparisonHours, 1));
       document.getElementById("riskScoreBadge").textContent = `${latest.risk}%`;
       document.getElementById("riskValue").textContent = format(latest.risk);
       document.getElementById("ageValue").textContent = AGE;
       document.getElementById("riskAvg").textContent = `${format(avgRisk, 1)}%`;
       document.getElementById("riskPeak").textContent = `${format(maxValue(risks))}%`;
-      document.getElementById("riskHint").textContent = t("riskHint", format(Math.abs(riskShift), 1), riskShift >= 0, comparisonWindow);
-      document.getElementById("riskFoot").textContent = t("riskFoot", comparisonWindow, format(recentRisk, 1));
+      document.getElementById("riskHint").textContent = t("riskHint", format(Math.abs(riskShift), 1), riskShift >= 0, format(comparisonHours, 1));
+      document.getElementById("riskFoot").textContent = t("riskFoot", format(comparisonHours, 1), format(recentRisk, 1));
       document.getElementById("summaryCopy").textContent = t(
         "summary",
-        data.length,
         summaryTone,
-        format(badNightCount),
-        format(desatNights),
+        format(stressEpisodes),
+        format(desatEpisodes),
+        format(alcoholEpisodes),
         format(hrvShift, 1)
       );
 
@@ -1325,105 +1671,313 @@
       document.getElementById("hrvTrend").textContent = describeTrend(
         windowAverage(hrvs, comparisonWindow, true),
         windowAverage(hrvs, comparisonWindow, false),
-        comparisonWindow,
+        comparisonHours,
         true
       );
       document.getElementById("hrvHint").textContent = t(
         "hrvHint",
         format(windowAverage(hrvs, comparisonWindow, true), 1),
-        format(maxValue(hrvs)),
-        comparisonWindow
+        format(profile.hrvBaseline, 1),
+        format(comparisonHours, 1)
       );
       document.getElementById("hrvAvg").textContent = `${format(average(hrvs), 1)} ms`;
       document.getElementById("hrvMin").textContent = `${format(minValue(hrvs))} ms`;
       document.getElementById("hrvMax").textContent = `${format(maxValue(hrvs))} ms`;
-      document.getElementById("hrvFoot").textContent = t("hrvFoot", data.length, format(minValue(hrvs)), format(maxValue(hrvs)));
+      document.getElementById("hrvFoot").textContent = t("hrvFoot", TOTAL_HOURS, format(minValue(hrvs)), format(maxValue(hrvs)));
 
       document.getElementById("spo2Current").textContent = format(latest.spo2, 1);
-      document.getElementById("spo2Status").textContent = severeDesatNights > 0 ? t("spo2Dips") : t("spo2Stable");
-      document.getElementById("spo2Hint").textContent = desatNights > 0
-        ? t("spo2HintSome", format(desatNights), format(minValue(spo2s), 1), format(severeDesatNights))
+      document.getElementById("spo2Status").textContent = desatMinutes > 0 ? t("spo2Dips") : t("spo2Stable");
+      document.getElementById("spo2Hint").textContent = desatMinutes > 0
+        ? t("spo2HintSome", format(desatMinutes), format(minValue(spo2s), 1), format(severeDesatMinutes))
         : t("spo2HintNone");
-      document.getElementById("spo2Chip").textContent = t("desatNights", format(desatNights));
+      document.getElementById("spo2Chip").textContent = t("desatMinutes", format(desatMinutes));
       document.getElementById("spo2Avg").textContent = `${format(average(spo2s), 1)}%`;
       document.getElementById("spo2Min").textContent = `${format(minValue(spo2s), 1)}%`;
       document.getElementById("spo2Max").textContent = `${format(maxValue(spo2s), 1)}%`;
       document.getElementById("spo2Foot").textContent = t("spo2Foot", format(minValue(spo2s), 1));
-      document.getElementById("spo2Dot").style.background = severeDesatNights > 0 ? "#fb8c00" : "#43a047";
+      document.getElementById("spo2Dot").style.background = severeDesatMinutes > 0
+        ? "#e53935"
+        : desatMinutes > 0 ? "#fb8c00" : "#43a047";
 
-      document.getElementById("sleepCurrent").textContent = format(latest.sleep, 2);
-      document.getElementById("sleepSide").innerHTML = shortSleepDays > Math.max(5, Math.round(data.length * 0.18))
-        ? t("sleepSideCompressed")
-        : t("sleepSideNormal");
-      document.getElementById("sleepHint").textContent = t("sleepHint", format(shortSleepDays), format(latest.frag, 2));
-      document.getElementById("sleepAvg").textContent = `${format(average(sleeps), 2)} ${t("hrs")}`;
-      document.getElementById("sleepMin").textContent = `${format(minValue(sleeps), 2)} ${t("hrs")}`;
-      document.getElementById("sleepMax").textContent = `${format(maxValue(sleeps), 2)} ${t("hrs")}`;
-      document.getElementById("sleepFoot").textContent = t("sleepFoot", comparisonWindow, format(windowAverage(sleeps, comparisonWindow, true), 2));
+      document.getElementById("sleepCurrent").textContent = format(totalSleepHours, 2);
+      document.getElementById("sleepSide").innerHTML = sleepGoalReached ? t("sleepSideNormal") : t("sleepSideCompressed");
+      document.getElementById("sleepHint").textContent = t(
+        "sleepHint",
+        sleepWindowText,
+        format(wakeups),
+        sleepGoalReached ? t("goalMet") : t("goalMissed")
+      );
+      document.getElementById("sleepAvg").textContent = sleepWindowText;
+      document.getElementById("sleepMin").textContent = format(wakeups);
+      document.getElementById("sleepMax").textContent = sleepGoalReached ? t("goalMet") : t("goalMissed");
+      document.getElementById("sleepFoot").textContent = t("sleepFoot", format(SLEEP_GOAL_HOURS, 1), format(wakeups));
 
-      document.getElementById("fragFoot").textContent = t("fragFoot", format(latest.frag, 2));
-      document.getElementById("tempFoot").textContent = t("tempFoot", format(latest.temp, 2));
-      document.getElementById("swsFoot").textContent = t("swsFoot", format(average(swss), 2));
-      document.getElementById("remFoot").textContent = t("remFoot", format(average(rems), 2));
+      document.getElementById("fragFoot").textContent = t("fragFoot", peakFragTime);
+      document.getElementById("tempFoot").textContent = t("tempFoot", format(profile.temperatureBaseAbs, 2));
+      document.getElementById("swsFoot").textContent = t("swsFoot", format(averageSws, 0), format(averageRem, 0));
+      document.getElementById("remFoot").textContent = t("remFoot", format(stressEpisodes), format(desatEpisodes));
 
-      const dayStart = t("dayN", 1);
-      const dayEnd = t("dayN", data.length);
+      const startLabel = formatTime(startTime);
+      const endLabel = formatTime(endTime);
+
       [
         "riskStartDay", "hrvStartDay", "spo2StartDay", "sleepStartDay",
         "fragStartDay", "tempStartDay", "swsStartDay", "remStartDay"
       ].forEach((id) => {
-        document.getElementById(id).textContent = dayStart;
+        document.getElementById(id).textContent = startLabel;
       });
       [
         "riskEndDay", "hrvEndDay", "spo2EndDay", "sleepEndDay",
         "fragEndDay", "tempEndDay", "swsEndDay", "remEndDay"
       ].forEach((id) => {
-        document.getElementById(id).textContent = dayEnd;
+        document.getElementById(id).textContent = endLabel;
       });
 
       setRiskTone(latest.risk);
     }
 
-    function buildChartColor(hex, alpha) {
-      const map = {
-        green: `rgba(67, 160, 71, ${alpha})`,
-        yellow: `rgba(251, 192, 45, ${alpha})`,
-        orange: `rgba(251, 140, 0, ${alpha})`,
-        red: `rgba(229, 57, 53, ${alpha})`,
-        slate: `rgba(127, 144, 167, ${alpha})`,
-        violet: `rgba(124, 97, 196, ${alpha})`
+    function createBaseOptions(yOptions = {}, tooltipFormatter = (context) => `${context.parsed.y}`, extraPlugins = {}) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          intersect: false,
+          mode: "index"
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            displayColors: false,
+            backgroundColor: "rgba(20, 28, 44, 0.92)",
+            titleColor: "#f0f4f8",
+            bodyColor: "#f0f4f8",
+            padding: 10,
+            cornerRadius: 8,
+            callbacks: {
+              title: tooltipTitle,
+              label: tooltipFormatter
+            }
+          },
+          ...extraPlugins
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false
+            },
+            border: {
+              display: false
+            },
+            ticks: {
+              autoSkip: false,
+              color: "#7f90a7",
+              maxRotation: 0,
+              callback(value, index) {
+                return axisTickLabel(index, this.chart.width);
+              }
+            }
+          },
+          y: {
+            grid: {
+              color: "rgba(127, 144, 167, 0.12)"
+            },
+            border: {
+              display: false
+            },
+            ticks: {
+              color: "#7f90a7"
+            },
+            ...yOptions
+          }
+        }
       };
-      return map[hex];
     }
 
-    function makeChart(id, key, colorKey, fillKey) {
-      const ctx = document.getElementById(id).getContext("2d");
+    function createChart(id, config) {
+      const canvas = document.getElementById(id);
+      const ctx = canvas.getContext("2d");
+      chartInstances[id] = new Chart(ctx, config);
+    }
 
-      chartInstances[id] = new Chart(ctx, {
+    function makeRiskChart() {
+      createChart("riskChart", {
         type: "line",
         data: {
-          labels: data.map((item) => t("dayN", item.day)),
+          labels,
           datasets: [{
-            data: data.map((item) => item[key]),
-            borderColor: buildChartColor(colorKey, 0.86),
-            backgroundColor: buildChartColor(fillKey, 0.12),
+            data: risks,
+            borderColor: buildChartColor("orange", 0.96),
+            backgroundColor: (context) => createVerticalGradient(context.chart, [
+              [0, "rgba(251, 140, 0, 0.34)"],
+              [1, "rgba(251, 140, 0, 0.02)"]
+            ], "rgba(251, 140, 0, 0.2)"),
             fill: true,
-            borderWidth: 2,
+            borderWidth: 2.4,
             pointRadius: 0,
             pointHoverRadius: 4,
             pointHoverBorderWidth: 2,
             pointHoverBackgroundColor: "#ffffff",
-            pointHoverBorderColor: buildChartColor(colorKey, 1),
-            tension: 0.35
+            pointHoverBorderColor: buildChartColor("orange", 1),
+            tension: 0.34
           }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: {
-            intersect: false,
-            mode: "index"
+          ...createBaseOptions(
+            {
+              min: 0,
+              max: 100,
+              ticks: {
+                color: "#7f90a7",
+                callback(value) {
+                  return `${value}%`;
+                }
+              }
+            },
+            (context) => `${format(context.parsed.y)}%`,
+            {
+              riskZones: {
+                zones: [
+                  { from: 0, to: 34, color: "rgba(67, 160, 71, 0.12)" },
+                  { from: 34, to: 67, color: "rgba(251, 140, 0, 0.12)" },
+                  { from: 67, to: 100, color: "rgba(229, 57, 53, 0.12)" }
+                ]
+              }
+            }
+          )
+        }
+      });
+    }
+
+    function makeHrvChart() {
+      createChart("hrvChart", {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              data: data.map(() => round(profile.hrvBaseline, 1)),
+              borderColor: buildChartColor("slate", 0.7),
+              borderDash: [5, 5],
+              borderWidth: 1.5,
+              pointRadius: 0,
+              fill: false
+            },
+            {
+              data: hrvs,
+              borderColor: buildChartColor("green", 0.96),
+              backgroundColor: buildChartColor("green", 0.14),
+              fill: {
+                target: 0,
+                above: "rgba(67, 160, 71, 0.08)",
+                below: "rgba(229, 57, 53, 0.16)"
+              },
+              borderWidth: 2.2,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+              pointHoverBorderWidth: 2,
+              pointHoverBackgroundColor: "#ffffff",
+              pointHoverBorderColor: buildChartColor("green", 1),
+              tension: 0.28
+            }
+          ]
+        },
+        options: createBaseOptions(
+          {
+            min: Math.max(20, Math.floor((minValue(hrvs) - 6) / 5) * 5),
+            max: Math.ceil((maxValue(hrvs) + 6) / 5) * 5,
+            ticks: {
+              color: "#7f90a7",
+              callback(value) {
+                return `${value} ms`;
+              }
+            }
           },
+          (context) => `${format(context.parsed.y)} ms`
+        )
+      });
+    }
+
+    function makeSpo2Chart() {
+      createChart("spo2Chart", {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              data: spo2s,
+              borderColor: buildChartColor("yellow", 0.96),
+              backgroundColor: buildChartColor("yellow", 0.12),
+              fill: false,
+              borderWidth: 2.1,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+              pointHoverBorderWidth: 2,
+              pointHoverBackgroundColor: "#ffffff",
+              pointHoverBorderColor: buildChartColor("yellow", 1),
+              tension: 0.24
+            },
+            {
+              type: "scatter",
+              data: data.map((item, index) => item.spo2 < 95 && item.spo2 >= 92 ? { x: labels[index], y: item.spo2, originalIndex: index } : null).filter(Boolean),
+              pointRadius: 3.5,
+              pointHoverRadius: 4.5,
+              pointBackgroundColor: buildChartColor("orange", 0.95),
+              pointBorderWidth: 0
+            },
+            {
+              type: "scatter",
+              data: data.map((item, index) => item.spo2 < 92 ? { x: labels[index], y: item.spo2, originalIndex: index } : null).filter(Boolean),
+              pointRadius: 4.2,
+              pointHoverRadius: 5,
+              pointBackgroundColor: buildChartColor("red", 0.95),
+              pointBorderWidth: 0
+            }
+          ]
+        },
+        options: createBaseOptions(
+          {
+            min: 90,
+            max: 100,
+            ticks: {
+              color: "#7f90a7",
+              callback(value) {
+                return `${value}%`;
+              }
+            }
+          },
+          (context) => `${format(context.parsed.y, 1)}%`
+        )
+      });
+    }
+
+    function makeSleepChart() {
+      createChart("sleepChart", {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [{
+            data: sleepBars,
+            backgroundColor: sleepBarColors,
+            borderRadius: 3,
+            borderSkipped: false,
+            barPercentage: 1,
+            categoryPercentage: 1
+          }]
+        },
+        options: {
+          ...createBaseOptions(
+            {
+              min: 0,
+              max: 1,
+              ticks: {
+                display: false
+              },
+              grid: {
+                display: false
+              }
+            },
+            (context) => context.parsed.y > 0 ? `${INTERVAL_MINUTES} мин сна` : t("noSleep")
+          ),
           plugins: {
             legend: { display: false },
             tooltip: {
@@ -1432,31 +1986,10 @@
               titleColor: "#f0f4f8",
               bodyColor: "#f0f4f8",
               padding: 10,
-              cornerRadius: 8
-            }
-          },
-          scales: {
-            x: {
-              grid: {
-                color: "rgba(127, 144, 167, 0.08)"
-              },
-              border: {
-                display: false
-              },
-              ticks: {
-                color: "#7f90a7",
-                maxTicksLimit: 6
-              }
-            },
-            y: {
-              grid: {
-                color: "rgba(127, 144, 167, 0.12)"
-              },
-              border: {
-                display: false
-              },
-              ticks: {
-                color: "#7f90a7"
+              cornerRadius: 8,
+              callbacks: {
+                title: tooltipTitle,
+                label: (context) => context.parsed.y > 0 ? `${INTERVAL_MINUTES} мин сна` : t("noSleep")
               }
             }
           }
@@ -1464,17 +1997,212 @@
       });
     }
 
+    function makeTempChart() {
+      createChart("tempChart", {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              data: data.map(() => round(profile.temperatureBaseAbs, 2)),
+              borderColor: buildChartColor("slate", 0.68),
+              borderDash: [5, 5],
+              borderWidth: 1.5,
+              pointRadius: 0,
+              fill: false
+            },
+            {
+              data: temps,
+              borderColor: buildChartColor("red", 0.9),
+              backgroundColor: buildChartColor("red", 0.12),
+              fill: {
+                target: 0,
+                above: "rgba(229, 57, 53, 0.18)",
+                below: "rgba(127, 144, 167, 0.08)"
+              },
+              borderWidth: 2.1,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+              pointHoverBorderWidth: 2,
+              pointHoverBackgroundColor: "#ffffff",
+              pointHoverBorderColor: buildChartColor("red", 1),
+              tension: 0.24
+            }
+          ]
+        },
+        options: createBaseOptions(
+          {
+            min: Math.floor((minValue(temps) - 0.15) * 10) / 10,
+            max: Math.ceil((maxValue(temps) + 0.15) * 10) / 10,
+            ticks: {
+              color: "#7f90a7",
+              callback(value) {
+                return `${value}°C`;
+              }
+            }
+          },
+          (context) => `${format(context.parsed.y, 2)} °C`
+        )
+      });
+    }
+
+    function makeStructureChart() {
+      createChart("swsChart", {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              data: data.map((item) => item.other_sleep),
+              borderColor: buildChartColor("slate", 0.72),
+              backgroundColor: buildChartColor("slate", 0.2),
+              fill: true,
+              stack: "sleep-structure",
+              pointRadius: 0,
+              borderWidth: 1.2,
+              tension: 0.24
+            },
+            {
+              data: data.map((item) => item.sws),
+              borderColor: buildChartColor("green", 0.9),
+              backgroundColor: buildChartColor("green", 0.28),
+              fill: true,
+              stack: "sleep-structure",
+              pointRadius: 0,
+              borderWidth: 1.5,
+              tension: 0.24
+            },
+            {
+              data: data.map((item) => item.rem),
+              borderColor: buildChartColor("violet", 0.92),
+              backgroundColor: buildChartColor("violet", 0.28),
+              fill: true,
+              stack: "sleep-structure",
+              pointRadius: 0,
+              borderWidth: 1.5,
+              tension: 0.24
+            }
+          ]
+        },
+        options: createBaseOptions(
+          {
+            stacked: true,
+            min: 0,
+            max: 1,
+            ticks: {
+              color: "#7f90a7",
+              callback(value) {
+                return `${Math.round(value * 100)}%`;
+              }
+            }
+          },
+          (context) => `${format(context.parsed.y * 100, 0)}%`
+        )
+      });
+    }
+
+    function heatmapColor(value) {
+      const ratio = clamp(value / 5, 0, 1);
+      const hue = 42 - ratio * 38;
+      const lightness = 96 - ratio * 42;
+      return `hsl(${hue} 88% ${lightness}%)`;
+    }
+
+    function renderHeatmap() {
+      const container = document.getElementById("fragChart");
+      container.innerHTML = "";
+
+      const shell = document.createElement("div");
+      shell.className = "heatmap-shell";
+
+      const legend = document.createElement("div");
+      legend.className = "legend-inline";
+      [
+        { label: t("calm"), color: "hsl(42 88% 92%)" },
+        { label: t("medium"), color: "hsl(18 88% 72%)" },
+        { label: t("severe"), color: "hsl(4 82% 56%)" }
+      ].forEach((item) => {
+        const legendItem = document.createElement("span");
+        legendItem.className = "legend-item";
+
+        const dot = document.createElement("i");
+        dot.className = "legend-dot";
+        dot.style.background = item.color;
+
+        const text = document.createElement("span");
+        text.textContent = item.label;
+
+        legendItem.append(dot, text);
+        legend.appendChild(legendItem);
+      });
+
+      const grid = document.createElement("div");
+      grid.className = "heatmap-grid";
+      grid.style.gridTemplateColumns = `repeat(${HEATMAP_COLUMNS}, minmax(0, 1fr))`;
+
+      data.forEach((item) => {
+        const cell = document.createElement("div");
+        cell.className = "heatmap-cell";
+        cell.style.background = heatmapColor(item.frag);
+        cell.title = `${formatDateTime(item.timestamp)} - ${format(item.frag, 2)}`;
+        grid.appendChild(cell);
+      });
+
+      shell.append(legend, grid);
+      container.appendChild(shell);
+    }
+
+    function renderTimeline() {
+      const container = document.getElementById("remChart");
+      container.innerHTML = "";
+
+      const lanes = [
+        { label: t("eventStress"), color: buildChartColor("red", 0.84), isActive: (item) => item.events.stress },
+        { label: t("eventSleep"), color: buildChartColor("orange", 0.84), isActive: (item) => item.events.badSleep },
+        { label: t("eventAlcohol"), color: buildChartColor("warm", 0.88), isActive: (item) => item.events.alcohol },
+        { label: t("eventDesat"), color: buildChartColor("red", 0.96), isActive: (item) => item.spo2 < 95 }
+      ];
+
+      lanes.forEach((lane) => {
+        const row = document.createElement("div");
+        row.className = "timeline-row";
+
+        const label = document.createElement("div");
+        label.className = "timeline-label";
+        label.textContent = lane.label;
+
+        const track = document.createElement("div");
+        track.className = "timeline-track";
+
+        data.forEach((item) => {
+          const cell = document.createElement("div");
+          cell.className = "timeline-cell";
+
+          if (lane.isActive(item)) {
+            cell.classList.add("is-active");
+            cell.style.background = lane.color;
+          }
+
+          cell.title = `${formatDateTime(item.timestamp)} - ${lane.label}`;
+          track.appendChild(cell);
+        });
+
+        row.append(label, track);
+        container.appendChild(row);
+      });
+    }
+
     function rebuildCharts() {
       Object.values(chartInstances).forEach((chart) => chart.destroy());
       chartInstances = {};
-      makeChart("riskChart", "risk", "orange", "orange");
-      makeChart("hrvChart", "hrv", "green", "green");
-      makeChart("spo2Chart", "spo2", "yellow", "yellow");
-      makeChart("sleepChart", "sleep", "slate", "slate");
-      makeChart("fragChart", "frag", "red", "red");
-      makeChart("swsChart", "sws", "slate", "slate");
-      makeChart("remChart", "rem", "violet", "violet");
-      makeChart("tempChart", "temp", "red", "red");
+      makeRiskChart();
+      makeHrvChart();
+      makeSpo2Chart();
+      makeSleepChart();
+      makeTempChart();
+      makeStructureChart();
+      renderHeatmap();
+      renderTimeline();
     }
 
     function render() {
