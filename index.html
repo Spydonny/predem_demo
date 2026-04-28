@@ -7,21 +7,25 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --bg: #f6f8fb;
-      --card-bg: #ffffff;
-      --line: #e6eaf0;
-      --line-soft: #eef2f6;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --muted-warm: #81776e;
-      --green: #43a047;
-      --yellow: #fbc02d;
-      --orange: #fb8c00;
-      --red: #e53935;
-      --slate: #7f90a7;
-      --shadow-a: 0 1px 2px rgba(15, 23, 42, 0.04);
-      --shadow-b: 0 6px 16px rgba(15, 23, 42, 0.06);
-      --shadow-c: 0 10px 24px rgba(15, 23, 42, 0.08);
+      --bg: #f4f6f1;
+      --bg-secondary: #edf2eb;
+      --card-bg: rgba(255, 255, 255, 0.86);
+      --card-strong: rgba(255, 255, 255, 0.94);
+      --line: #dce4dc;
+      --line-soft: #e9efea;
+      --text: #1f2b24;
+      --muted: #647267;
+      --muted-warm: #768076;
+      --green: #4f8a63;
+      --yellow: #d4b060;
+      --orange: #d48a53;
+      --red: #c97a62;
+      --slate: #7b8796;
+      --violet: #7c61c4;
+      --warm: #8d5c1d;
+      --shadow-a: 0 1px 3px rgba(16, 24, 18, 0.05);
+      --shadow-b: 0 14px 40px rgba(31, 43, 36, 0.07);
+      --shadow-c: 0 22px 56px rgba(31, 43, 36, 0.1);
     }
 
     * {
@@ -31,58 +35,211 @@
     html,
     body {
       min-height: 100%;
+      scroll-behavior: smooth;
     }
 
     body {
       margin: 0;
-      background: var(--bg);
+      background:
+        radial-gradient(circle at top left, rgba(95, 156, 148, 0.12), transparent 34%),
+        radial-gradient(circle at top right, rgba(212, 176, 96, 0.12), transparent 30%),
+        linear-gradient(180deg, #f8faf7 0%, #f2f5f1 100%);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
       letter-spacing: -0.012em;
       -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
 
     .shell {
-      max-width: 1430px;
+      max-width: 1480px;
       margin: 0 auto;
-      padding: 34px 30px 42px;
+      padding: 28px clamp(16px, 3vw, 32px) 40px;
     }
 
-    .flex {
-      display: flex;
-    }
-
-    .row {
+    .dashboard-grid {
       display: grid;
-      gap: var(--gap, 16px);
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 20px;
+      align-items: start;
     }
 
-    .col {
-      display: flex;
-      flex-direction: column;
-      gap: var(--gap, 12px);
+    .span-12 {
+      grid-column: span 12;
     }
 
-    .gap {
-      gap: var(--gap, 16px);
+    .span-8 {
+      grid-column: span 8;
+    }
+
+    .span-6 {
+      grid-column: span 6;
+    }
+
+    .span-4 {
+      grid-column: span 4;
+    }
+
+    .span-3 {
+      grid-column: span 3;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow-a), var(--shadow-b);
+      backdrop-filter: blur(18px);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: #cfd9cf;
+      box-shadow: var(--shadow-a), var(--shadow-c);
     }
 
     .muted {
       color: var(--muted);
     }
 
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      box-shadow: var(--shadow-a), var(--shadow-b);
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    .toolbar {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
     }
 
-    .card:hover {
-      transform: translateY(-2px);
-      border-color: #dbe3ec;
-      box-shadow: var(--shadow-a), var(--shadow-c);
+    .lang-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: var(--shadow-a);
+    }
+
+    .lang-btn {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+    }
+
+    .lang-btn:hover {
+      background: #f2f6f2;
+      color: var(--text);
+      transform: translateY(-1px);
+    }
+
+    .lang-btn.is-active {
+      background: #edf4ef;
+      color: var(--text);
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) auto;
+      gap: 24px;
+      padding: 28px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(250, 252, 249, 0.84)),
+        var(--card-bg);
+    }
+
+    .topbar::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -90px auto;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(95, 156, 148, 0.12), transparent 70%);
+      pointer-events: none;
+    }
+
+    .topbar-copy,
+    .topbar-meta {
+      position: relative;
+      z-index: 1;
+    }
+
+    .patient-tag,
+    .section-label,
+    .plot-kicker,
+    .meta-k,
+    .datebox .k {
+      font-size: 11px;
+      line-height: 1.2;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .patient-name {
+      margin: 0;
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+      font-weight: 680;
+      max-width: 12ch;
+      position: relative;
+      z-index: 1;
+    }
+
+    .subcopy,
+    .section-copy,
+    .plot-copy,
+    .insight-copy,
+    .hero-note,
+    .hero-interpretation {
+      margin: 0;
+      color: var(--muted-warm);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .subcopy {
+      max-width: 72ch;
+      margin-top: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar-meta {
+      display: grid;
+      gap: 14px;
+      justify-items: end;
+      align-content: start;
+    }
+
+    .datebox {
+      min-width: min(100%, 310px);
+      padding: 16px 18px;
+      border-radius: 22px;
+      border: 1px solid var(--line-soft);
+      background: rgba(255, 255, 255, 0.74);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    }
+
+    .datebox .v {
+      margin-top: 8px;
+      font-size: 16px;
+      line-height: 1.45;
+      font-weight: 620;
     }
 
     .badge {
@@ -90,13 +247,13 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 4px;
-      min-width: 136px;
-      padding: 11px 16px 12px;
-      border: 1px solid rgba(251, 140, 0, 0.18);
+      min-width: 154px;
+      padding: 14px 18px;
+      border: 1px solid rgba(212, 138, 83, 0.18);
       border-radius: 999px;
-      background: rgba(251, 140, 0, 0.08);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
-      transform: translate(8px, 6px);
+      background: rgba(212, 138, 83, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+      transition: background 0.18s ease, border-color 0.18s ease;
     }
 
     .badge span {
@@ -107,222 +264,441 @@
     }
 
     .badge strong {
-      font-size: 30px;
+      font-size: 32px;
       line-height: 1;
       letter-spacing: -0.05em;
-      color: #8e5b19;
-      font-weight: 700;
+      color: #8d5c1d;
+      font-weight: 720;
+      transition: color 0.18s ease;
     }
 
-    .topbar {
-      grid-template-columns: minmax(0, 1.26fr) auto;
-      align-items: start;
-      margin-bottom: 26px;
+    .status-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
     }
 
-    .toolbar {
+    .status-card {
+      display: flex;
+      gap: 14px;
+      min-height: 116px;
+      padding: 18px;
+      align-items: flex-start;
+    }
+
+    .status-icon {
+      width: 44px;
+      height: 44px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 760;
+      letter-spacing: 0.08em;
+      background: rgba(95, 156, 148, 0.12);
+      color: var(--text);
+    }
+
+    .status-copy {
+      display: grid;
+      gap: 4px;
+    }
+
+    .status-label {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.3;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .status-status {
+      font-size: 17px;
+      line-height: 1.2;
+      font-weight: 650;
+      color: var(--text);
+    }
+
+    .status-meta {
+      font-size: 13px;
+      color: var(--muted-warm);
+      line-height: 1.45;
+    }
+
+    .status-card[data-tone="rest"] .status-icon {
+      background: rgba(79, 138, 99, 0.12);
+      color: #356147;
+    }
+
+    .status-card[data-tone="warm"] .status-icon {
+      background: rgba(212, 176, 96, 0.16);
+      color: #896526;
+    }
+
+    .status-card[data-tone="focus"] .status-icon {
+      background: rgba(95, 156, 148, 0.14);
+      color: #316b65;
+    }
+
+    .status-card[data-tone="support"] .status-icon {
+      background: rgba(124, 97, 196, 0.12);
+      color: #5f49a3;
+    }
+
+    .hero-card {
+      display: grid;
+      gap: 26px;
+      padding: 28px;
+    }
+
+    .hero-head,
+    .section-header,
+    .analytics-header,
+    .plot-head,
+    .deviation-top,
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .hero-title,
+    .section-heading,
+    .insight-title {
+      margin: 8px 0 0;
+      font-size: clamp(1.5rem, 2.4vw, 2.4rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      font-weight: 680;
+    }
+
+    .trend-chip,
+    .severity-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      margin-bottom: 4px;
-    }
-
-    .lang-switch {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.72);
-      box-shadow: var(--shadow-a);
-    }
-
-    .lang-btn {
-      border: 0;
-      background: transparent;
-      color: var(--muted);
-      font: inherit;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: rgba(212, 138, 83, 0.08);
+      color: #936223;
       font-size: 11px;
+      line-height: 1;
       font-weight: 650;
-      letter-spacing: 0.08em;
-      padding: 7px 10px;
-      border-radius: 9px;
-      cursor: pointer;
+      white-space: nowrap;
       transition: background 0.18s ease, color 0.18s ease;
     }
 
-    .lang-btn:hover {
-      background: #f2f5f8;
-      color: var(--text);
+    .hero-body {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+      gap: 28px;
+      align-items: center;
     }
 
-    .lang-btn.is-active {
-      background: #eef3f8;
-      color: var(--text);
+    .risk-orb {
+      --risk-angle: 0deg;
+      --risk-color: var(--orange);
+      --risk-soft: rgba(212, 138, 83, 0.18);
+      width: min(100%, 340px);
+      aspect-ratio: 1;
+      margin: 0 auto;
+      padding: 18px;
+      border-radius: 50%;
+      position: relative;
+      background: conic-gradient(var(--risk-color) 0deg var(--risk-angle), rgba(123, 135, 150, 0.14) var(--risk-angle) 360deg);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        0 18px 42px rgba(31, 43, 36, 0.08);
+      transition: background 0.18s ease, box-shadow 0.18s ease;
     }
 
-    .patient-tag {
+    .risk-orb::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.98), rgba(247, 249, 246, 0.92)),
+        var(--card-strong);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
+    }
+
+    .risk-orb::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, transparent 58%, var(--risk-soft) 100%);
+      opacity: 0.52;
+      pointer-events: none;
+    }
+
+    .risk-orb-core {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 42px;
+    }
+
+    .risk-orb-label {
       font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.13em;
-      color: var(--muted);
-      margin-bottom: 2px;
-    }
-
-    .patient-name {
-      margin: 0;
-      font-size: 37px;
-      line-height: 1.02;
-      letter-spacing: -0.045em;
-      font-weight: 630;
-    }
-
-    .subcopy {
-      max-width: 780px;
-      font-size: 14px;
-      line-height: 1.55;
-      color: var(--muted-warm);
-    }
-
-    .side-meta {
-      align-items: flex-start;
-      margin-right: 10px;
-      padding-top: 5px;
-    }
-
-    .datebox {
-      min-width: 176px;
-      padding-top: 3px;
-    }
-
-    .datebox .k {
-      font-size: 11px;
+      line-height: 1.3;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--muted);
-      margin-bottom: 7px;
     }
 
-    .datebox .v {
-      font-size: 17px;
-      font-weight: 620;
-      margin-bottom: 5px;
-    }
-
-    .stats {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      margin-bottom: 18px;
-    }
-
-    .plots {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      margin-bottom: 18px;
-    }
-
-    .bottom {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      align-items: start;
-    }
-
-    .stat {
-      min-height: 174px;
-      position: relative;
-      padding: 17px 18px 16px;
-    }
-
-    .title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .title {
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    .title-side {
-      font-size: 11px;
-      color: var(--muted-warm);
-      text-align: right;
-      line-height: 1.3;
-    }
-
-    .value {
-      font-size: 35px;
-      line-height: 1;
-      letter-spacing: -0.055em;
-      font-weight: 650;
+    .risk-orb-value {
       margin-top: 10px;
+      font-size: clamp(3.4rem, 8vw, 5.8rem);
+      line-height: 0.95;
+      letter-spacing: -0.07em;
+      font-weight: 760;
+      color: var(--text);
+      transition: color 0.18s ease;
     }
 
-    .unit {
-      font-size: 15px;
+    .risk-unit {
+      font-size: 0.34em;
+      margin-left: 4px;
       color: var(--muted);
-      margin-left: 6px;
-      font-weight: 550;
+      font-weight: 640;
     }
 
-    .hint {
-      font-size: 12px;
-      color: var(--muted-warm);
-      line-height: 1.45;
-      margin-top: 8px;
-    }
-
-    .meta-row {
+    .hero-copy {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .hero-interpretation {
+      font-size: 15px;
+      color: var(--text);
+      max-width: 46ch;
+    }
+
+    .hero-mini-grid,
+    .metric-chip-grid,
+    .chart-meta-grid {
+      display: grid;
       gap: 12px;
-      margin-top: auto;
-      padding-top: 12px;
-      border-top: 1px solid var(--line-soft);
     }
 
-    .meta-k {
-      font-size: 10px;
+    .hero-mini-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .metric-brief,
+    .metric-chip,
+    .chart-meta {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid var(--line-soft);
+      background: rgba(252, 253, 252, 0.82);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    .metric-brief span,
+    .metric-chip span,
+    .chart-meta span {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 11px;
+      line-height: 1.3;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
       color: var(--muted);
-      margin-bottom: 4px;
     }
 
-    .meta-v {
-      font-size: 13px;
+    .metric-brief strong,
+    .metric-chip strong,
+    .chart-meta strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 670;
       color: var(--text);
     }
 
-    .trend-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: rgba(251, 140, 0, 0.08);
-      color: #9b6622;
-      font-size: 11px;
+    .insight-card,
+    .deviations-card {
+      display: grid;
+      gap: 20px;
+      padding: 24px;
+    }
+
+    .insight-copy {
+      max-width: 34ch;
+    }
+
+    .insight-panel {
+      display: grid;
+      gap: 14px;
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid var(--line-soft);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(249, 251, 248, 0.92));
+    }
+
+    .detail-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .detail-value {
+      font-size: 14px;
+      line-height: 1.5;
+      font-weight: 620;
+      color: var(--text);
+      text-align: right;
+    }
+
+    .metric-chip-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .deviation-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .deviation-item {
+      display: grid;
+      gap: 14px;
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid var(--line-soft);
+      background: rgba(253, 254, 252, 0.86);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    }
+
+    .deviation-name {
+      font-size: 15px;
+      font-weight: 650;
+      color: var(--text);
+    }
+
+    .deviation-delta {
+      margin-top: 4px;
+      font-size: 24px;
       line-height: 1;
-      white-space: nowrap;
+      letter-spacing: -0.04em;
+      font-weight: 720;
+      color: var(--text);
+    }
+
+    .deviation-bar {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(123, 135, 150, 0.12);
+      overflow: hidden;
+    }
+
+    .deviation-fill {
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, rgba(95, 156, 148, 0.78), rgba(212, 138, 83, 0.92));
+      transition: width 0.24s ease;
+    }
+
+    .deviation-meta {
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--muted-warm);
+    }
+
+    .analytics-header {
+      padding: 4px 4px 0;
+      align-items: end;
+    }
+
+    .plot-card {
+      display: grid;
+      grid-template-rows: auto auto auto 1fr auto;
+      gap: 14px;
+      min-height: 320px;
+      padding: 20px;
+    }
+
+    .plot-head-main {
+      display: grid;
+      gap: 6px;
+    }
+
+    .plot-name {
+      font-size: 16px;
+      line-height: 1.2;
+      font-weight: 650;
+      color: var(--text);
+    }
+
+    .plot-note {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--muted-warm);
+      max-width: 32ch;
+    }
+
+    .plot-stat {
+      display: grid;
+      gap: 4px;
+      justify-items: end;
+      text-align: right;
+      max-width: 240px;
+    }
+
+    .plot-stat strong {
+      font-size: clamp(1.25rem, 2vw, 1.75rem);
+      line-height: 1;
+      letter-spacing: -0.05em;
+      font-weight: 720;
+      color: var(--text);
+    }
+
+    .plot-unit {
+      font-size: 0.6em;
+      margin-left: 5px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .plot-trend {
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--muted-warm);
+      white-space: normal;
     }
 
     .dot-note {
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      font-size: 11px;
+      font-size: 12px;
+      line-height: 1.4;
       color: var(--muted-warm);
-      white-space: nowrap;
+      white-space: normal;
+      justify-content: flex-end;
+    }
+
+    .dot-note i,
+    .legend-dot {
+      display: inline-block;
+      border-radius: 50%;
     }
 
     .dot-note i {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      display: inline-block;
+      width: 8px;
+      height: 8px;
+      flex: 0 0 auto;
       background: var(--green);
     }
 
@@ -330,59 +706,35 @@
       display: inline-flex;
       align-items: center;
       width: fit-content;
-      padding: 5px 8px;
+      padding: 6px 10px;
       border-radius: 999px;
       border: 1px solid var(--line-soft);
-      background: #fafbfd;
+      background: #fafcf9;
       color: var(--muted);
       font-size: 11px;
       line-height: 1;
-      margin-top: 8px;
     }
 
-    .plot-card {
-      min-height: 276px;
-      overflow: hidden;
-      padding: 16px 15px 15px;
-    }
-
-    .plot-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 11px;
-    }
-
-    .plot-name {
-      font-size: 13px;
-      font-weight: 610;
-    }
-
-    .plot-note {
-      max-width: 138px;
-      text-align: right;
-      font-size: 12px;
-      line-height: 1.34;
-      color: var(--muted-warm);
+    .chart-meta-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .plot-shell {
-      height: 188px;
+      height: 194px;
       overflow: hidden;
       border: 1px solid var(--line-soft);
-      border-radius: 10px;
+      border-radius: 18px;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
       background-image:
-        linear-gradient(to bottom, rgba(31, 41, 55, 0.028) 1px, transparent 1px),
-        linear-gradient(to right, rgba(31, 41, 55, 0.022) 1px, transparent 1px);
+        linear-gradient(to bottom, rgba(31, 43, 36, 0.03) 1px, transparent 1px),
+        linear-gradient(to right, rgba(31, 43, 36, 0.022) 1px, transparent 1px);
       background-size: 100% 34px, 48px 100%;
-      padding: 10px 10px 6px;
+      padding: 12px 12px 8px;
     }
 
     .plot-shell.no-grid {
       background-image: none;
-      padding: 12px;
+      padding: 14px;
     }
 
     .plot-foot {
@@ -390,17 +742,16 @@
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      margin-top: 10px;
       font-size: 12px;
       color: var(--muted);
     }
 
     .tint-risk {
-      background-color: #fcfbf6;
+      background-color: #fcfbf7;
     }
 
     .tint-hrv {
-      background-color: #f8fbf8;
+      background-color: #f7fbf8;
     }
 
     .tint-spo2 {
@@ -444,8 +795,6 @@
     .legend-dot {
       width: 8px;
       height: 8px;
-      border-radius: 999px;
-      display: inline-block;
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.65);
     }
 
@@ -466,7 +815,7 @@
 
     .heatmap-cell {
       min-height: 22px;
-      border-radius: 6px;
+      border-radius: 8px;
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.62);
     }
 
@@ -479,7 +828,7 @@
 
     .timeline-row {
       display: grid;
-      grid-template-columns: 64px minmax(0, 1fr);
+      grid-template-columns: 68px minmax(0, 1fr);
       gap: 10px;
       align-items: center;
     }
@@ -513,48 +862,139 @@
     }
 
     @media (max-width: 1180px) {
-      .stats,
-      .plots {
+      .dashboard-grid {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+      }
+
+      .span-12,
+      .span-8,
+      .span-6 {
+        grid-column: span 8;
+      }
+
+      .span-4,
+      .span-3 {
+        grid-column: span 4;
+      }
+
+      .topbar,
+      .hero-body {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-meta {
+        justify-items: start;
+      }
+
+      .status-strip,
+      .deviation-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .bottom {
-        grid-template-columns: 1fr;
+      .hero-mini-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .section-header,
+      .analytics-header {
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
 
-    @media (max-width: 820px) {
+    @media (max-width: 760px) {
       .shell {
-        padding: 22px 16px 28px;
+        padding: 18px 16px 28px;
       }
 
-      .topbar {
+      .dashboard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .span-12,
+      .span-8,
+      .span-6,
+      .span-4,
+      .span-3 {
+        grid-column: span 2;
+      }
+
+      .status-strip,
+      .metric-chip-grid,
+      .deviation-grid,
+      .hero-mini-grid {
         grid-template-columns: 1fr;
       }
 
-      .side-meta {
-        margin-right: 0;
+      .topbar,
+      .hero-card,
+      .insight-card,
+      .deviations-card,
+      .plot-card {
+        padding: 20px;
       }
 
-      .stats,
-      .plots {
+      .plot-head,
+      .hero-head,
+      .detail-row {
+        flex-direction: column;
+      }
+
+      .plot-stat,
+      .detail-value {
+        text-align: left;
+        justify-items: start;
+        max-width: none;
+      }
+
+      .plot-shell {
+        height: 182px;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .dashboard-grid {
         grid-template-columns: 1fr;
+      }
+
+      .span-12,
+      .span-8,
+      .span-6,
+      .span-4,
+      .span-3 {
+        grid-column: span 1;
       }
 
       .patient-name {
-        font-size: 30px;
+        max-width: none;
+      }
+
+      .datebox,
+      .badge {
+        width: 100%;
       }
 
       .badge {
-        transform: none;
+        align-items: flex-start;
+      }
+
+      .chart-meta-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
       }
     }
   </style>
 </head>
 <body>
-  <main class="shell col" style="--gap: 0;">
-    <header class="row topbar" style="--gap: 18px;">
-      <div class="col" style="--gap: 10px;">
+  <main class="shell">
+    <div class="dashboard-grid">
+      <header class="card topbar span-12">
+        <div class="topbar-copy">
         <div class="toolbar">
           <div class="lang-switch" aria-label="Language switcher">
             <button class="lang-btn is-active" type="button" data-lang="ru">RU</button>
@@ -564,8 +1004,8 @@
         <div class="patient-tag" id="dashboardTag">Панель оценки риска деменции</div>
         <h1 class="patient-name" id="pageTitle">Обзор мониторинга</h1>
         <div class="subcopy" id="summaryCopy"></div>
-      </div>
-      <div class="flex gap side-meta" style="--gap: 19px;">
+        </div>
+        <div class="topbar-meta">
         <div class="datebox">
           <div class="k" id="recordedLabel">Записано</div>
           <div class="v" id="recordedValue"></div>
@@ -575,109 +1015,150 @@
           <span id="riskScoreLabel">Риск</span>
           <strong id="riskScoreBadge">0%</strong>
         </div>
+        </div>
+      </header>
+
+      <section class="status-strip span-12">
+        <article class="card status-card" id="summarySleepCard" data-tone="rest">
+          <div class="status-icon" id="summarySleepIcon">SL</div>
+          <div class="status-copy">
+            <div class="status-label" id="summarySleepLabel">Sleep quality</div>
+            <div class="status-status" id="summarySleepStatus">Calm night</div>
+            <div class="status-meta" id="summarySleepMeta"></div>
+          </div>
+        </article>
+
+        <article class="card status-card" id="summaryRecoveryCard" data-tone="focus">
+          <div class="status-icon" id="summaryRecoveryIcon">RC</div>
+          <div class="status-copy">
+            <div class="status-label" id="summaryRecoveryLabel">Recovery state</div>
+            <div class="status-status" id="summaryRecoveryStatus">Balanced</div>
+            <div class="status-meta" id="summaryRecoveryMeta"></div>
+          </div>
+        </article>
+
+        <article class="card status-card" id="summaryStressCard" data-tone="warm">
+          <div class="status-icon" id="summaryStressIcon">ST</div>
+          <div class="status-copy">
+            <div class="status-label" id="summaryStressLabel">Stress level</div>
+            <div class="status-status" id="summaryStressStatus">Watchful</div>
+            <div class="status-meta" id="summaryStressMeta"></div>
+          </div>
+        </article>
+
+        <article class="card status-card" id="summaryCognitiveCard" data-tone="support">
+          <div class="status-icon" id="summaryCognitiveIcon">CG</div>
+          <div class="status-copy">
+            <div class="status-label" id="summaryCognitiveLabel">Cognitive stability</div>
+            <div class="status-status" id="summaryCognitiveStatus">Steady</div>
+            <div class="status-meta" id="summaryCognitiveMeta"></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="card hero-card span-8">
+        <div class="hero-head">
+          <div>
+            <div class="section-label" id="primaryMetricLabel">Primary metric</div>
+            <div class="hero-title" id="currentRiskLabel">Dementia Risk</div>
+          </div>
+          <div class="trend-chip" id="riskTrend">Stable</div>
+        </div>
+
+        <div class="hero-body">
+          <div class="risk-orb" id="riskOrb">
+            <div class="risk-orb-core">
+              <div>
+                <div class="risk-orb-label" id="riskCenterLabel">Dementia Risk</div>
+                <div class="risk-orb-value"><span id="riskValue">0</span><span class="risk-unit">%</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-copy">
+            <p class="hero-note" id="riskHint"></p>
+            <p class="hero-interpretation" id="riskInterpretation"></p>
+
+            <div class="hero-mini-grid">
+              <div class="metric-brief">
+                <span id="ageLabel">Age</span>
+                <strong id="ageValue">45</strong>
+              </div>
+              <div class="metric-brief">
+                <span id="riskAvgLabel">Average</span>
+                <strong id="riskAvg">0%</strong>
+              </div>
+              <div class="metric-brief">
+                <span id="riskPeakLabel">Peak</span>
+                <strong id="riskPeak">0%</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card insight-card span-4">
+        <div>
+          <div class="section-label" id="insightLabel">Context</div>
+          <h2 class="insight-title" id="insightTitle">What matters now</h2>
+        </div>
+        <p class="insight-copy" id="insightCopy"></p>
+
+        <div class="insight-panel">
+          <div class="detail-row">
+            <span class="detail-label" id="comparisonLabel">Review window</span>
+            <strong class="detail-value" id="comparisonWindowValue">0 h</strong>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label" id="insightRiskLabel">Risk</span>
+            <strong class="detail-value" id="insightRiskValue">0%</strong>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label" id="packetLabel">Sampling</span>
+            <strong class="detail-value" id="insightPacket"></strong>
+          </div>
+
+          <div class="metric-chip-grid">
+            <div class="metric-chip">
+              <span id="sleepDurationLabel">Sleep duration</span>
+              <strong id="insightSleepValue">0 h</strong>
+            </div>
+            <div class="metric-chip">
+              <span id="comparisonPeakLabel">Risk peak</span>
+              <strong id="comparisonPeakValue">0%</strong>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="card deviations-card span-12">
+        <div class="section-header">
+          <div>
+            <div class="section-label" id="deviationsLabel">Key shifts</div>
+            <h2 class="section-heading" id="deviationsTitle">Largest deviations from baseline</h2>
+          </div>
+          <p class="section-copy" id="deviationsCopy"></p>
+        </div>
+        <div class="deviation-grid" id="deviationList"></div>
+      </section>
+
+      <div class="analytics-header span-12">
+        <div>
+          <div class="section-label" id="analyticsLabel">Supporting analytics</div>
+          <h2 class="section-heading" id="analyticsTitle">Signals behind the score</h2>
+        </div>
+        <p class="section-copy" id="analyticsCopy"></p>
       </div>
-    </header>
 
-    <section class="row stats" style="--gap: 14px;">
-      <article class="card stat col" style="--gap: 10px;">
-        <div class="title-row">
-          <div class="title" id="currentRiskLabel">Текущий риск</div>
-          <div class="trend-chip" id="riskTrend">stable</div>
-        </div>
-        <div class="value"><span id="riskValue">0</span><span class="unit">%</span></div>
-        <div class="hint" id="riskHint"></div>
-        <div class="meta-row">
-          <div>
-            <div class="meta-k" id="ageLabel">Возраст</div>
-            <div class="meta-v" id="ageValue">45</div>
-          </div>
-          <div>
-            <div class="meta-k" id="riskAvgLabel">Среднее 30д</div>
-            <div class="meta-v" id="riskAvg">0%</div>
-          </div>
-          <div>
-            <div class="meta-k" id="riskPeakLabel">Пик</div>
-            <div class="meta-v" id="riskPeak">0%</div>
-          </div>
-        </div>
-      </article>
-
-      <article class="card stat col" style="--gap: 10px;">
-        <div class="title-row">
-          <div class="title">HRV</div>
-          <div class="trend-chip" id="hrvTrend">без изменений относительно 1-й недели</div>
-        </div>
-        <div class="value"><span id="hrvCurrent">0</span><span class="unit">ms</span></div>
-        <div class="hint" id="hrvHint"></div>
-        <div class="meta-row">
-          <div>
-            <div class="meta-k" id="avgLabelHrv">Среднее</div>
-            <div class="meta-v" id="hrvAvg">0 ms</div>
-          </div>
-          <div>
-            <div class="meta-k" id="minLabelHrv">Мин</div>
-            <div class="meta-v" id="hrvMin">0 ms</div>
-          </div>
-          <div>
-            <div class="meta-k" id="maxLabelHrv">Макс</div>
-            <div class="meta-v" id="hrvMax">0 ms</div>
-          </div>
-        </div>
-      </article>
-
-      <article class="card stat col" style="--gap: 10px;">
-        <div class="title-row">
-          <div class="title">SpO2</div>
-          <div class="dot-note"><i id="spo2Dot"></i><span id="spo2Status">базовый уровень стабилен</span></div>
-        </div>
-        <div class="value"><span id="spo2Current">0</span><span class="unit">%</span></div>
-        <div class="hint" id="spo2Hint"></div>
-        <div class="chip" id="spo2Chip"></div>
-        <div class="meta-row">
-          <div>
-            <div class="meta-k" id="avgLabelSpo2">Среднее</div>
-            <div class="meta-v" id="spo2Avg">0%</div>
-          </div>
-          <div>
-            <div class="meta-k" id="minLabelSpo2">Мин</div>
-            <div class="meta-v" id="spo2Min">0%</div>
-          </div>
-          <div>
-            <div class="meta-k" id="maxLabelSpo2">Макс</div>
-            <div class="meta-v" id="spo2Max">0%</div>
-          </div>
-        </div>
-      </article>
-
-      <article class="card stat col" style="--gap: 10px;">
-        <div class="title-row">
-          <div class="title" id="sleepDurationLabel">Длительность сна</div>
-          <div class="title-side" id="sleepSide">ночной ритм<br>в норме</div>
-        </div>
-        <div class="value"><span id="sleepCurrent">0</span><span class="unit" id="sleepUnit">ч</span></div>
-        <div class="hint" id="sleepHint"></div>
-        <div class="meta-row">
-          <div>
-            <div class="meta-k" id="avgLabelSleep">Среднее</div>
-            <div class="meta-v" id="sleepAvg">0 hrs</div>
-          </div>
-          <div>
-            <div class="meta-k" id="minLabelSleep">Мин</div>
-            <div class="meta-v" id="sleepMin">0 hrs</div>
-          </div>
-          <div>
-            <div class="meta-k" id="maxLabelSleep">Макс</div>
-            <div class="meta-v" id="sleepMax">0 hrs</div>
-          </div>
-        </div>
-      </article>
-    </section>
-
-    <section class="row plots" style="--gap: 14px;">
-      <article class="card plot-card">
+      <article class="card plot-card span-6">
         <div class="plot-head">
-          <div class="plot-name" id="riskTrendChartLabel">Динамика риска</div>
-          <div class="plot-note" id="riskTrendChartNote"></div>
+          <div class="plot-head-main">
+            <div class="plot-kicker" id="riskChartKicker">Trend</div>
+            <div class="plot-name" id="riskTrendChartLabel">Динамика риска</div>
+            <p class="plot-note" id="riskTrendChartNote"></p>
+          </div>
         </div>
         <div class="plot-shell tint-risk"><canvas id="riskChart"></canvas></div>
         <div class="plot-foot">
@@ -687,10 +1168,32 @@
         </div>
       </article>
 
-      <article class="card plot-card">
+      <article class="card plot-card span-3">
         <div class="plot-head">
-          <div class="plot-name">HRV</div>
-          <div class="plot-note" id="hrvChartNote"></div>
+          <div class="plot-head-main">
+            <div class="plot-kicker" id="hrvChartKicker">Recovery</div>
+            <div class="plot-name">HRV</div>
+            <p class="plot-note" id="hrvChartNote"></p>
+          </div>
+          <div class="plot-stat">
+            <strong><span id="hrvCurrent">0</span><span class="plot-unit">ms</span></strong>
+            <span class="plot-trend" id="hrvTrend">steady</span>
+          </div>
+        </div>
+        <p class="plot-copy" id="hrvHint"></p>
+        <div class="chart-meta-grid">
+          <div class="chart-meta">
+            <span id="avgLabelHrv">Average</span>
+            <strong id="hrvAvg">0 ms</strong>
+          </div>
+          <div class="chart-meta">
+            <span id="minLabelHrv">Min</span>
+            <strong id="hrvMin">0 ms</strong>
+          </div>
+          <div class="chart-meta">
+            <span id="maxLabelHrv">Max</span>
+            <strong id="hrvMax">0 ms</strong>
+          </div>
         </div>
         <div class="plot-shell tint-hrv"><canvas id="hrvChart"></canvas></div>
         <div class="plot-foot">
@@ -700,11 +1203,34 @@
         </div>
       </article>
 
-      <article class="card plot-card">
+      <article class="card plot-card span-3">
         <div class="plot-head">
-          <div class="plot-name">SpO2</div>
-          <div class="plot-note" id="spo2ChartNote"></div>
+          <div class="plot-head-main">
+            <div class="plot-kicker" id="spo2ChartKicker">Oxygen</div>
+            <div class="plot-name">SpO2</div>
+            <p class="plot-note" id="spo2ChartNote"></p>
+          </div>
+          <div class="plot-stat">
+            <strong><span id="spo2Current">0</span><span class="plot-unit">%</span></strong>
+            <span class="dot-note"><i id="spo2Dot"></i><span id="spo2Status">baseline stable</span></span>
+          </div>
         </div>
+        <p class="plot-copy" id="spo2Hint"></p>
+        <div class="chart-meta-grid">
+          <div class="chart-meta">
+            <span id="avgLabelSpo2">Average</span>
+            <strong id="spo2Avg">0%</strong>
+          </div>
+          <div class="chart-meta">
+            <span id="minLabelSpo2">Min</span>
+            <strong id="spo2Min">0%</strong>
+          </div>
+          <div class="chart-meta">
+            <span id="maxLabelSpo2">Max</span>
+            <strong id="spo2Max">0%</strong>
+          </div>
+        </div>
+        <div class="chip" id="spo2Chip"></div>
         <div class="plot-shell tint-spo2"><canvas id="spo2Chart"></canvas></div>
         <div class="plot-foot">
           <span id="spo2StartDay"></span>
@@ -713,10 +1239,32 @@
         </div>
       </article>
 
-      <article class="card plot-card">
+      <article class="card plot-card span-4">
         <div class="plot-head">
-          <div class="plot-name" id="sleepChartLabel">Длительность сна</div>
-          <div class="plot-note" id="sleepChartNote"></div>
+          <div class="plot-head-main">
+            <div class="plot-kicker" id="sleepChartKicker">Rest</div>
+            <div class="plot-name" id="sleepChartLabel">Длительность сна</div>
+            <p class="plot-note" id="sleepChartNote"></p>
+          </div>
+          <div class="plot-stat">
+            <strong><span id="sleepCurrent">0</span><span class="plot-unit" id="sleepUnit">ч</span></strong>
+            <span class="plot-trend" id="sleepSide">night rhythm in range</span>
+          </div>
+        </div>
+        <p class="plot-copy" id="sleepHint"></p>
+        <div class="chart-meta-grid">
+          <div class="chart-meta">
+            <span id="avgLabelSleep">Window</span>
+            <strong id="sleepAvg">0 hrs</strong>
+          </div>
+          <div class="chart-meta">
+            <span id="minLabelSleep">Wakeups</span>
+            <strong id="sleepMin">0 hrs</strong>
+          </div>
+          <div class="chart-meta">
+            <span id="maxLabelSleep">Goal</span>
+            <strong id="sleepMax">0 hrs</strong>
+          </div>
         </div>
         <div class="plot-shell tint-sleep"><canvas id="sleepChart"></canvas></div>
         <div class="plot-foot">
@@ -725,65 +1273,71 @@
           <span id="sleepEndDay"></span>
         </div>
       </article>
-    </section>
 
-    <section class="row bottom" style="--gap: 14px;">
-      <div class="col" style="--gap: 14px;">
-        <article class="card plot-card">
-          <div class="plot-head">
-            <div class="plot-name" id="fragChartLabel">Фрагментация</div>
-            <div class="plot-note" id="fragChartNote"></div>
-          </div>
-          <div class="plot-shell tint-frag no-grid"><div id="fragChart"></div></div>
-          <div class="plot-foot">
-            <span id="fragStartDay"></span>
-            <span id="fragFoot"></span>
-            <span id="fragEndDay"></span>
-          </div>
-        </article>
-
-        <article class="card plot-card">
-          <div class="plot-head">
+      <article class="card plot-card span-4">
+        <div class="plot-head">
+          <div class="plot-head-main">
+            <div class="plot-kicker" id="tempChartKicker">Temperature</div>
             <div class="plot-name" id="tempChartLabel">Температурная нестабильность</div>
-            <div class="plot-note" id="tempChartNote"></div>
+            <p class="plot-note" id="tempChartNote"></p>
           </div>
-          <div class="plot-shell tint-temp"><canvas id="tempChart"></canvas></div>
-          <div class="plot-foot">
-            <span id="tempStartDay"></span>
-            <span id="tempFoot"></span>
-            <span id="tempEndDay"></span>
-          </div>
-        </article>
-      </div>
+        </div>
+        <div class="plot-shell tint-temp"><canvas id="tempChart"></canvas></div>
+        <div class="plot-foot">
+          <span id="tempStartDay"></span>
+          <span id="tempFoot"></span>
+          <span id="tempEndDay"></span>
+        </div>
+      </article>
 
-      <div class="col" style="--gap: 14px;">
-        <article class="card plot-card">
-          <div class="plot-head">
+      <article class="card plot-card span-4">
+        <div class="plot-head">
+          <div class="plot-head-main">
+            <div class="plot-kicker" id="swsChartKicker">Sleep stages</div>
             <div class="plot-name" id="swsChartLabel">Структура сна</div>
-            <div class="plot-note" id="swsChartNote"></div>
+            <p class="plot-note" id="swsChartNote"></p>
           </div>
-          <div class="plot-shell tint-sws"><canvas id="swsChart"></canvas></div>
-          <div class="plot-foot">
-            <span id="swsStartDay"></span>
-            <span id="swsFoot"></span>
-            <span id="swsEndDay"></span>
-          </div>
-        </article>
+        </div>
+        <div class="plot-shell tint-sws"><canvas id="swsChart"></canvas></div>
+        <div class="plot-foot">
+          <span id="swsStartDay"></span>
+          <span id="swsFoot"></span>
+          <span id="swsEndDay"></span>
+        </div>
+      </article>
 
-        <article class="card plot-card">
-          <div class="plot-head">
+      <article class="card plot-card span-6">
+        <div class="plot-head">
+          <div class="plot-head-main">
+            <div class="plot-kicker" id="fragChartKicker">Night continuity</div>
+            <div class="plot-name" id="fragChartLabel">Фрагментация</div>
+            <p class="plot-note" id="fragChartNote"></p>
+          </div>
+        </div>
+        <div class="plot-shell tint-frag no-grid"><div id="fragChart"></div></div>
+        <div class="plot-foot">
+          <span id="fragStartDay"></span>
+          <span id="fragFoot"></span>
+          <span id="fragEndDay"></span>
+        </div>
+      </article>
+
+      <article class="card plot-card span-6">
+        <div class="plot-head">
+          <div class="plot-head-main">
+            <div class="plot-kicker" id="remChartKicker">Event timeline</div>
             <div class="plot-name" id="remChartLabel">Лента событий</div>
-            <div class="plot-note" id="remChartNote"></div>
+            <p class="plot-note" id="remChartNote"></p>
           </div>
-          <div class="plot-shell tint-rem no-grid"><div id="remChart" class="timeline-shell"></div></div>
-          <div class="plot-foot">
-            <span id="remStartDay"></span>
-            <span id="remFoot"></span>
-            <span id="remEndDay"></span>
-          </div>
-        </article>
-      </div>
-    </section>
+        </div>
+        <div class="plot-shell tint-rem no-grid"><div id="remChart" class="timeline-shell"></div></div>
+        <div class="plot-foot">
+          <span id="remStartDay"></span>
+          <span id="remFoot"></span>
+          <span id="remEndDay"></span>
+        </div>
+      </article>
+    </div>
   </main>
 
   <script>
@@ -863,7 +1417,61 @@
         noSleep: "без сна",
         calm: "спокойно",
         medium: "внимание",
-        severe: "сильнее"
+        severe: "сильнее",
+        primaryMetricLabel: "Главный показатель",
+        riskCenterLabel: "Риск деменции",
+        insightLabel: "Контекст",
+        insightTitle: "Что важно сейчас",
+        insightCopy: "Оценка объединяет сон, восстановление, кислород и температуру в один понятный ежедневный ориентир.",
+        comparisonLabel: "Окно оценки",
+        packetLabel: "Дискретность",
+        comparisonPeakLabel: "Пик риска",
+        deviationsLabel: "Ключевые изменения",
+        deviationsTitle: "Самые заметные отклонения от базового уровня",
+        deviationsCopy: "Карточки отсортированы по силе отклонения, чтобы вверху сразу было видно, что влияет сильнее.",
+        analyticsLabel: "Поддерживающая аналитика",
+        analyticsTitle: "Сигналы за последние 24 часа",
+        analyticsCopy: "Спокойные графики помогают увидеть фон без лишней медицинской сложности.",
+        sleepQualityLabel: "Качество сна",
+        recoveryStateLabel: "Восстановление",
+        stressLevelLabel: "Стресс",
+        cognitiveStabilityLabel: "Когнитивная стабильность",
+        sleepStatusGood: "сон восстанавливает",
+        sleepStatusFair: "сон немного сжат",
+        sleepStatusLow: "сну нужно внимание",
+        recoveryStatusGood: "ресурс растет",
+        recoveryStatusFair: "восстановление ровное",
+        recoveryStatusLow: "ресурс снижен",
+        stressStatusGood: "фон спокойный",
+        stressStatusFair: "нагрузка заметна",
+        stressStatusHigh: "нагрузка высокая",
+        cognitiveStatusGood: "состояние устойчивое",
+        cognitiveStatusFair: "нужна мягкая проверка",
+        cognitiveStatusLow: "фон нестабилен",
+        summarySleepMeta: (hours, wakeups) => `${hours} ч сна · ${wakeups} пробужд.`,
+        summaryRecoveryMeta: (delta) => `${delta} мс к начальному уровню`,
+        summaryStressMeta: (episodes) => `${episodes} стресс-эп. за сутки`,
+        summaryCognitiveMeta: (delta) => `сдвиг риска ${delta} п.`,
+        riskInterpretationLow: "Сейчас картина выглядит спокойной: выраженных отклонений от вашего обычного фона не видно.",
+        riskInterpretationModerate: "Есть несколько мягких отклонений от базового уровня. Полезно дать приоритет сну, восстановлению и спокойному темпу.",
+        riskInterpretationHigh: "Сигналы заметно ушли от привычного фона. Лучше снизить нагрузку и понаблюдать за восстановлением.",
+        deviationSeverityHigh: "приоритет",
+        deviationSeverityMedium: "умеренно",
+        deviationSeverityLow: "легко",
+        deviationMetricHrv: "HRV",
+        deviationMetricSleep: "Сон",
+        deviationMetricSpo2: "SpO2",
+        deviationMetricTemp: "Температура",
+        deviationMetricFrag: "Фрагментация",
+        deviationFromBaseline: "от базового уровня",
+        riskChartKicker: "Тренд",
+        hrvChartKicker: "Восстановление",
+        spo2ChartKicker: "Кислород",
+        sleepChartKicker: "Сон",
+        tempChartKicker: "Температура",
+        swsChartKicker: "Стадии сна",
+        fragChartKicker: "Непрерывность сна",
+        remChartKicker: "Лента событий"
       },
       kk: {
         locale: "kk-KZ",
@@ -940,7 +1548,61 @@
         noSleep: "ұйқы жоқ",
         calm: "тыныш",
         medium: "назар",
-        severe: "күшті"
+        severe: "күшті",
+        primaryMetricLabel: "Негізгі көрсеткіш",
+        riskCenterLabel: "Деменция қаупі",
+        insightLabel: "Контекст",
+        insightTitle: "Қазір не маңызды",
+        insightCopy: "Баға ұйқы, қалпына келу, оттегі және температура өзгерістерін бір түсінікті күндік бағдарға жинайды.",
+        comparisonLabel: "Бағалау терезесі",
+        packetLabel: "Дискрет",
+        comparisonPeakLabel: "Қауіп шыңы",
+        deviationsLabel: "Негізгі өзгерістер",
+        deviationsTitle: "Базалық деңгейден ең маңызды ауытқулар",
+        deviationsCopy: "Карточкалар ықпал күшіне қарай реттелген, сондықтан ең маңызды өзгерістер бірден жоғарыда тұрады.",
+        analyticsLabel: "Қолдаушы аналитика",
+        analyticsTitle: "Соңғы 24 сағаттағы сигналдар",
+        analyticsCopy: "Тыныш графиктер жағдайды артық медициналық күрделіліксіз көруге көмектеседі.",
+        sleepQualityLabel: "Ұйқы сапасы",
+        recoveryStateLabel: "Қалпына келу",
+        stressLevelLabel: "Стресс",
+        cognitiveStabilityLabel: "Когнитивтік тұрақтылық",
+        sleepStatusGood: "ұйқы қалпына келтіреді",
+        sleepStatusFair: "ұйқы сәл қысқа",
+        sleepStatusLow: "ұйқыға назар керек",
+        recoveryStatusGood: "ресурс өсіп тұр",
+        recoveryStatusFair: "қалпына келу бірқалыпты",
+        recoveryStatusLow: "ресурс төмендеген",
+        stressStatusGood: "фон тыныш",
+        stressStatusFair: "жүктеме байқалады",
+        stressStatusHigh: "жүктеме жоғары",
+        cognitiveStatusGood: "жағдай тұрақты",
+        cognitiveStatusFair: "жұмсақ тексеру керек",
+        cognitiveStatusLow: "фон тұрақсыз",
+        summarySleepMeta: (hours, wakeups) => `${hours} сағ ұйқы · ${wakeups} ояну`,
+        summaryRecoveryMeta: (delta) => `бастапқы деңгейге ${delta} мс`,
+        summaryStressMeta: (episodes) => `${episodes} стресс-эп. тәулігіне`,
+        summaryCognitiveMeta: (delta) => `қауіп ығысуы ${delta} т.`,
+        riskInterpretationLow: "Қазір көрініс тыныш: әдеттегі фоннан айқын ауытқу байқалмайды.",
+        riskInterpretationModerate: "Базалық деңгейден бірнеше жұмсақ ауытқу бар. Ұйқыға, қалпына келуге және тыныш ырғаққа басымдық берген пайдалы.",
+        riskInterpretationHigh: "Сигналдар әдеттегі фоннан едәуір алыстады. Жүктемені азайтып, қалпына келуді бақылаған дұрыс.",
+        deviationSeverityHigh: "басым",
+        deviationSeverityMedium: "орташа",
+        deviationSeverityLow: "жеңіл",
+        deviationMetricHrv: "HRV",
+        deviationMetricSleep: "Ұйқы",
+        deviationMetricSpo2: "SpO2",
+        deviationMetricTemp: "Температура",
+        deviationMetricFrag: "Фрагментация",
+        deviationFromBaseline: "базалық деңгейден",
+        riskChartKicker: "Тренд",
+        hrvChartKicker: "Қалпына келу",
+        spo2ChartKicker: "Оттегі",
+        sleepChartKicker: "Ұйқы",
+        tempChartKicker: "Температура",
+        swsChartKicker: "Ұйқы сатылары",
+        fragChartKicker: "Ұйқы тұтастығы",
+        remChartKicker: "Оқиға лентасы"
       }
     };
 
@@ -1428,9 +2090,28 @@
     }
 
     function toneForRisk(risk) {
-      if (risk < 34) return { name: "low", color: "#2c7a34", bg: "rgba(67, 160, 71, 0.1)" };
-      if (risk < 67) return { name: "moderate", color: "#8e5b19", bg: "rgba(251, 140, 0, 0.1)" };
-      return { name: "high", color: "#a33532", bg: "rgba(229, 57, 53, 0.1)" };
+      if (risk < 34) {
+        return {
+          name: "low",
+          color: "#3d7a52",
+          bg: "rgba(79, 138, 99, 0.12)",
+          soft: "rgba(79, 138, 99, 0.18)"
+        };
+      }
+      if (risk < 67) {
+        return {
+          name: "moderate",
+          color: "#9a6b27",
+          bg: "rgba(212, 176, 96, 0.16)",
+          soft: "rgba(212, 176, 96, 0.18)"
+        };
+      }
+      return {
+        name: "high",
+        color: "#b66f55",
+        bg: "rgba(201, 122, 98, 0.15)",
+        soft: "rgba(201, 122, 98, 0.2)"
+      };
     }
 
     function describeTrend(current, baseline, comparisonHours, positiveWhenHigher = true) {
@@ -1454,13 +2135,19 @@
       const badge = document.getElementById("riskScoreBadge");
       const value = document.getElementById("riskValue");
       const trend = document.getElementById("riskTrend");
+      const orb = document.getElementById("riskOrb");
+      const insightRiskValue = document.getElementById("insightRiskValue");
 
       badge.style.color = tone.color;
       badge.parentElement.style.background = tone.bg;
       badge.parentElement.style.borderColor = tone.bg;
       value.style.color = tone.color;
+      orb.style.setProperty("--risk-angle", `${clamp(risk, 0, 100) * 3.6}deg`);
+      orb.style.setProperty("--risk-color", tone.color);
+      orb.style.setProperty("--risk-soft", tone.soft);
       trend.style.background = tone.bg;
       trend.style.color = tone.color;
+      insightRiskValue.style.color = tone.color;
       trend.textContent = tone.name === "low"
         ? t("lowLoad")
         : tone.name === "moderate"
@@ -1546,6 +2233,14 @@
     const baselineRisk = windowAverage(risks, comparisonWindow, false);
     const recentRisk = windowAverage(risks, comparisonWindow, true);
     const riskShift = latest.risk - baselineRisk;
+    const baselineHrv = windowAverage(hrvs, comparisonWindow, false);
+    const recentHrv = windowAverage(hrvs, comparisonWindow, true);
+    const baselineSpo2 = windowAverage(spo2s, comparisonWindow, false);
+    const recentSpo2 = windowAverage(spo2s, comparisonWindow, true);
+    const baselineSleepWindow = windowAverage(sleepMetricValues, comparisonWindow, false);
+    const recentSleepWindow = windowAverage(sleepMetricValues, comparisonWindow, true);
+    const baselineFrag = windowAverage(frags, comparisonWindow, false);
+    const recentFrag = windowAverage(frags, comparisonWindow, true);
     const hrvShift = windowAverage(hrvs, comparisonWindow, true) - windowAverage(hrvs, comparisonWindow, false);
     const totalSleepHours = round(sleepBars.filter(Boolean).length * INTERVAL_MINUTES / 60, 2);
     const sleepStartSample = data.find((item) => item.asleep);
@@ -1558,6 +2253,7 @@
     const averageRem = average(rems) * 100;
     const maxFragIndex = frags.indexOf(maxValue(frags));
     const peakFragTime = maxFragIndex >= 0 ? formatTime(data[maxFragIndex].timestamp) : formatTime(startTime);
+    const latestTempDelta = latest.temp - profile.temperatureBaseAbs;
 
     let cumulativeSleep = 0;
     const sleepBarColors = data.map((item) => {
@@ -1603,6 +2299,183 @@
       return formatDateTime(data[sourceIndex].timestamp);
     }
 
+    function formatSigned(value, decimals = 0) {
+      if (Math.abs(value) < 0.05) {
+        return format(0, decimals);
+      }
+      const sign = value > 0 ? "+" : "-";
+      return `${sign}${format(Math.abs(value), decimals)}`;
+    }
+
+    function getSeverityTone(score) {
+      if (score >= 68) {
+        return {
+          label: t("deviationSeverityHigh"),
+          background: "rgba(201, 122, 98, 0.15)",
+          color: "#9f5c4a"
+        };
+      }
+      if (score >= 38) {
+        return {
+          label: t("deviationSeverityMedium"),
+          background: "rgba(212, 176, 96, 0.16)",
+          color: "#8d6823"
+        };
+      }
+      return {
+        label: t("deviationSeverityLow"),
+        background: "rgba(95, 156, 148, 0.14)",
+        color: "#316b65"
+      };
+    }
+
+    function setStatusCard(cardId, labelId, statusId, metaId, config) {
+      document.getElementById(cardId).dataset.tone = config.tone;
+      document.getElementById(labelId).textContent = config.label;
+      document.getElementById(statusId).textContent = config.status;
+      document.getElementById(metaId).textContent = config.meta;
+    }
+
+    function renderSummaryCards() {
+      const sleepStatusKey = totalSleepHours >= SLEEP_GOAL_HOURS && wakeups <= 3
+        ? "sleepStatusGood"
+        : totalSleepHours >= SLEEP_LOW_HOURS && wakeups <= 5
+          ? "sleepStatusFair"
+          : "sleepStatusLow";
+      const recoveryDelta = recentHrv - profile.hrvBaseline;
+      const recoveryStatusKey = recoveryDelta >= 2.5
+        ? "recoveryStatusGood"
+        : recoveryDelta >= -2
+          ? "recoveryStatusFair"
+          : "recoveryStatusLow";
+      const stressStatusKey = stressEpisodes <= 1
+        ? "stressStatusGood"
+        : stressEpisodes <= 3
+          ? "stressStatusFair"
+          : "stressStatusHigh";
+      const cognitiveStatusKey = latest.risk < 34 && Math.abs(riskShift) < 8
+        ? "cognitiveStatusGood"
+        : latest.risk < 67
+          ? "cognitiveStatusFair"
+          : "cognitiveStatusLow";
+
+      setStatusCard("summarySleepCard", "summarySleepLabel", "summarySleepStatus", "summarySleepMeta", {
+        label: t("sleepQualityLabel"),
+        status: t(sleepStatusKey),
+        meta: t("summarySleepMeta", format(totalSleepHours, 1), format(wakeups)),
+        tone: sleepStatusKey === "sleepStatusGood" ? "rest" : sleepStatusKey === "sleepStatusFair" ? "focus" : "warm"
+      });
+
+      setStatusCard("summaryRecoveryCard", "summaryRecoveryLabel", "summaryRecoveryStatus", "summaryRecoveryMeta", {
+        label: t("recoveryStateLabel"),
+        status: t(recoveryStatusKey),
+        meta: t("summaryRecoveryMeta", formatSigned(recoveryDelta, 1)),
+        tone: recoveryStatusKey === "recoveryStatusGood" ? "focus" : recoveryStatusKey === "recoveryStatusFair" ? "support" : "warm"
+      });
+
+      setStatusCard("summaryStressCard", "summaryStressLabel", "summaryStressStatus", "summaryStressMeta", {
+        label: t("stressLevelLabel"),
+        status: t(stressStatusKey),
+        meta: t("summaryStressMeta", format(stressEpisodes)),
+        tone: stressStatusKey === "stressStatusGood" ? "rest" : "warm"
+      });
+
+      setStatusCard("summaryCognitiveCard", "summaryCognitiveLabel", "summaryCognitiveStatus", "summaryCognitiveMeta", {
+        label: t("cognitiveStabilityLabel"),
+        status: t(cognitiveStatusKey),
+        meta: t("summaryCognitiveMeta", formatSigned(riskShift, 1)),
+        tone: cognitiveStatusKey === "cognitiveStatusGood" ? "support" : cognitiveStatusKey === "cognitiveStatusFair" ? "focus" : "warm"
+      });
+    }
+
+    function renderDeviations() {
+      const container = document.getElementById("deviationList");
+      container.innerHTML = "";
+
+      const hrvPercentChange = ((recentHrv - baselineHrv) / Math.max(baselineHrv, 1)) * 100;
+      const sleepPercentChange = ((recentSleepWindow - baselineSleepWindow) / Math.max(baselineSleepWindow, 0.5)) * 100;
+      const spo2PercentChange = ((recentSpo2 - baselineSpo2) / Math.max(baselineSpo2, 0.5)) * 100;
+      const fragPercentChange = ((recentFrag - baselineFrag) / Math.max(baselineFrag, 0.4)) * 100;
+
+      const items = [
+        {
+          label: t("deviationMetricHrv"),
+          deltaText: `${formatSigned(hrvPercentChange, 0)}%`,
+          severity: clamp(((baselineHrv - recentHrv) / Math.max(baselineHrv, 1)) * 240, 0, 100),
+          meta: `${t("deviationFromBaseline")} · ${format(recentHrv, 1)} ms`
+        },
+        {
+          label: t("deviationMetricSleep"),
+          deltaText: `${formatSigned(sleepPercentChange, 0)}%`,
+          severity: clamp(((baselineSleepWindow - recentSleepWindow) / Math.max(baselineSleepWindow, 0.5)) * 220, 0, 100),
+          meta: `${t("deviationFromBaseline")} · ${format(totalSleepHours, 1)} ${t("hrs")}`
+        },
+        {
+          label: t("deviationMetricSpo2"),
+          deltaText: `${formatSigned(spo2PercentChange, 1)}%`,
+          severity: clamp(((baselineSpo2 - recentSpo2) / Math.max(baselineSpo2, 0.5)) * 4200, 0, 100),
+          meta: `${t("deviationFromBaseline")} · ${format(recentSpo2, 1)}%`
+        },
+        {
+          label: t("deviationMetricTemp"),
+          deltaText: `${formatSigned(latestTempDelta, 2)}°C`,
+          severity: clamp((Math.abs(latestTempDelta) / 0.45) * 100, 0, 100),
+          meta: `${t("deviationFromBaseline")} · ${format(latest.temp, 2)} °C`
+        },
+        {
+          label: t("deviationMetricFrag"),
+          deltaText: `${formatSigned(fragPercentChange, 0)}%`,
+          severity: clamp(((recentFrag - baselineFrag) / Math.max(baselineFrag, 0.4)) * 170, 0, 100),
+          meta: `${t("deviationFromBaseline")} · ${format(recentFrag, 2)}`
+        }
+      ];
+
+      items
+        .sort((left, right) => right.severity - left.severity)
+        .forEach((item) => {
+          const severityTone = getSeverityTone(item.severity);
+          const article = document.createElement("article");
+          article.className = "deviation-item";
+
+          const top = document.createElement("div");
+          top.className = "deviation-top";
+
+          const titleBlock = document.createElement("div");
+          const name = document.createElement("div");
+          name.className = "deviation-name";
+          name.textContent = item.label;
+
+          const delta = document.createElement("div");
+          delta.className = "deviation-delta";
+          delta.textContent = item.deltaText;
+
+          titleBlock.append(name, delta);
+
+          const pill = document.createElement("span");
+          pill.className = "severity-pill";
+          pill.textContent = severityTone.label;
+          pill.style.background = severityTone.background;
+          pill.style.color = severityTone.color;
+
+          top.append(titleBlock, pill);
+
+          const bar = document.createElement("div");
+          bar.className = "deviation-bar";
+
+          const fill = document.createElement("div");
+          fill.className = "deviation-fill";
+          fill.style.width = `${Math.max(14, round(item.severity, 0))}%`;
+          bar.appendChild(fill);
+
+          const meta = document.createElement("div");
+          meta.className = "deviation-meta";
+          meta.textContent = item.meta;
+
+          article.append(top, bar, meta);
+          container.appendChild(article);
+        });
+    }
+
     function setStaticLabels() {
       document.documentElement.lang = currentLang === "kk" ? "kk" : "ru";
       document.title = t("title");
@@ -1610,10 +2483,25 @@
       document.getElementById("pageTitle").textContent = t("pageTitle");
       document.getElementById("recordedLabel").textContent = t("recorded");
       document.getElementById("riskScoreLabel").textContent = t("riskScore");
+      document.getElementById("primaryMetricLabel").textContent = t("primaryMetricLabel");
+      document.getElementById("riskCenterLabel").textContent = t("riskCenterLabel");
       document.getElementById("currentRiskLabel").textContent = t("currentRisk");
+      document.getElementById("insightLabel").textContent = t("insightLabel");
+      document.getElementById("insightTitle").textContent = t("insightTitle");
+      document.getElementById("insightCopy").textContent = t("insightCopy");
+      document.getElementById("comparisonLabel").textContent = t("comparisonLabel");
+      document.getElementById("insightRiskLabel").textContent = t("riskScore");
+      document.getElementById("packetLabel").textContent = t("packetLabel");
+      document.getElementById("comparisonPeakLabel").textContent = t("comparisonPeakLabel");
       document.getElementById("ageLabel").textContent = t("age");
       document.getElementById("riskAvgLabel").textContent = t("avgPeriod");
       document.getElementById("riskPeakLabel").textContent = t("peak");
+      document.getElementById("deviationsLabel").textContent = t("deviationsLabel");
+      document.getElementById("deviationsTitle").textContent = t("deviationsTitle");
+      document.getElementById("deviationsCopy").textContent = t("deviationsCopy");
+      document.getElementById("analyticsLabel").textContent = t("analyticsLabel");
+      document.getElementById("analyticsTitle").textContent = t("analyticsTitle");
+      document.getElementById("analyticsCopy").textContent = t("analyticsCopy");
       document.getElementById("avgLabelHrv").textContent = t("avg");
       document.getElementById("minLabelHrv").textContent = t("min");
       document.getElementById("maxLabelHrv").textContent = t("max");
@@ -1625,6 +2513,14 @@
       document.getElementById("avgLabelSleep").textContent = t("sleepWindowMeta");
       document.getElementById("minLabelSleep").textContent = t("wakeupsMeta");
       document.getElementById("maxLabelSleep").textContent = t("goalMeta");
+      document.getElementById("riskChartKicker").textContent = t("riskChartKicker");
+      document.getElementById("hrvChartKicker").textContent = t("hrvChartKicker");
+      document.getElementById("spo2ChartKicker").textContent = t("spo2ChartKicker");
+      document.getElementById("sleepChartKicker").textContent = t("sleepChartKicker");
+      document.getElementById("tempChartKicker").textContent = t("tempChartKicker");
+      document.getElementById("swsChartKicker").textContent = t("swsChartKicker");
+      document.getElementById("fragChartKicker").textContent = t("fragChartKicker");
+      document.getElementById("remChartKicker").textContent = t("remChartKicker");
       document.getElementById("riskTrendChartLabel").textContent = t("riskTrendChart");
       document.getElementById("riskTrendChartNote").textContent = t("riskTrendChartNote");
       document.getElementById("hrvChartNote").textContent = t("hrvChartNote");
@@ -1639,6 +2535,10 @@
       document.getElementById("swsChartNote").textContent = t("swsChartNote");
       document.getElementById("remChartLabel").textContent = t("remChart");
       document.getElementById("remChartNote").textContent = t("remChartNote");
+      document.getElementById("summarySleepLabel").textContent = t("sleepQualityLabel");
+      document.getElementById("summaryRecoveryLabel").textContent = t("recoveryStateLabel");
+      document.getElementById("summaryStressLabel").textContent = t("stressLevelLabel");
+      document.getElementById("summaryCognitiveLabel").textContent = t("cognitiveStabilityLabel");
     }
 
     function setDynamicText() {
@@ -1652,11 +2552,20 @@
       document.getElementById("recordedValue").textContent = `${formatDateTime(startTime)} - ${formatDateTime(endTime)}`;
       document.getElementById("lastPacket").textContent = t("packet", TOTAL_HOURS, INTERVAL_MINUTES, POINTS, format(comparisonHours, 1));
       document.getElementById("riskScoreBadge").textContent = `${latest.risk}%`;
+      document.getElementById("insightRiskValue").textContent = `${latest.risk}%`;
       document.getElementById("riskValue").textContent = format(latest.risk);
       document.getElementById("ageValue").textContent = AGE;
       document.getElementById("riskAvg").textContent = `${format(avgRisk, 1)}%`;
       document.getElementById("riskPeak").textContent = `${format(maxValue(risks))}%`;
+      document.getElementById("comparisonPeakValue").textContent = `${format(maxValue(risks))}%`;
+      document.getElementById("comparisonWindowValue").textContent = `${format(comparisonHours, 1)} ${t("hrs")}`;
+      document.getElementById("insightPacket").textContent = t("packet", TOTAL_HOURS, INTERVAL_MINUTES, POINTS, format(comparisonHours, 1));
       document.getElementById("riskHint").textContent = t("riskHint", format(Math.abs(riskShift), 1), riskShift >= 0, format(comparisonHours, 1));
+      document.getElementById("riskInterpretation").textContent = tone.name === "low"
+        ? t("riskInterpretationLow")
+        : tone.name === "moderate"
+          ? t("riskInterpretationModerate")
+          : t("riskInterpretationHigh");
       document.getElementById("riskFoot").textContent = t("riskFoot", format(comparisonHours, 1), format(recentRisk, 1));
       document.getElementById("summaryCopy").textContent = t(
         "summary",
@@ -1669,14 +2578,14 @@
 
       document.getElementById("hrvCurrent").textContent = format(latest.hrv);
       document.getElementById("hrvTrend").textContent = describeTrend(
-        windowAverage(hrvs, comparisonWindow, true),
-        windowAverage(hrvs, comparisonWindow, false),
+        recentHrv,
+        baselineHrv,
         comparisonHours,
         true
       );
       document.getElementById("hrvHint").textContent = t(
         "hrvHint",
-        format(windowAverage(hrvs, comparisonWindow, true), 1),
+        format(recentHrv, 1),
         format(profile.hrvBaseline, 1),
         format(comparisonHours, 1)
       );
@@ -1700,6 +2609,7 @@
         : desatMinutes > 0 ? "#fb8c00" : "#43a047";
 
       document.getElementById("sleepCurrent").textContent = format(totalSleepHours, 2);
+      document.getElementById("insightSleepValue").textContent = `${format(totalSleepHours, 1)} ${t("hrs")}`;
       document.getElementById("sleepSide").innerHTML = sleepGoalReached ? t("sleepSideNormal") : t("sleepSideCompressed");
       document.getElementById("sleepHint").textContent = t(
         "sleepHint",
@@ -1733,6 +2643,8 @@
         document.getElementById(id).textContent = endLabel;
       });
 
+      renderSummaryCards();
+      renderDeviations();
       setRiskTone(latest.risk);
     }
 
