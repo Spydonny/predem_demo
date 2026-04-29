@@ -451,6 +451,70 @@
     });
   }
 
+  function computeFinalRisk(config) {
+    const {
+      profile, hrvs, spo2s, frags, temps,
+      totalSleepHours, avgSws, avgRem,
+      stressEpisodes, alcoholEpisodes, desatEpisodes,
+      severeDesatMinutes
+    } = config;
+
+    const zAge = (profile.age - 47.5) / 10;
+
+    const avgHrv = average(hrvs);
+    const hrvStd = Math.max(stdDev(hrvs), 3);
+    const zLowHrv = Math.max(0, (profile.hrvBaseline - avgHrv) / hrvStd);
+
+    const avgSpo2 = average(spo2s);
+    const spo2Std = Math.max(stdDev(spo2s), 0.3);
+    const zSpo2Desat = Math.max(0, (profile.spo2Baseline - avgSpo2) / spo2Std);
+
+    const avgFrag = average(frags);
+    const fragStd = Math.max(stdDev(frags), 0.3);
+    const zFrag = Math.max(0, (avgFrag - 0.6) / fragStd);
+
+    const zShortSleep = Math.max(0, (SLEEP_GOAL_HOURS - totalSleepHours) / 1.5);
+
+    const tempDeviations = temps.map(function (v) {
+      return Math.abs(v - profile.temperatureBaseAbs);
+    });
+    const avgTempDev = average(tempDeviations);
+    const tempStd = Math.max(stdDev(tempDeviations), 0.03);
+    const zTempInstability = Math.max(0, (avgTempDev - 0.05) / tempStd);
+
+    const swsFraction = avgSws / 100;
+    const remFraction = avgRem / 100;
+    const zSwsRatio = swsFraction > 0 ? (swsFraction - profile.swsBaseline) / 0.04 : 0;
+    const zRemRatio = remFraction > 0 ? (remFraction - profile.remBaseline) / 0.04 : 0;
+
+    let raw =
+      0.88 * zAge +
+      0.82 * zLowHrv +
+      0.78 * zSpo2Desat +
+      0.62 * zFrag +
+      0.44 * zShortSleep +
+      0.34 * zTempInstability -
+      0.22 * zSwsRatio -
+      0.16 * zRemRatio +
+      (stressEpisodes > 0 ? 0.35 * Math.min(stressEpisodes, 4) : 0) +
+      (alcoholEpisodes > 0 ? 0.46 * Math.min(alcoholEpisodes, 3) : 0) +
+      (desatEpisodes > 0 ? 0.3 * Math.min(desatEpisodes, 4) : 0);
+
+    if (minValue(spo2s) < 92) {
+      raw += 0.95 + (92 - minValue(spo2s)) * 0.22;
+    }
+
+    if (totalSleepHours < SLEEP_LOW_HOURS) {
+      raw += 0.3 + (SLEEP_LOW_HOURS - totalSleepHours) * 0.22;
+    }
+
+    if (severeDesatMinutes > 0) {
+      raw += severeDesatMinutes * 0.04;
+    }
+
+    return Math.round(clamp(100 * sigmoid(raw), 1, 40));
+  }
+
   function generateData(points, age, endTime) {
     const profile = createProfile(age);
     const data = [];
@@ -724,31 +788,7 @@
 
   function loadSimulation() {
     const alignedEnd = alignToInterval(new Date(), INTERVAL_MINUTES);
-    const targetEndIso = alignedEnd.toISOString();
-
-    try {
-      const cached = localStorage.getItem(STORAGE_KEY);
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (parsed && parsed.endTime === targetEndIso) {
-          return reviveSimulation(parsed);
-        }
-        const age = parsed && parsed.profile && parsed.profile.age ? parsed.profile.age : randomInt(30, 65);
-        const regenerated = generateData(POINTS, age, alignedEnd);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeSimulation(regenerated)));
-        return regenerated;
-      }
-    } catch {
-      return generateData(POINTS, randomInt(30, 65), alignedEnd);
-    }
-
-    const created = generateData(POINTS, randomInt(30, 65), alignedEnd);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeSimulation(created)));
-    } catch {
-      return created;
-    }
-    return created;
+    return generateData(POINTS, randomInt(30, 65), alignedEnd);
   }
 
   function toneForRisk(risk) {
@@ -819,7 +859,7 @@
     const avgRisk = average(risks);
     const baselineRisk = windowAverage(risks, comparisonWindow, false);
     const recentRisk = windowAverage(risks, comparisonWindow, true);
-    const riskShift = latest.risk - baselineRisk;
+
     const baselineHrv = windowAverage(hrvs, comparisonWindow, false);
     const recentHrv = windowAverage(hrvs, comparisonWindow, true);
     const baselineSpo2 = windowAverage(spo2s, comparisonWindow, false);
@@ -857,6 +897,16 @@
       return buildChartColor("green", 0.82);
     });
 
+    const finalRisk = computeFinalRisk({
+      profile, hrvs, spo2s, frags, temps,
+      totalSleepHours,
+      avgSws: averageSws,
+      avgRem: averageRem,
+      stressEpisodes, alcoholEpisodes, desatEpisodes,
+      severeDesatMinutes
+    });
+    const riskShift = finalRisk - baselineRisk;
+
     return {
       simulation,
       profile,
@@ -884,6 +934,7 @@
       avgRisk,
       baselineRisk,
       recentRisk,
+      finalRisk,
       riskShift,
       baselineHrv,
       recentHrv,
@@ -1006,13 +1057,13 @@
     setText("recordedValue", `${formatDateTime(metrics.simulation.startTime)} - ${formatDateTime(metrics.simulation.endTime)}`);
     setText("lastPacket", t("packet", TOTAL_HOURS, INTERVAL_MINUTES, POINTS, format(metrics.comparisonHours, 1)));
     setText("riskScoreLabel", t("riskScore"));
-    setText("riskScoreBadge", `${metrics.latest.risk}%`);
+    setText("riskScoreBadge", `${metrics.finalRisk}%`);
     setText("dashboardLink", t("dashboardLink"));
 
     setText("primaryMetricLabel", t("primaryMetricLabel"));
     setText("currentRiskLabel", t("currentRisk"));
     setText("riskCenterLabel", t("currentRisk"));
-    setText("riskValue", format(metrics.latest.risk));
+    setText("riskValue", format(metrics.finalRisk));
     setText("ageLabel", t("age"));
     setText("ageValue", metrics.profile.age);
     setText("riskAvgLabel", t("avgPeriod"));
@@ -1026,7 +1077,7 @@
     setText("comparisonLabel", t("comparisonLabel"));
     setText("comparisonWindowValue", `${format(metrics.comparisonHours, 1)} ${t("hrs")}`);
     setText("insightRiskLabel", t("riskScore"));
-    setText("insightRiskValue", `${metrics.latest.risk}%`);
+    setText("insightRiskValue", `${metrics.finalRisk}%`);
     setText("packetLabel", t("packetLabel"));
     setText("insightPacket", t("packet", TOTAL_HOURS, INTERVAL_MINUTES, POINTS, format(metrics.comparisonHours, 1)));
     setText("sleepDurationLabel", t("sleepDuration"));
@@ -1038,7 +1089,7 @@
     setText("deviationsTitle", t("deviationsTitle"));
     setText("deviationsCopy", t("deviationsCopy"));
 
-    const tone = toneForRisk(metrics.latest.risk);
+    const tone = toneForRisk(metrics.finalRisk);
     const summaryTone = tone.name === "low"
       ? t("lowSummaryTone")
       : tone.name === "moderate"
@@ -1066,7 +1117,7 @@
       valueId: "riskValue",
       orbId: "riskOrb",
       text: tone.name === "low" ? t("lowLoad") : tone.name === "moderate" ? t("moderateLoad") : t("highLoad")
-    }, tone, metrics.latest.risk);
+    }, tone, metrics.finalRisk);
 
     renderSummaryCards(metrics);
     renderDeviationList(metrics);
@@ -1090,9 +1141,9 @@
       : metrics.stressEpisodes <= 3
         ? "stressStatusFair"
         : "stressStatusHigh";
-    const cognitiveStatusKey = metrics.latest.risk < 34 && Math.abs(metrics.riskShift) < 8
+    const cognitiveStatusKey = metrics.finalRisk < 34 && Math.abs(metrics.riskShift) < 8
       ? "cognitiveStatusGood"
-      : metrics.latest.risk < 67
+      : metrics.finalRisk < 67
         ? "cognitiveStatusFair"
         : "cognitiveStatusLow";
 
@@ -1272,14 +1323,14 @@
     setText("recordedValue", `${formatDateTime(metrics.simulation.startTime)} - ${formatDateTime(metrics.simulation.endTime)}`);
     setText("lastPacket", t("packet", TOTAL_HOURS, INTERVAL_MINUTES, POINTS, format(metrics.comparisonHours, 1)));
     setText("riskScoreLabel", t("riskScore"));
-    setText("riskScoreBadge", `${metrics.latest.risk}%`);
+    setText("riskScoreBadge", `${metrics.finalRisk}%`);
 
     setText("dashboardRiskLabel", t("dashboardRiskLabel"));
-    setText("dashboardRiskValue", `${metrics.latest.risk}%`);
+    setText("dashboardRiskValue", `${metrics.finalRisk}%`);
     setText("dashboardRiskHint", t("riskHint", format(Math.abs(metrics.riskShift), 1), metrics.riskShift >= 0, format(metrics.comparisonHours, 1)));
-    setText("dashboardInterpretation", metrics.latest.risk < 34
+    setText("dashboardInterpretation", metrics.finalRisk < 34
       ? t("riskInterpretationLow")
-      : metrics.latest.risk < 67
+      : metrics.finalRisk < 67
         ? t("riskInterpretationModerate")
         : t("riskInterpretationHigh"));
     setText("dashboardPeriodLabel", t("dashboardPeriodLabel"));
@@ -1295,13 +1346,13 @@
     setText("viewerSectionTitle", t("viewerSectionTitle"));
     setText("viewerSectionCopy", t("viewerSectionCopy"));
 
-    const tone = toneForRisk(metrics.latest.risk);
+    const tone = toneForRisk(metrics.finalRisk);
     applyRiskTone({
       badgeId: "riskScoreBadge",
       chipId: "dashboardRiskTrend",
       valueId: "dashboardRiskValue",
       text: tone.name === "low" ? t("lowLoad") : tone.name === "moderate" ? t("moderateLoad") : t("highLoad")
-    }, tone, metrics.latest.risk);
+    }, tone, metrics.finalRisk);
 
     renderTabs(metrics);
     bindLanguageButtons(renderDashboardPage);
