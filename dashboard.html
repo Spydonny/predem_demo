@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Детальный дашборд</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body data-page="dashboard">
+  <main class="page-shell">
+    <header class="card topbar">
+      <div class="topbar-main">
+        <div class="toolbar">
+          <div class="lang-switch" aria-label="Language switcher">
+            <button class="lang-btn is-active" type="button" data-lang="ru">RU</button>
+            <button class="lang-btn" type="button" data-lang="kk">KZ</button>
+          </div>
+          <a class="button button-ghost button-small" href="index.html" id="overviewLink">К обзору</a>
+        </div>
+        <div class="eyebrow" id="dashboardTag">Панель оценки риска деменции</div>
+        <h1 class="page-title" id="pageTitle">Детальный дашборд сигналов</h1>
+        <p class="page-copy" id="summaryCopy"></p>
+      </div>
+
+      <div class="topbar-side">
+        <div class="date-card">
+          <div class="date-label" id="recordedLabel">Период</div>
+          <div class="date-value" id="recordedValue"></div>
+          <div class="date-meta" id="lastPacket"></div>
+        </div>
+
+        <div class="risk-pill">
+          <span id="riskScoreLabel">Риск</span>
+          <strong id="riskScoreBadge">0%</strong>
+        </div>
+      </div>
+    </header>
+
+    <section class="dashboard-layout">
+      <aside class="card detail-side">
+        <div class="eyebrow" id="dashboardRiskLabel">Текущий риск</div>
+        <div class="detail-risk" id="dashboardRiskValue">0%</div>
+        <div class="trend-chip" id="dashboardRiskTrend">спокойно</div>
+        <p class="detail-copy" id="dashboardRiskHint"></p>
+        <p class="detail-copy detail-copy-strong" id="dashboardInterpretation"></p>
+
+        <div class="context-list">
+          <div class="context-item">
+            <span class="context-key" id="dashboardPeriodLabel">Окно оценки</span>
+            <strong class="context-value" id="dashboardPeriodValue">0 ч</strong>
+          </div>
+          <div class="context-item">
+            <span class="context-key" id="dashboardPacketLabel">Дискретность</span>
+            <strong class="context-value" id="dashboardPacketValue"></strong>
+          </div>
+          <div class="context-item">
+            <span class="context-key" id="dashboardSleepLabel">Сон за 24 часа</span>
+            <strong class="context-value" id="dashboardSleepValue">0 ч</strong>
+          </div>
+          <div class="context-item">
+            <span class="context-key" id="dashboardPeakLabel">Пик риска</span>
+            <strong class="context-value" id="dashboardPeakValue">0%</strong>
+          </div>
+        </div>
+      </aside>
+
+      <section class="card viewer-stage">
+        <div class="section-top">
+          <div>
+            <div class="eyebrow" id="viewerSectionLabel">Детальный дашборд</div>
+            <h2 class="section-title section-title-small" id="viewerSectionTitle">Сигналы по одному через табы</h2>
+          </div>
+          <p class="section-copy section-copy-wide" id="viewerSectionCopy"></p>
+        </div>
+
+        <div class="tab-row" id="chartTabs"></div>
+
+        <article class="viewer-card">
+          <div class="viewer-head">
+            <div>
+              <div class="eyebrow" id="viewerKicker">График</div>
+              <h3 class="viewer-title" id="viewerTitle">HRV</h3>
+              <p class="viewer-note" id="viewerNote"></p>
+            </div>
+            <div class="viewer-stat">
+              <strong id="viewerValue">0</strong>
+              <span id="viewerTrend"></span>
+            </div>
+          </div>
+
+          <div class="viewer-meta-grid" id="viewerMeta"></div>
+
+          <div class="viewer-visual">
+            <canvas id="viewerCanvas"></canvas>
+            <div class="html-panel is-hidden" id="viewerHtml"></div>
+          </div>
+
+          <div class="viewer-foot">
+            <span id="viewerStart"></span>
+            <span id="viewerFoot"></span>
+            <span id="viewerEnd"></span>
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
+</body>
+</html>
